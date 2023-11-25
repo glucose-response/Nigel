@@ -2,19 +2,16 @@ package com.example.testingthings;
 
 import com.github.mikephil.charting.data.Entry;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Person {
+public class Bebe{
     private int id;
     private String name;
     private List<Entry> timeSeriesData;
 
-    public Person(int id, String name) {
+    public Bebe(int id, String name, List<Entry> timeSeriesData) {
         this.id = id;
-        this.name = name;
-    }
-
-    public Person(String name, List<Entry> timeSeriesData) {
         this.name = name;
         this.timeSeriesData = timeSeriesData;
     }
