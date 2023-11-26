@@ -1,5 +1,6 @@
 package com.example.testingthings;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -12,14 +13,29 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 // MainActivity.java
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
 
+    private SwipeRefreshLayout swipeRefreshLayout;
+    private Executor executor = Executors.newSingleThreadExecutor();
+    private OkHttpClient client = new OkHttpClient();
     private List<Bebe> bebeList = new ArrayList<>();
     private RecyclerView recyclerView;
     private BebeListAdapter adapter;
@@ -30,19 +46,99 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Populate personList with data (replace this with your actual data)
-        for (int i = 0; i < 10; i++) {
-            bebeList.add(new Bebe(i, "Person " + String.valueOf(i), generateRandomTimeSeriesData()));
-        }
-        // ...
+        fetchDataInBackground();
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        adapter = new BebeListAdapter(bebeList);
-        recyclerView.setAdapter(adapter);
-
+        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
+        swipeRefreshLayout.setOnRefreshListener(this);
         setupSearch();
+    }
+
+    @Override
+    public void onRefresh() {
+        // Fetch data
+        fetchDataInBackground();
+        }
+
+    private void fetchDataInBackground() {
+        // Perform data fetching from CSV file or server
+        executor.execute(() -> {
+            List<Bebe> result = fetchData();
+
+            // Update UI with the fetched data
+            runOnUiThread(() -> {
+                bebeList.clear();
+                bebeList.addAll(result);
+                Log.d("MainActivity", "Bebe list size: " + bebeList.size());
+
+                adapter = new BebeListAdapter(bebeList);
+                recyclerView.setAdapter(adapter);
+
+                swipeRefreshLayout.setRefreshing(false);
+
+            });
+        });
+    }
+
+    private List<Bebe> fetchData() {
+        // Implement the logic to fetch data from CSV file or server
+        // Return the fetched data as a List<Bebe>
+        // ...
+        String url = "https://jaminhu19.pythonanywhere.com/api/data";
+        Request request = new Request.Builder()
+                .url(url)
+                .build();
+
+        try {
+            // Synchronous request (executes on the background thread)
+            Response response = client.newCall(request).execute();
+            Log.d("MainActivity", "Response: " + response.toString());
+
+            if (response.isSuccessful()) {
+                // Parse the response and return the data as a List<Bebe>
+                return parseResponse(response.body().string());
+            } else {
+                // Handle unsuccessful response
+                return null;
+            }
+        } catch (IOException e) {
+            // Handle exceptions
+            e.printStackTrace();
+            return null;
+        }
+    }
+    private List<Bebe> parseResponse(String responseBody) {
+        // Implement logic to parse the response and convert it to a List<Bebe>
+        // ...
+        Log.d("MainActivity", "Response body: " + responseBody);
+        List<Bebe> bebeList = new ArrayList<>();
+        try {
+            JSONArray jsonArray = new JSONArray(responseBody);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                int id = jsonObject.getInt("Nigel ID");
+                float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
+                String group = jsonObject.getString("Group");
+                int timeOfBirth = jsonObject.getInt("Time of Birth");
+
+                // Now you can use the id and name as needed
+                bebeList.add(
+                        new Bebe(
+                                id,
+                                timeOfBirth,
+                                weight,
+                                group,
+                                generateRandomTimeSeriesData())
+                );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return bebeList;
     }
 
     private void setupSearch() {

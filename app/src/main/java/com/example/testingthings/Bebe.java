@@ -10,7 +10,17 @@ public class Bebe{
     private String name;
     private List<Entry> timeSeriesData;
 
-    public Bebe(int id, String name, List<Entry> timeSeriesData) {
+    private int birthDate;
+
+    private float weight;
+
+    private String group;
+
+    public Bebe(int id,
+                int birthDate,
+                float weight,
+                String group,
+                List<Entry> timeSeriesData) {
         this.id = id;
         this.name = name;
         this.timeSeriesData = timeSeriesData;
