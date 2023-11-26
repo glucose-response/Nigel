@@ -87,10 +87,10 @@ public class Baby {
      * Sourced: https://www.w3resource.com/java-exercises/datetime/java-datetime-exercise-36.php
      * @return a String format of the UNIX date
      */
-    private String convertUnixToString(long unix){
+    private static String convertUnixToString(long unix){
         Date date = new Date(unix*1000L);
         SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        jdf.setTimeZone(TimeZone.getTimeZone("GMT-4"));
+        jdf.setTimeZone(TimeZone.getTimeZone("GMT-0"));
         String stringDate = jdf.format(date);
         return stringDate;
     }

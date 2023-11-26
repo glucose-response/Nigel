@@ -48,14 +48,8 @@ public class TestBaby {
     @Test
     public void checkGetBirthDateString(){
         List<Entry> list = new ArrayList<Entry>();
-        long unix_seconds = 1372339860L;
         Baby baby = new Baby(0, 1372339860L, 40.5, "Group A",list);
-        Date date = new Date(unix_seconds*1000L);
-        SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
-        jdf.setTimeZone(TimeZone.getTimeZone("GMT-4"));
-        String java_date = jdf.format(date);
-        System.out.println("\n"+java_date+"\n");
-        assertEquals(baby.getBirthDateString(),"2013-06-27 09:31:00 GMT-04:00");
+        assertEquals(baby.getBirthDateString(),"2013-06-27 13:31:00 GMT-00:00");
     }
 
     @Test
@@ -94,6 +88,10 @@ public class TestBaby {
         Baby baby = new Baby(0, 0L, 40.5, "Group A",list);
         baby.setTimeSeriesData(list2);
         assertTrue(baby.getTimeSeriesData().equals(list3));
+    }
+
+    @Test
+    public void testConvertUnixToString(){
     }
 
 
