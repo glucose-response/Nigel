@@ -5,11 +5,11 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class BebeDetailActivity extends AppCompatActivity {
+public class DetailedActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_detail);
+        setContentView(R.layout.activity_detailed);
 
         TextView textView = findViewById(R.id.nameTextView);
         int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");

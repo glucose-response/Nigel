@@ -1,6 +1,5 @@
 package com.example.testingthings;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -36,15 +35,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private SwipeRefreshLayout swipeRefreshLayout;
     private Executor executor = Executors.newSingleThreadExecutor();
     private OkHttpClient client = new OkHttpClient();
-    private List<Bebe> bebeList = new ArrayList<>();
+    private List<Baby> babyList = new ArrayList<>();
     private RecyclerView recyclerView;
-    private BebeListAdapter adapter;
+    private BabyListAdapter adapter;
     private EditText searchEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_dashboard);
 
         fetchDataInBackground();
 
@@ -65,15 +64,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void fetchDataInBackground() {
         // Perform data fetching from CSV file or server
         executor.execute(() -> {
-            List<Bebe> result = fetchData();
+            List<Baby> result = fetchData();
 
             // Update UI with the fetched data
             runOnUiThread(() -> {
-                bebeList.clear();
-                bebeList.addAll(result);
-                Log.d("MainActivity", "Bebe list size: " + bebeList.size());
+                babyList.clear();
+                babyList.addAll(result);
+                Log.d("MainActivity", "Bebe list size: " + babyList.size());
 
-                adapter = new BebeListAdapter(bebeList);
+                adapter = new BabyListAdapter(babyList);
                 recyclerView.setAdapter(adapter);
 
                 swipeRefreshLayout.setRefreshing(false);
@@ -82,7 +81,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
-    private List<Bebe> fetchData() {
+    private List<Baby> fetchData() {
         // Implement the logic to fetch data from CSV file or server
         // Return the fetched data as a List<Bebe>
         // ...
@@ -109,11 +108,11 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             return null;
         }
     }
-    private List<Bebe> parseResponse(String responseBody) {
+    private List<Baby> parseResponse(String responseBody) {
         // Implement logic to parse the response and convert it to a List<Bebe>
         // ...
         Log.d("MainActivity", "Response body: " + responseBody);
-        List<Bebe> bebeList = new ArrayList<>();
+        List<Baby> babyList = new ArrayList<>();
         try {
             JSONArray jsonArray = new JSONArray(responseBody);
 
@@ -126,8 +125,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 int timeOfBirth = jsonObject.getInt("Time of Birth");
 
                 // Now you can use the id and name as needed
-                bebeList.add(
-                        new Bebe(
+                babyList.add(
+                        new Baby(
                                 id,
                                 timeOfBirth,
                                 weight,
@@ -138,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return bebeList;
+        return babyList;
     }
 
     private void setupSearch() {

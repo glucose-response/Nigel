@@ -2,10 +2,9 @@ package com.example.testingthings;
 
 import com.github.mikephil.charting.data.Entry;
 
-import java.io.Serializable;
 import java.util.List;
 
-public class Bebe{
+public class Baby {
     private int id;
     private List<Entry> timeSeriesData;
 
@@ -15,7 +14,7 @@ public class Bebe{
 
     private String group;
 
-    public Bebe(int id,
+    public Baby(int id,
                 int birthDate,
                 float weight,
                 String group,

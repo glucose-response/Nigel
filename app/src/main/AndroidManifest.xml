@@ -28,7 +28,7 @@
                 android:value="" />
         </activity>
 
-        <activity android:name=".BebeDetailActivity"/>
+        <activity android:name=".DetailedActivity"/>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

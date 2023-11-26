@@ -5,34 +5,29 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.components.XAxis;
-import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.listener.ChartTouchListener;
-import com.github.mikephil.charting.listener.OnChartGestureListener;
 
 import java.util.ArrayList;
 import java.util.List;
-public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHolder>{
+public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
 
-    private List<Bebe> originalList;
-    private List<Bebe> filteredList; // New list to store filtered results
+    private List<Baby> originalList;
+    private List<Baby> filteredList; // New list to store filtered results
     private AxisConfiguration commonAxisConfig;
 
-    public BebeListAdapter(List<Bebe> bebeList) {
-        this.originalList = bebeList;
+    public BabyListAdapter(List<Baby> babyList) {
+        this.originalList = babyList;
         this.filteredList = this.originalList;
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
-        if (bebeList != null) {
-            this.filteredList = new ArrayList<>(bebeList); // Initialize filtered list with all items
+        if (babyList != null) {
+            this.filteredList = new ArrayList<>(babyList); // Initialize filtered list with all items
         } else {
             this.filteredList = new ArrayList<>(); // Initialize an empty list if bebeList is null
         }    }
@@ -58,22 +53,22 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Bebe bebe = filteredList.get(position);
+        Baby baby = filteredList.get(position);
 
-        holder.personNameTextView.setText(String.valueOf(bebe.getId()));
+        holder.personNameTextView.setText(String.valueOf(baby.getId()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(v.getContext(), BebeDetailActivity.class);
-                intent.putExtra("BEBE_KEY", bebe.getId());
+                Intent intent = new Intent(v.getContext(), DetailedActivity.class);
+                intent.putExtra("BEBE_KEY", baby.getId());
                 v.getContext().startActivity(intent);
             }
         });
 
         // Customize this method based on your data and chart setup
         setupPersonChart(holder.personChart,
-                bebe.getTimeSeriesData(),
+                baby.getTimeSeriesData(),
                 commonAxisConfig);
     }
 
@@ -110,7 +105,7 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
         if (query.isEmpty()) {
             filteredList.addAll(originalList); // If query is empty, show all babies
         } else {
-            for (Bebe baby : originalList) {
+            for (Baby baby : originalList) {
                 Log.d("FILTER", "filterByName: " + baby.getId());
                 if (String.valueOf(baby.getId()).toLowerCase().contains(query.toLowerCase())) {
                     Log.d("FILTER", "baby added: " + baby.getId());
@@ -122,11 +117,11 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
         notifyDataSetChanged(); // Notify the adapter that the data has changed
     }
 
-    public List<Bebe> getFilteredList() {
+    public List<Baby> getFilteredList() {
         return filteredList;
     }
 
-    public List<Bebe> getOriginalList() {
+    public List<Baby> getOriginalList() {
         return originalList;
     }
 
