@@ -60,7 +60,7 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Bebe bebe = filteredList.get(position);
 
-        holder.personNameTextView.setText(bebe.getName());
+        holder.personNameTextView.setText(String.valueOf(bebe.getId()));
 
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,9 +111,9 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
             filteredList.addAll(originalList); // If query is empty, show all babies
         } else {
             for (Bebe baby : originalList) {
-                Log.d("FILTER", "filterByName: " + baby.getName());
-                if (baby.getName().toLowerCase().contains(query.toLowerCase())) {
-                    Log.d("FILTER", "baby added: " + baby.getName());
+                Log.d("FILTER", "filterByName: " + baby.getId());
+                if (String.valueOf(baby.getId()).toLowerCase().contains(query.toLowerCase())) {
+                    Log.d("FILTER", "baby added: " + baby.getId());
                     filteredList.add(baby);
                 }
             }

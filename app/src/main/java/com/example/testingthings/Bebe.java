@@ -7,7 +7,6 @@ import java.util.List;
 
 public class Bebe{
     private int id;
-    private String name;
     private List<Entry> timeSeriesData;
 
     private int birthDate;
@@ -22,18 +21,24 @@ public class Bebe{
                 String group,
                 List<Entry> timeSeriesData) {
         this.id = id;
-        this.name = name;
+        this.birthDate = birthDate;
+        this.weight = weight;
+        this.group = group;
         this.timeSeriesData = timeSeriesData;
     }
 
     public int getId() {
         return id;
     }
-
-    public String getName() {
-        return name;
+    public int getBirthDate() {
+        return birthDate;
     }
-
+    public float getWeight() {
+        return weight;
+    }
+    public String getGroup() {
+        return group;
+    }
     public List<Entry> getTimeSeriesData() {
         return timeSeriesData;
     }
