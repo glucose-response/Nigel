@@ -19,20 +19,28 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.listener.ChartTouchListener;
 import com.github.mikephil.charting.listener.OnChartGestureListener;
 
+import java.util.ArrayList;
 import java.util.List;
 public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHolder>{
 
-    private List<Bebe> bebeList;
+    private List<Bebe> originalList;
+    private List<Bebe> filteredList; // New list to store filtered results
     private AxisConfiguration commonAxisConfig;
 
     public BebeListAdapter(List<Bebe> bebeList) {
-        this.bebeList = bebeList;
+        this.originalList = bebeList;
+        this.filteredList = this.originalList;
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
-    }
+        if (bebeList != null) {
+            this.filteredList = new ArrayList<>(bebeList); // Initialize filtered list with all items
+        } else {
+            this.filteredList = new ArrayList<>(); // Initialize an empty list if bebeList is null
+        }    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView personNameTextView;
         public LineChart personChart;
+
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -50,7 +58,7 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Bebe bebe = bebeList.get(position);
+        Bebe bebe = filteredList.get(position);
 
         holder.personNameTextView.setText(bebe.getName());
 
@@ -71,7 +79,7 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return bebeList.size();
+        return filteredList.size();
     }
 
     private void setupPersonChart(LineChart chart,
@@ -94,6 +102,32 @@ public class BebeListAdapter extends RecyclerView.Adapter<BebeListAdapter.ViewHo
 
         chart.getDescription().setEnabled(false);
         chart.invalidate(); // refresh
+    }
+
+    public void filterByName(String query) {
+        Log.d("FILTER", "filterByName: " + query);
+        filteredList.clear();
+        if (query.isEmpty()) {
+            filteredList.addAll(originalList); // If query is empty, show all babies
+        } else {
+            for (Bebe baby : originalList) {
+                Log.d("FILTER", "filterByName: " + baby.getName());
+                if (baby.getName().toLowerCase().contains(query.toLowerCase())) {
+                    Log.d("FILTER", "baby added: " + baby.getName());
+                    filteredList.add(baby);
+                }
+            }
+        }
+
+        notifyDataSetChanged(); // Notify the adapter that the data has changed
+    }
+
+    public List<Bebe> getFilteredList() {
+        return filteredList;
+    }
+
+    public List<Bebe> getOriginalList() {
+        return originalList;
     }
 
 }

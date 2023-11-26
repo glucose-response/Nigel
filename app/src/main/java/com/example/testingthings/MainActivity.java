@@ -1,6 +1,10 @@
 package com.example.testingthings;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.github.mikephil.charting.data.Entry;
 
@@ -17,6 +21,9 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     private List<Bebe> bebeList = new ArrayList<>();
+    private RecyclerView recyclerView;
+    private BebeListAdapter adapter;
+    private EditText searchEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +36,29 @@ public class MainActivity extends AppCompatActivity {
         }
         // ...
 
-        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        BebeListAdapter adapter = new BebeListAdapter(bebeList);
+        adapter = new BebeListAdapter(bebeList);
         recyclerView.setAdapter(adapter);
+
+        setupSearch();
+    }
+
+    private void setupSearch() {
+        searchEditText = findViewById(R.id.searchEditText); // Replace with your actual EditText ID
+        Button searchButton = findViewById(R.id.searchButton); // Replace with your actual Button ID
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d("MainActivity", "Search button clicked");
+                String query = searchEditText.getText().toString();
+                adapter.filterByName(query);
+                recyclerView.setAdapter(adapter);
+                Log.d("MainActivity", "Filtered List" + adapter.getFilteredList().toString());
+            }
+        });
     }
 
     // Replace this method with your actual data fetching logic
