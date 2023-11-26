@@ -1,4 +1,4 @@
-package com.example.testingthings;
+package com.example.nigel;
 
 // AxisConfiguration.java
 public class AxisConfiguration {

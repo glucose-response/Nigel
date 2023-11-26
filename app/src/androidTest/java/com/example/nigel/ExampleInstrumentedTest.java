@@ -1,4 +1,4 @@
-package com.example.testingthings;
+package com.example.nigel;
 
 import android.content.Context;
 
