@@ -120,9 +120,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 int id = jsonObject.getInt("Nigel ID");
-                float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
+                double weight = (double) jsonObject.getDouble("Birth Weight (kg)");
                 String group = jsonObject.getString("Group");
-                int timeOfBirth = jsonObject.getInt("Time of Birth");
+                long timeOfBirth = jsonObject.getInt("Time of Birth");
 
                 // Now you can use the id and name as needed
                 babyList.add(
