@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="#ffe1eb"
@@ -11,8 +12,9 @@
         android:id="@+id/backButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="@drawable/rounded_corners_background"
         android:textColor="#ffe1eb"
-        android:background="#313678"
+        android:backgroundTint="#313678"
         android:text="Home"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,54 +34,60 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp"/>
 
-    <!-- 3. Baby Basic Info -->
-    <!-- dob -->
-    <TextView
-        android:id="@+id/dateOfBirthTextView"
-        android:layout_width="wrap_content"
+    <!-- 3. Baby Basic Info Container -->
+    <LinearLayout
+        android:id="@+id/basicInfoContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Date of Birth: [Placeholder]"
-        android:textSize="16sp"
+        android:layout_marginTop="15dp"
+        android:orientation="vertical"
+        android:padding="15dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:background="@drawable/rounded_corners_background"
         app:layout_constraintTop_toBottomOf="@+id/nameTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="10dp" />
+        android:elevation="2dp"
+        >
 
-    <!-- gest age -->
-    <TextView
-        android:id="@+id/gestationalAgeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Gestational Age: [Placeholder]"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/dateOfBirthTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="5dp" />
+        <!-- dob -->
+        <TextView
+            android:id="@+id/dateOfBirthTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date of Birth: [Placeholder]"
+            android:textSize="16sp"
+            android:layout_marginTop="10dp" />
 
-    <!-- birth weight -->
-    <TextView
-        android:id="@+id/birthWeightTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Birth Weight: [Placeholder]"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/gestationalAgeTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="5dp" />
+        <!-- gest age -->
+        <TextView
+            android:id="@+id/gestationalAgeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Gestational Age: [Placeholder]"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp" />
 
-    <!-- monit. start time -->
-    <TextView
-        android:id="@+id/monitoringStartTimeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Monitoring Started: [Placeholder]"
-        android:textSize="16sp"
-        app:layout_constraintTop_toBottomOf="@+id/birthWeightTextView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="5dp" />
+        <!-- birth weight -->
+        <TextView
+            android:id="@+id/birthWeightTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Birth Weight: [Placeholder]"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp" />
+
+        <!-- monit. start time -->
+        <TextView
+            android:id="@+id/monitoringStartTimeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monitoring Started: [Placeholder]"
+            android:textSize="16sp"
+            android:layout_marginTop="5dp" />
+
+    </LinearLayout>
 
     <!-- 4. Notes -->
     <TextView
@@ -92,8 +100,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintMarginStart="15dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/monitoringStartTimeTextView" />
-
+        app:layout_constraintTop_toBottomOf="@+id/basicInfoContainer" />
 
     <!-- Placeholder for Future Notes -->
     <EditText
@@ -106,7 +113,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="15dp"/>
-
 
     <!-- 5. Graph for Skin Glucose -->
     <com.github.mikephil.charting.charts.LineChart
