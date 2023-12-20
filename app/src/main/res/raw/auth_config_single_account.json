@@ -1,0 +1,17 @@
+
+{
+  "client_id" : "4a240264-49d5-4fb4-b8cc-9cbc3b079b76",
+  "authorization_user_agent" : "DEFAULT",
+  "redirect_uri" : "msauth://com.example.nigel/1pMGRoAPg72bCoH7tKNfc0d938g%3D",
+  "broker_redirect_uri_registered": true,
+  "account_mode": "SINGLE",
+  "authorities" : [
+    {
+      "type": "AAD",
+      "audience": {
+        "type": "AzureADMyOrg",
+        "tenant_id": "2b897507-ee8c-4575-830b-4f8267c3d307"
+      }
+    }
+  ]
+}
