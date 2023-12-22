@@ -36,7 +36,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         public TextView personNameTextView;
         public LineChart personChart;
 
-
         public ViewHolder(View itemView) {
             super(itemView);
             personNameTextView = itemView.findViewById(R.id.nameTextView);
@@ -54,9 +53,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Baby baby = filteredList.get(position);
-
         holder.personNameTextView.setText(String.valueOf(baby.getId()));
-
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -81,7 +78,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                                   List<Entry> timeSeriesData,
                                   AxisConfiguration axisConfig) {
         // Customize this method based on how you want to display the chart
-        // ...
 
         // Example setup:
         LineDataSet dataSet = new LineDataSet(timeSeriesData, "Person Data");

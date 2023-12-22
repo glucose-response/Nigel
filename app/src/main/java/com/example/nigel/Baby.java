@@ -3,7 +3,9 @@ package com.example.nigel;
 import com.github.mikephil.charting.data.Entry;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -75,23 +77,26 @@ public class Baby {
         return convertUnixToString(birthDate);
     }
 
-    public long getAge(){
-        long now = System.currentTimeMillis()/1000;
-        long age = now - birthDate;
-        return age;
-    }
-    public String getAgeString(){
-        return convertUnixToString(getAge());
+    public String[] getAge(){
+        long difference = birthDate - System.currentTimeMillis()/1000;
+        String[] details = convertUnixToString(difference).split("-");
+        int size = details.length;
+        int[] age = new int[size];
+        for(int i = 0; i < size; i++){
+            age[i] = Integer.parseInt(details[i]);
+        }
+        age[0] -= 1970;
+        return details;
     }
     /**
      * Sourced: https://www.w3resource.com/java-exercises/datetime/java-datetime-exercise-36.php
      * @return a String format of the UNIX date
      */
-    private static String convertUnixToString(long unix){
+    public static String convertUnixToString(long unix){
         Date date = new Date(unix*1000L);
         SimpleDateFormat jdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
         jdf.setTimeZone(TimeZone.getTimeZone("GMT-0"));
-        String stringDate = jdf.format(date);
-        return stringDate;
+        String[] stringDate = jdf.format(date).split(" ");
+        return stringDate[0];
     }
 }

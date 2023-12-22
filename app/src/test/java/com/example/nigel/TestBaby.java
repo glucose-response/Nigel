@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 import com.github.mikephil.charting.data.Entry;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -92,6 +94,15 @@ public class TestBaby {
 
     @Test
     public void testConvertUnixToString(){
+        long birth = 1372339860L;
+        long now = System.currentTimeMillis()/1000;
+        Baby baby = new Baby(0, birth, 40.5, "Group A",null);
+        String birthString = Baby.convertUnixToString(birth);
+        String nowString = Baby.convertUnixToString(now);
+        System.out.println(birthString + " : " + nowString);
+        System.out.println(baby.getAge().toString());
+
+
     }
 
 
