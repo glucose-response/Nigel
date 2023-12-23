@@ -77,8 +77,8 @@ public class Baby {
         return convertUnixToString(birthDate);
     }
 
-    public String[] getAge(){
-        long difference = birthDate - System.currentTimeMillis()/1000;
+    public int[] getAge(){
+        long difference = System.currentTimeMillis()/1000 - birthDate;
         String[] details = convertUnixToString(difference).split("-");
         int size = details.length;
         int[] age = new int[size];
@@ -86,7 +86,25 @@ public class Baby {
             age[i] = Integer.parseInt(details[i]);
         }
         age[0] -= 1970;
-        return details;
+        age[1] -= 1;
+        return age;
+    }
+    /**
+     * Function is "identical" to the previous function however it does not use the System
+     * class as this cannot be Powermocked for testing. Hence, Line 96 says current time as
+     * the 30th January 2024 (1706572800L)
+     */
+    public int[] getAgeForTest(){
+        long difference = 1706572800L - birthDate;
+        String[] details = convertUnixToString(difference).split("-");
+        int size = details.length;
+        int[] age = new int[size];
+        for(int i = 0; i < size; i++){
+            age[i] = Integer.parseInt(details[i]);
+        }
+        age[0] -= 1970;
+        age[1] -= 1;
+        return age;
     }
     /**
      * Sourced: https://www.w3resource.com/java-exercises/datetime/java-datetime-exercise-36.php
