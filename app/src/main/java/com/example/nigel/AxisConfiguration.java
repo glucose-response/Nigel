@@ -8,10 +8,11 @@ public class AxisConfiguration {
     private float maxY;
 
     public AxisConfiguration(float minX, float maxX, float minY, float maxY) {
-        this.minX = minX;
-        this.maxX = maxX;
-        this.minY = minY;
-        this.maxY = maxY;
+        // Negative values are set to 0.
+        this.minX = (minX < 0) ? 0 : minX;
+        this.maxX = (maxX < 0) ? 0 : maxX;
+        this.minY = (minY < 0) ? 0 : minY;
+        this.maxY = (maxY < 0) ? 0 : maxY;
     }
 
     public float getMinX() {
