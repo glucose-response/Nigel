@@ -46,27 +46,24 @@ public class SingleAccountModeFragment extends Fragment {
     private static final String TAG = SingleAccountModeFragment.class.getSimpleName();
 
     /* UI & Debugging Variables */
-    private Button signInButton;
-    private TextView logTextView;
-    private AccountSettings settings;
+    Button signInButton;
+    Button signOutButton;
+    TextView logTextView;
+
+
 
 
     /* Azure AD Variables */
     private ISingleAccountPublicClientApplication mSingleAccountApp;
     private IAccount mAccount;
 
-    public SingleAccountModeFragment(AccountSettings settings){
-        this.settings = settings;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
-
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.login_test, container, false);
         initializeUI(view);
-
 
         // Creates a PublicClientApplication object with res/raw/auth_config_single_account.json
         PublicClientApplication.createSingleAccountPublicClientApplication(getContext(),
@@ -79,7 +76,6 @@ public class SingleAccountModeFragment extends Fragment {
                          * This requires "account_mode" : "SINGLE" in the config json file.
                          **/
                         mSingleAccountApp = application;
-                        settings.setmSingleAccountApp(application);
                         loadAccount();
                     }
 
@@ -92,14 +88,13 @@ public class SingleAccountModeFragment extends Fragment {
         return view;
     }
 
-
-
     /**
      * Initializes UI variables and callbacks.
      */
     private void initializeUI(@NonNull final View view) {
         signInButton = view.findViewById(R.id.loginButton);
-        this.logTextView = view.findViewById(R.id.txt_logs);
+        signOutButton = view.findViewById(R.id.logoutButton);
+        logTextView = view.findViewById(R.id.txt_logs);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -113,6 +108,31 @@ public class SingleAccountModeFragment extends Fragment {
                         .withCallback(getAuthInteractiveCallback())
                         .build();
                 mSingleAccountApp.signIn(signInParameters);
+            }
+        });
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                if (mSingleAccountApp == null) {
+                    return;
+                }
+
+                /**
+                 * Removes the signed-in account and cached tokens from this app (or device, if the device is in shared mode).
+                 */
+                mSingleAccountApp.signOut(new ISingleAccountPublicClientApplication.SignOutCallback() {
+                    @Override
+                    public void onSignOut() {
+                        mAccount = null;
+                        updateUI();
+                        showToastOnSignOut();
+                    }
+
+                    @Override
+                    public void onError(@NonNull MsalException exception) {
+                        displayError(exception);
+                    }
+                });
             }
         });
     }
@@ -150,21 +170,12 @@ public class SingleAccountModeFragment extends Fragment {
             return;
         }
 
-        // Check whether it is already signed in
         mSingleAccountApp.getCurrentAccountAsync(new ISingleAccountPublicClientApplication.CurrentAccountCallback() {
             @Override
             public void onAccountLoaded(@Nullable IAccount activeAccount) {
                 // You can use the account data to update your UI or your app database.
-                settings.setmAccount(activeAccount);
-                mAccount = settings.getmAccount();
-                if (mAccount!=null) {
-                    Log.d(TAG, "Account Updated: " + mAccount.toString());
-
-                    /* Redirects to main page if still signed in*/
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    startActivity(intent);
-                }
-//                updateUI();
+                mAccount = activeAccount;
+                updateUI();
             }
 
             @Override
@@ -182,36 +193,36 @@ public class SingleAccountModeFragment extends Fragment {
         });
     }
 
-//    /**
-//     * Callback used in for silent acquireToken calls.
-//     */
-//    private SilentAuthenticationCallback getAuthSilentCallback() {
-//        return new SilentAuthenticationCallback() {
-//
-//            @Override
-//            public void onSuccess(IAuthenticationResult authenticationResult) {
-//                Log.d(TAG, "Successfully authenticated");
-//
-//                /* Successfully got a token, use it to call a protected resource - MSGraph */
-//                callGraphAPI(authenticationResult);
-//            }
-//
-//            @Override
-//            public void onError(MsalException exception) {
-//                /* Failed to acquireToken */
-//                Log.d(TAG, "Authentication failed: " + exception.toString());
-//                displayError(exception);
-//
-//                if (exception instanceof MsalClientException) {
-//                    /* Exception inside MSAL, more info inside MsalError.java */
-//                } else if (exception instanceof MsalServiceException) {
-//                    /* Exception when communicating with the STS, likely config issue */
-//                } else if (exception instanceof MsalUiRequiredException) {
-//                    /* Tokens expired or no session, retry with interactive */
-//                }
-//            }
-//        };
-//    }
+    /**
+     * Callback used in for silent acquireToken calls.
+     */
+    private SilentAuthenticationCallback getAuthSilentCallback() {
+        return new SilentAuthenticationCallback() {
+
+            @Override
+            public void onSuccess(IAuthenticationResult authenticationResult) {
+                Log.d(TAG, "Successfully authenticated");
+
+                /* Successfully got a token, use it to call a protected resource - MSGraph */
+                callGraphAPI(authenticationResult);
+            }
+
+            @Override
+            public void onError(MsalException exception) {
+                /* Failed to acquireToken */
+                Log.d(TAG, "Authentication failed: " + exception.toString());
+                displayError(exception);
+
+                if (exception instanceof MsalClientException) {
+                    /* Exception inside MSAL, more info inside MsalError.java */
+                } else if (exception instanceof MsalServiceException) {
+                    /* Exception when communicating with the STS, likely config issue */
+                } else if (exception instanceof MsalUiRequiredException) {
+                    /* Tokens expired or no session, retry with interactive */
+                }
+            }
+        };
+    }
 
     /**
      * Callback used for interactive request.
@@ -231,14 +242,10 @@ public class SingleAccountModeFragment extends Fragment {
                 Log.d(TAG, "Token: " + authenticationResult.getAccessToken());
 
                 /* Update account */
-                settings.setmAccount(authenticationResult.getAccount());
-                settings.setAuthenticationResult(authenticationResult);
-                settings.setLoginState(false);
                 mAccount = authenticationResult.getAccount();
                 Log.d(TAG, "Account Updated: " + mAccount.toString());
                 updateUI();
 
-                /* Launch the MainActivity */
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
 
@@ -251,6 +258,12 @@ public class SingleAccountModeFragment extends Fragment {
                 /* Failed to acquireToken */
                 Log.d(TAG, "Authentication failed: " + exception.toString());
                 displayError(exception);
+
+                if (exception instanceof MsalClientException) {
+                    /* Exception inside MSAL, more info inside MsalError.java */
+                } else if (exception instanceof MsalServiceException) {
+                    /* Exception when communicating with the STS, likely config issue */
+                }
             }
 
             @Override
@@ -261,29 +274,29 @@ public class SingleAccountModeFragment extends Fragment {
         };
     }
 
-//    /**
-//     * Make an HTTP request to obtain MSGraph data
-//     */
-//    private void callGraphAPI(final IAuthenticationResult authenticationResult) {
-//        MSGraphRequestWrapper.callGraphAPIUsingVolley(
-//                getContext(),
-//                authenticationResult.getAccessToken(),
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        /* Successfully called graph, process data and send to UI */
-//                        Log.d(TAG, "Response: " + response.toString());
-//                        displayUserInfo(response);
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d(TAG, "Error: " + error.toString());
-//                        displayError(error);
-//                    }
-//                });
-//    }
+    /**
+     * Make an HTTP request to obtain MSGraph data
+     */
+    private void callGraphAPI(final IAuthenticationResult authenticationResult) {
+        MSGraphRequestWrapper.callGraphAPIUsingVolley(
+                getContext(),
+                authenticationResult.getAccessToken(),
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        /* Successfully called graph, process data and send to UI */
+                        Log.d(TAG, "Response: " + response.toString());
+                        displayUserInfo(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.d(TAG, "Error: " + error.toString());
+                        displayError(error);
+                    }
+                });
+    }
 
     //
     // Helper methods manage UI updates
@@ -326,7 +339,15 @@ public class SingleAccountModeFragment extends Fragment {
      * Updates UI based on the current account.
      */
     private void updateUI() {
-        signInButton.setEnabled(mAccount == null);
+        if (mAccount != null) {
+            signInButton.setEnabled(false);
+            signOutButton.setEnabled(true);
+
+        } else {
+            signInButton.setEnabled(true);
+            signOutButton.setEnabled(false);
+
+        }
     }
 
     /**
