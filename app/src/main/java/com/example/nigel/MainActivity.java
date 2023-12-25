@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         int id = item.getItemId();
 
         if (id == R.id.logoutButton) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivity(intent);
             return true;
         }
 
