@@ -5,9 +5,11 @@
     android:background="#edc3d4"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".YourActivityName">
+    tools:context=".DetailedActivity">
 
     <!-- Go back to home page -->
+    <!-- currently trying to fix the error above, will replace home button with logo-->
+
     <Button
         android:id="@+id/backButton"
         android:layout_width="40dp"
