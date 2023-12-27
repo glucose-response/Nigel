@@ -1,0 +1,5 @@
+<resources>
+    <string name="home">Home</string>
+    <string name="back_button_description">Go back to the home page</string>
+    <!-- Other string resources -->
+</resources>
