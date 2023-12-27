@@ -20,57 +20,97 @@
         android:backgroundTint="#ffe1eb"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/nameTextView"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
-        android:contentDescription="@string/back_button_description" /> <!-- Accessibility description -->
+        android:contentDescription="@string/back_button_description"/>
+
+
+    <!-- NiGEL ID -->
 
     <TextView
         android:id="@+id/backButtonLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
         android:text="@string/home"
-        android:textSize="12sp"
         android:textColor="#313678"
+        android:textSize="12sp"
         app:layout_constraintStart_toStartOf="@id/backButton"
-        app:layout_constraintTop_toBottomOf="@id/backButton"
-        android:layout_marginTop="4dp"/>
+        app:layout_constraintTop_toBottomOf="@id/backButton" />
 
-
-    <!-- NiGEL ID -->
     <TextView
         android:id="@+id/nameTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Baby NiGEL ID: 12345"
         android:textColor="#313678"
-        android:textSize="24sp"
+        android:textSize="25sp"
         android:textStyle="bold"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/backButton"/>
+        app:layout_constraintStart_toEndOf="@id/backButton"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/backButton"
+        android:layout_marginStart="8dp"/>
 
+
+
+    <!-- box with baby basic information -->
     <!-- Baby Basic Info Container -->
     <LinearLayout
         android:id="@+id/basicInfoContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
         android:background="@drawable/rounded_container"
-        android:backgroundTint="#5178e1"
-        android:elevation="4dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintTop_toBottomOf="@id/nameTextView"
+        android:padding="16dp"
+        app:layout_constraintTop_toBottomOf="@id/backButton"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp">
 
-        <!-- Basic Info Text Views (Date of Birth, Gestational Age, Birth Weight, Monitoring Start Time) -->
-        <!-- Replace [Placeholder] with actual data -->
-        <!-- Add TextViews for Date of Birth, Gestational Age, etc. -->
-    </LinearLayout>
+
+    <!-- Date of Birth -->
+    <TextView
+        android:id="@+id/dateOfBirthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Date of Birth: XX/XX/XXXX"
+        android:textSize="16sp"
+        android:textColor="#ffffff" /> <!-- White text for contrast -->
+
+    <!-- Gestational Age -->
+    <TextView
+        android:id="@+id/gestationalAgeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Gestational Age: XX weeks"
+        android:textSize="16sp"
+        android:textColor="#ffffff" />
+
+    <!-- Birth Weight -->
+    <TextView
+        android:id="@+id/birthWeightTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Birth Weight: XXXX g"
+        android:textSize="16sp"
+        android:textColor="#ffffff" />
+
+    <!-- Days of Life -->
+    <!-- This value should be dynamically calculated and set from your Java/Kotlin code -->
+    <TextView
+        android:id="@+id/daysOfLifeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Days of Life: XXX days"
+        android:textSize="16sp"
+        android:textColor="#ffffff" />
+</LinearLayout>
+
+
 
     <!-- Notes -->
     <TextView
@@ -99,7 +139,7 @@
         android:textColor="#313678"
         android:padding="16dp"
         android:gravity="top|start"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="10dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
         app:layout_constraintTop_toBottomOf="@id/notesTextView"
