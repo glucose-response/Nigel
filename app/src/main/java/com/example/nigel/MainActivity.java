@@ -53,6 +53,29 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
         setupSearch();
+
+        // Add Baby button
+        Button addBabyButton = findViewById(R.id.addBabyButton); // Replace with your actual Button ID
+
+        // Set a click listener for the Add Baby button
+        addBabyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddBabyDialog();
+            }
+        });
+    }
+
+    //Tian's new code to open the dialog
+    private void openAddBabyDialog() {
+        AddBabyDialog addBabyDialog = new AddBabyDialog(this, new AddBabyDialog.OnAddBabyListener() {
+            @Override
+            public void onAddBaby(String babyID, String dob, String group) {
+                // Handle the data received from the dialog if needed
+                // For example, you can send the data to your server or update the UI
+            }
+        });
+        addBabyDialog.show();
     }
 
     @Override

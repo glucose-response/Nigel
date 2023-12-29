@@ -1,6 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent">
+<!-- dialog_add_baby.xml -->
+<!-- Used ChatGPT -->
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingLeft="30dp"
+    android:paddingRight="30dp"
+    android:paddingBottom="30dp"
+    android:paddingTop="30dp">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/favicon"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="18dp"/>
+
+    <!-- NigID Input -->
+    <EditText
+        android:id="@+id/editTextBabyID"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="NigID"
+        android:inputType="text"
+        android:layout_marginTop="200dp"
+        android:textSize="18sp"/>
+
+    <!-- Gestational Age Input -->
+    <EditText
+        android:id="@+id/editTextAge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Gestational Age (Weeks)"
+        android:inputType="number"
+        android:layout_below="@id/editTextBabyID"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"/>
+
+    <!-- Date of Birth Input -->
+    <EditText
+        android:id="@+id/editTextDOB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Date of Birth"
+        android:inputType="date"
+        android:layout_below="@id/editTextGestAge"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"/>
+
+    <!-- Group Selector -->
+    <Spinner
+        android:id="@+id/spinnerGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextDOB"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp">
+    </Spinner>
+
+    <!-- Display Button -->
+    <Button
+        android:id="@+id/addButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add baby"
+        android:layout_below="@id/spinnerGroup"
+        android:layout_marginTop="16dp"/>
+
+    <TextView
+        android:id="@+id/outputText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Output: "
+        android:layout_below="@id/addButton"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"/>
+
+</RelativeLayout>

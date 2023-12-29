@@ -1,3 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+<!-- res/values/arrays.xml -->
 <resources>
+    <string-array name="group_options">
+        <item>Group 1</item>
+        <item>Group 2</item>
+        <item>Group 3</item>
+    </string-array>
 </resources>
