@@ -28,7 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class AddBabyDialog extends Dialog {
     private EditText editTextBabyID;
     private EditText editTextDOB;
-    private EditText editTextAge;
+    private EditText editTextGestAge;
     private EditText editTextWeight;
     private Spinner spinnerGroup;
     private TextView outputText;
@@ -52,7 +52,7 @@ public class AddBabyDialog extends Dialog {
 
         editTextBabyID = findViewById(R.id.editTextBabyID);
         editTextDOB = findViewById(R.id.editTextDOB);
-        editTextAge = findViewById(R.id.editTextAge);
+        editTextGestAge = findViewById(R.id.editTextGestAge);
         editTextWeight = findViewById(R.id.editTextWeight);
         spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
@@ -93,7 +93,7 @@ public class AddBabyDialog extends Dialog {
                 // Display details in the TextBox
                 String NigID = editTextBabyID.getText().toString();
                 String DoB = editTextDOB.getText().toString();
-                String Age  = editTextAge.getText().toString();
+                String Age  = editTextGestAge.getText().toString();
                 String Weight  = editTextWeight.getText().toString();
                 String selectedGroup = spinnerGroup.getSelectedItem().toString();
 
@@ -102,9 +102,10 @@ public class AddBabyDialog extends Dialog {
                 }else if (DoB.isEmpty()) {
                     editTextDOB.setError("The date of birth cannot be empty");
                 }else if (Age.isEmpty()){
-                    editTextAge.setError("The age cannot be empty");
+                    editTextGestAge.setError("The age cannot be empty");
                 }else if (Weight.isEmpty()){
-                    editTextAge.setError("The weight cannot be empty");
+                    editTextWeight.setError("The weight cannot be empty");
+
                 } else {
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
