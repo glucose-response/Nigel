@@ -5,6 +5,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".AccountSettings"
         android:allowBackup="true"
         android:icon="@mipmap/nigel_logo"
         android:label="@string/app_name"
@@ -51,6 +52,8 @@
             android:exported = "true"
             android:configChanges="orientation|keyboardHidden|screenSize|smallestScreenSize|screenLayout|keyboard">
         </activity>
+
     </application>
+
 
 </manifest>

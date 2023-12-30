@@ -14,6 +14,8 @@ import com.github.mikephil.charting.data.Entry;
 import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -34,31 +36,18 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 // MainActivity.java
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
-
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Executor executor = Executors.newSingleThreadExecutor();
-    private OkHttpClient client = new OkHttpClient();
-    private List<Baby> babyList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private BabyListAdapter adapter;
-    private EditText searchEditText;
+public class MainActivity extends AppCompatActivity {
+    private AccountSettings settings;
     private ConstraintLayout mContentMain;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_main);
+        setContentView(R.layout.main_layout);
+        mContentMain = findViewById(R.id.main_layout);
 
-        fetchDataInBackground();
-
-        recyclerView = findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        swipeRefreshLayout = findViewById(R.id.swipeRefreshLayout);
-        swipeRefreshLayout.setOnRefreshListener(this);
-        setupSearch();
-
+        displayFragment(new MainBabyFragment());
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,124 +58,23 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.logoutButton) {
+        if (id == R.id.account_settings) {
+            displayFragment(new LogoutFragment());
+            return true;
+        }
+        if (id == R.id.home_button) {
+            displayFragment(new MainBabyFragment());
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onRefresh() {
-        // Fetch data
-        fetchDataInBackground();
-        }
-
-    private void fetchDataInBackground() {
-        // Perform data fetching from CSV file or server
-        executor.execute(() -> {
-            List<Baby> result = fetchData();
-
-            // Update UI with the fetched data
-            runOnUiThread(() -> {
-                babyList.clear();
-                babyList.addAll(result);
-                Log.d("MainActivity", "Bebe list size: " + babyList.size());
-
-                adapter = new BabyListAdapter(babyList);
-                recyclerView.setAdapter(adapter);
-
-                swipeRefreshLayout.setRefreshing(false);
-
-            });
-        });
+    private void displayFragment(final Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(mContentMain.getId(),fragment)
+                .commit();
     }
-
-    private List<Baby> fetchData() {
-        // Implement the logic to fetch data from CSV file or server
-        // Return the fetched data as a List<Bebe>
-        // ...
-        String url = "https://jaminhu19.pythonanywhere.com/api/data";
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            // Synchronous request (executes on the background thread)
-            Response response = client.newCall(request).execute();
-            Log.d("MainActivity", "Response: " + response.toString());
-
-            if (response.isSuccessful()) {
-                // Parse the response and return the data as a List<Bebe>
-                return parseResponse(response.body().string());
-            } else {
-                // Handle unsuccessful response
-                return null;
-            }
-        } catch (IOException e) {
-            // Handle exceptions
-            e.printStackTrace();
-            return null;
-        }
-    }
-    private List<Baby> parseResponse(String responseBody) {
-        // Implement logic to parse the response and convert it to a List<Bebe>
-        // ...
-        Log.d("MainActivity", "Response body: " + responseBody);
-        List<Baby> babyList = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(responseBody);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                int id = jsonObject.getInt("Nigel ID");
-                float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
-                String group = jsonObject.getString("Group");
-                int timeOfBirth = jsonObject.getInt("Time of Birth");
-
-                // Now you can use the id and name as needed
-                babyList.add(
-                        new Baby(
-                                id,
-                                timeOfBirth,
-                                weight,
-                                group,
-                                generateRandomTimeSeriesData())
-                );
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return babyList;
-    }
-
-    private void setupSearch() {
-        searchEditText = findViewById(R.id.searchEditText); // Replace with your actual EditText ID
-        Button searchButton = findViewById(R.id.searchButton); // Replace with your actual Button ID
-
-        searchButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d("MainActivity", "Search button clicked");
-                String query = searchEditText.getText().toString();
-                adapter.filterByName(query);
-                recyclerView.setAdapter(adapter);
-                Log.d("MainActivity", "Filtered List" + adapter.getFilteredList().toString());
-            }
-        });
-    }
-
-    // Replace this method with your actual data fetching logic
-    private List<Entry> generateRandomTimeSeriesData() {
-        List<Entry> data = new ArrayList<>();
-        Random random = new Random();
-
-        for (int i = 0; i < 10; i++) {
-            data.add(new Entry(i, random.nextFloat()));
-        }
-
-        return data;
-    }
-
 }

@@ -46,6 +46,7 @@ public class MSGraphRequestWrapper {
         RequestQueue queue = Volley.newRequestQueue(context);
         JSONObject parameters = new JSONObject();
 
+
         try {
             parameters.put("$select", "displayName,jobTitle,mail,userPrincipalName");
         } catch (Exception e) {

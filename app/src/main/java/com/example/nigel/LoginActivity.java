@@ -17,29 +17,14 @@ import com.microsoft.identity.client.IAccount;
 public class LoginActivity extends AppCompatActivity
 {
     private ConstraintLayout mContentMain;
-    private SingleAccountModeFragment loginfragment;
-    private LogoutFragment logoutFragment;
-    private AccountSettings settings = new AccountSettings();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContentMain = findViewById(R.id.activity_main);
-        settings.setLoginState(true);
-
-        this.loginfragment = new SingleAccountModeFragment(settings);
-        this.logoutFragment = new LogoutFragment(settings);
-
-        if (settings.getLoginState()){
-            displayFragment(loginfragment);
-        }else {
-            while (settings.getLoginState()==false){
-                displayFragment(logoutFragment);
-            }
-            displayFragment(logoutFragment);
-        }
-
+        displayFragment(new SingleAccountModeFragment());
     }
 
 

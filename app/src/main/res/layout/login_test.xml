@@ -56,15 +56,6 @@
                     android:backgroundTint="@color/blue"/>
 
             </LinearLayout>
-
-            <!-- txt is blank to give a illusion -->
-            <TextView
-                android:id="@+id/txt_logs"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="20dp"
-                android:layout_weight="0.8"
-                android:text="no text" />
         </LinearLayout>
     </LinearLayout>
 

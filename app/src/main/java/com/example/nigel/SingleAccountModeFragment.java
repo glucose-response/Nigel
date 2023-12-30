@@ -55,9 +55,6 @@ public class SingleAccountModeFragment extends Fragment {
     private ISingleAccountPublicClientApplication mSingleAccountApp;
     private IAccount mAccount;
 
-    public SingleAccountModeFragment(AccountSettings settings){
-        this.settings = settings;
-    }
     @Override
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
@@ -66,6 +63,7 @@ public class SingleAccountModeFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.login_test, container, false);
         initializeUI(view);
+        this.settings = (AccountSettings) requireActivity().getApplication();
 
 
         // Creates a PublicClientApplication object with res/raw/auth_config_single_account.json
@@ -81,6 +79,7 @@ public class SingleAccountModeFragment extends Fragment {
                         mSingleAccountApp = application;
                         settings.setmSingleAccountApp(application);
                         loadAccount();
+
                     }
 
                     @Override
@@ -160,10 +159,10 @@ public class SingleAccountModeFragment extends Fragment {
                 if (mAccount!=null) {
                     Log.d(TAG, "Account Updated: " + mAccount.toString());
 
-                    /* Redirects to main page if still signed in*/
-                    Intent intent = new Intent(getActivity(), MainActivity.class);
-                    startActivity(intent);
+                    // Check if there is a cached authentication result
+                    mSingleAccountApp.acquireTokenSilentAsync(getScopes(), mAccount.getAuthority(), getAuthSilentCallback());
                 }
+
 //                updateUI();
             }
 
@@ -182,36 +181,40 @@ public class SingleAccountModeFragment extends Fragment {
         });
     }
 
-//    /**
-//     * Callback used in for silent acquireToken calls.
-//     */
-//    private SilentAuthenticationCallback getAuthSilentCallback() {
-//        return new SilentAuthenticationCallback() {
-//
-//            @Override
-//            public void onSuccess(IAuthenticationResult authenticationResult) {
-//                Log.d(TAG, "Successfully authenticated");
-//
-//                /* Successfully got a token, use it to call a protected resource - MSGraph */
-//                callGraphAPI(authenticationResult);
-//            }
-//
-//            @Override
-//            public void onError(MsalException exception) {
-//                /* Failed to acquireToken */
-//                Log.d(TAG, "Authentication failed: " + exception.toString());
-//                displayError(exception);
-//
-//                if (exception instanceof MsalClientException) {
-//                    /* Exception inside MSAL, more info inside MsalError.java */
-//                } else if (exception instanceof MsalServiceException) {
-//                    /* Exception when communicating with the STS, likely config issue */
-//                } else if (exception instanceof MsalUiRequiredException) {
-//                    /* Tokens expired or no session, retry with interactive */
-//                }
-//            }
-//        };
-//    }
+    /**
+     * Callback used in for silent acquireToken calls.
+     */
+    private SilentAuthenticationCallback getAuthSilentCallback() {
+        return new SilentAuthenticationCallback() {
+
+            @Override
+            public void onSuccess(IAuthenticationResult authenticationResult) {
+                settings.setmAccount(authenticationResult.getAccount());
+                settings.setAuthenticationResult(authenticationResult);
+                Log.d(TAG, "Successfully (silent) authenticated");
+                Log.d(TAG, "Authentication Result: " + authenticationResult.toString());
+                Log.d(TAG, "Token: " + authenticationResult.getAccessToken());
+
+                Intent intent = new Intent(getActivity(), MainActivity.class);
+                startActivity(intent);
+            }
+
+            @Override
+            public void onError(MsalException exception) {
+                /* Failed to acquireToken */
+                Log.d(TAG, "Authentication failed: " + exception.toString());
+                displayError(exception);
+
+                if (exception instanceof MsalClientException) {
+                    /* Exception inside MSAL, more info inside MsalError.java */
+                } else if (exception instanceof MsalServiceException) {
+                    /* Exception when communicating with the STS, likely config issue */
+                } else if (exception instanceof MsalUiRequiredException) {
+                    /* Tokens expired or no session, retry with interactive */
+                }
+            }
+        };
+    }
 
     /**
      * Callback used for interactive request.
@@ -233,7 +236,6 @@ public class SingleAccountModeFragment extends Fragment {
                 /* Update account */
                 settings.setmAccount(authenticationResult.getAccount());
                 settings.setAuthenticationResult(authenticationResult);
-                settings.setLoginState(false);
                 mAccount = authenticationResult.getAccount();
                 Log.d(TAG, "Account Updated: " + mAccount.toString());
                 updateUI();

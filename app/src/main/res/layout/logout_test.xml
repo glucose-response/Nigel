@@ -11,24 +11,12 @@
         android:layout_height="match_parent"
         android:padding="16dp">
 
-        <ImageButton
-            android:id="@+id/backButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start|top"
-            android:src="@drawable/back_arrow"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/logoutButton"
-            android:background="?android:attr/selectableItemBackground"/>
-
         <Button
             android:id="@+id/logoutButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:text="@string/signout"
-            app:layout_constraintTop_toBottomOf="@id/backButton"
             app:layout_constraintBottom_toTopOf="@id/txt_logs"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

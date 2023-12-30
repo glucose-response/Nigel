@@ -4,9 +4,14 @@
     tools:context="com.example.nigel.MainActivity">
 
     <item
+        android:id="@+id/home_button"
+        android:orderInCategory="100"
+        android:title="Home"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/account_settings"
         android:orderInCategory="100"
-        android:title="Profile"
+        android:title="Account"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_settings"

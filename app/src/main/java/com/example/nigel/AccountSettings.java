@@ -1,14 +1,17 @@
 package com.example.nigel;
 
+import android.app.Application;
+
 import com.microsoft.identity.client.IAccount;
 import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 
-public class AccountSettings {
+import java.io.Serializable;
+
+public class AccountSettings extends Application {
     private IAccount mAccount;
     private IAuthenticationResult authenticationResult;
     private ISingleAccountPublicClientApplication mSingleAccountApp;
-    private boolean LoginState;
 
     /* Get variables */
     public IAccount getmAccount() {
@@ -19,9 +22,6 @@ public class AccountSettings {
     }
     public ISingleAccountPublicClientApplication getmSingleAccountApp(){
         return mSingleAccountApp;
-    }
-    public boolean getLoginState(){
-        return LoginState;
     }
 
     /* Set Variables */
@@ -35,9 +35,5 @@ public class AccountSettings {
 
     public void setmSingleAccountApp(ISingleAccountPublicClientApplication mSingleAccountApp) {
         this.mSingleAccountApp = mSingleAccountApp;
-    }
-
-    public void setLoginState(boolean loginState) {
-        this.LoginState = loginState;
     }
 }
