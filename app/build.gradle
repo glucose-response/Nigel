@@ -29,6 +29,10 @@ android {
     buildFeatures {
         viewBinding true
     }
+    packagingOptions {
+        pickFirst 'META-INF/LICENSE.md'
+        pickFirst 'META-INF/LICENSE-notice.md'
+    }
 }
 
 dependencies {
