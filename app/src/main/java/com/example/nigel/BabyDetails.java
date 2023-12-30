@@ -6,6 +6,8 @@ public class BabyDetails {
     private String age;
     private String group;
 
+    private String weight;
+
     public String getBabyID() {
         return nigID;
     }

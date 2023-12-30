@@ -146,6 +146,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 double weight = (double) jsonObject.getDouble("Birth Weight (kg)");
                 String group = jsonObject.getString("Group");
                 long timeOfBirth = jsonObject.getInt("Time of Birth");
+                double gestationalAge = jsonObject.getDouble("Gestational Age");
 
                 // Now you can use the id and name as needed
                 babyList.add(
@@ -153,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                                 id,
                                 timeOfBirth,
                                 weight,
+                                gestationalAge,
                                 group,
                                 generateRandomTimeSeriesData())
                 );
@@ -183,11 +185,9 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private List<Entry> generateRandomTimeSeriesData() {
         List<Entry> data = new ArrayList<>();
         Random random = new Random();
-
         for (int i = 0; i < 10; i++) {
             data.add(new Entry(i, random.nextFloat()));
         }
-
         return data;
     }
 }

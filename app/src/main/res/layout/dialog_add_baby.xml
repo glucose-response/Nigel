@@ -40,6 +40,17 @@
         android:textSize="18sp"/>
 
     <!-- Date of Birth Input -->
+
+    <EditText
+        android:id="@+id/editTextWeight"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/editTextBabyID"
+        android:layout_marginTop="61dp"
+        android:hint="Weight (kg)"
+        android:inputType="number"
+        android:textSize="18sp" />
+
     <EditText
         android:id="@+id/editTextDOB"
         android:layout_width="match_parent"

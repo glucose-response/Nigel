@@ -13,21 +13,19 @@ import java.util.TimeZone;
 public class Baby {
     private int id;
     private List<Entry> timeSeriesData;
-
     private long birthDate;
-
     private double weight;
-
+    private double gestationalAge;
     private String group;
 
-    public Baby(int id,
-                long birthDate,
-                double weight,
-                String group,
-                List<Entry> timeSeriesData) {
+    /**
+     * Constructor for a Baby object with all fields
+     */
+    public Baby(int id, long birthDate, double weight, double gestationalAge, String group, List<Entry> timeSeriesData) {
         this.id = id;
         this.birthDate = birthDate;
         this.weight = weight;
+        this.gestationalAge = gestationalAge;
         this.group = group;
         try{
             this.timeSeriesData = timeSeriesData;
@@ -37,6 +35,25 @@ public class Baby {
 
     }
 
+    /**
+     * Constructor for a Baby object without TimeSeries List
+     */
+    public Baby(int id, long birthDate, double weight, double gestationalAge, String group) {
+        try{
+            this.id = id;
+            this.birthDate = birthDate;
+            this.gestationalAge = gestationalAge;
+            this.weight = weight;
+            this.group = group;
+            this.timeSeriesData = new ArrayList<Entry>();
+        } catch (NullPointerException e){
+            System.out.println("Null Time Series Data");
+        }
+    }
+
+    /**
+     * Getters and Setters
+     */
     public int getId() {
         return id;
     }
@@ -73,6 +90,10 @@ public class Baby {
         this.group = group;
     }
 
+    public double getGestationalAge() {return gestationalAge;}
+
+    public void setGestationalAge(double gestationalAge) {this.gestationalAge = gestationalAge;}
+
     public String getBirthDateString(){
         return convertUnixToString(birthDate);
     }
@@ -93,6 +114,7 @@ public class Baby {
      * Function is "identical" to the previous function however it does not use the System
      * class as this cannot be Powermocked for testing. Hence, Line 96 says current time as
      * the 30th January 2024 (1706572800L)
+     * @return an int array of the age of the baby              *
      */
     public int[] getAgeForTest(){
         long difference = 1706572800L - birthDate;

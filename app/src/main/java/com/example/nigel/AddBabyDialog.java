@@ -24,17 +24,17 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-// Used Chatgpt to create a dialog
+// Used ChatGPT to create a dialog
 public class AddBabyDialog extends Dialog {
-
     private EditText editTextBabyID;
     private EditText editTextDOB;
     private EditText editTextAge;
+    private EditText editTextWeight;
     private Spinner spinnerGroup;
     private TextView outputText;
     private Button addButton;
     private String url = "https://nigel-c0b396b99759.herokuapp.com/";
-    private String POST = "PUT";
+    private String PUT = "PUT";
     private String GET = "GET";
     private BabyApi babyApi;
     private OnAddBabyListener onAddBabyListener;
@@ -44,6 +44,7 @@ public class AddBabyDialog extends Dialog {
         this.onAddBabyListener = onAddBabyListener;
     }
 
+    // This method is called when the dialog is created
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +53,7 @@ public class AddBabyDialog extends Dialog {
         editTextBabyID = findViewById(R.id.editTextBabyID);
         editTextDOB = findViewById(R.id.editTextDOB);
         editTextAge = findViewById(R.id.editTextAge);
+        editTextWeight = findViewById(R.id.editTextWeight);
         spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
@@ -92,8 +94,8 @@ public class AddBabyDialog extends Dialog {
                 String NigID = editTextBabyID.getText().toString();
                 String DoB = editTextDOB.getText().toString();
                 String Age  = editTextAge.getText().toString();
+                String Weight  = editTextWeight.getText().toString();
                 String selectedGroup = spinnerGroup.getSelectedItem().toString();
-
 
                 if (NigID.isEmpty()) {
                     editTextBabyID.setError("The NigID cannot be empty");
@@ -101,16 +103,19 @@ public class AddBabyDialog extends Dialog {
                     editTextDOB.setError("The date of birth cannot be empty");
                 }else if (Age.isEmpty()){
                     editTextAge.setError("The age cannot be empty");
+                }else if (Weight.isEmpty()){
+                    editTextAge.setError("The weight cannot be empty");
                 } else {
+                    // Convert Strings into Data
+                    int nigID = Integer.parseInt(NigID);
+                    long dob = Long.parseLong(DoB);
+                    double age  = Double.parseDouble(Age);
+                    double weight  = Double.parseDouble(Weight);
                     // Create a Baby object with the entered data
-                    BabyDetails baby = new BabyDetails();
-                    baby.setBabyID(NigID);
-                    baby.setDob(DoB);
-                    baby.setAge(Age);
-                    baby.setGroup(selectedGroup);
+                    Baby baby = new Baby(nigID, dob, weight, age, selectedGroup);
 
-                    // Send the Baby object in the POST request
-                    sendRequest(POST, "addBaby", baby);
+                    // Send the Baby object in the PUT request
+                    sendRequest(PUT, "addBaby", baby);
 
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age + "\nDOB:" + DoB + "\nGroup: " + selectedGroup;
@@ -120,10 +125,11 @@ public class AddBabyDialog extends Dialog {
         });
     }
 
-    void sendRequest(String type, String method, BabyDetails baby) {
+    // This method sends a request to add the babys details to the server and database
+    void sendRequest(String type, String method, Baby baby) {
         Call<ResponseBody> call;
 
-        if (type.equals(POST)) {
+        if (type.equals(PUT)) {
             call = babyApi.addBaby(baby);
         } else {
             // Handle other types or methods if needed
@@ -151,6 +157,7 @@ public class AddBabyDialog extends Dialog {
         });
     }
 
+    // This is the interface that will be used to communicate with the activity that created the dialog
     public interface OnAddBabyListener {
         void onAddBaby(String babyID, String dob, String group);
     }
