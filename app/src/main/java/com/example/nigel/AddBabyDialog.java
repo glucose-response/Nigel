@@ -34,6 +34,8 @@ public class AddBabyDialog extends Dialog {
     private Spinner spinnerGroup;
     private TextView outputText;
     private Button addButton;
+
+    private Button exitButton;
     private String url = "https://nigel-c0b396b99759.herokuapp.com/";
     private String PUT = "PUT";
     private String GET = "GET";
@@ -59,6 +61,7 @@ public class AddBabyDialog extends Dialog {
         spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
+        exitButton = findViewById(R.id.exitButton);
 
         // Set up the spinner with an array adapter
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -122,7 +125,15 @@ public class AddBabyDialog extends Dialog {
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age + "\nDOB:" + DoB + "\nGroup: " + selectedGroup;
                     outputText.setText(details);
+                    dismiss();
+
                 }
+            }
+        });
+        exitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
             }
         });
     }
