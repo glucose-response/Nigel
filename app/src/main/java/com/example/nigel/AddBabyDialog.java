@@ -26,6 +26,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 // Used ChatGPT to create a dialog
 public class AddBabyDialog extends Dialog {
+    private Context context;
     private EditText editTextBabyID;
     private EditText editTextDOB;
     private EditText editTextGestAge;
@@ -41,6 +42,7 @@ public class AddBabyDialog extends Dialog {
 
     public AddBabyDialog(@NonNull Context context, OnAddBabyListener onAddBabyListener) {
         super(context);
+        this.context = context;
         this.onAddBabyListener = onAddBabyListener;
     }
 
@@ -58,14 +60,14 @@ public class AddBabyDialog extends Dialog {
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
 
-  /*      // Set up the spinner with an array adapter
+        // Set up the spinner with an array adapter
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
+                context,
                 R.array.group_options, // Create an array resource in res/values/arrays.xml with your group options
                 android.R.layout.simple_spinner_item
         );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGroup.setAdapter(adapter);*/
+        spinnerGroup.setAdapter(adapter);
         // Example of setting text (a string) in TextView
         outputText.setText("Output: This is where you can place the values you get from the DataBase");
 
@@ -105,7 +107,6 @@ public class AddBabyDialog extends Dialog {
                     editTextGestAge.setError("The age cannot be empty");
                 }else if (Weight.isEmpty()){
                     editTextWeight.setError("The weight cannot be empty");
-
                 } else {
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
