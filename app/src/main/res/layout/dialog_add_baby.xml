@@ -9,34 +9,65 @@
     android:paddingLeft="30dp"
     android:paddingRight="30dp"
     android:paddingBottom="30dp"
-    android:paddingTop="30dp">
-
-    <ImageView
-        android:layout_width="351dp"
-        android:layout_height="242dp"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="18dp"
-        android:src="@drawable/favicon" />
+    android:layout_marginTop="50dp">
 
     <!-- NigID Input -->
 
     <!-- Gestational Age Input -->
 
+    <!-- Date of Birth Input -->
+
+    <!-- Group Selector -->
+
+    <!-- Display Button -->
+    <Button
+        android:id="@+id/exit"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="310dp"
+        android:layout_marginTop="1dp"
+        android:background="@color/black"
+        android:text="X"
+        android:textSize="10dp" />
+
+    <ImageView
+        android:layout_width="112dp"
+        android:layout_height="76dp"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/favicon" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="150dp"
+        android:layout_marginTop="35dp"
+        android:text="Add Baby"
+        android:textColor="@color/black"
+        android:textSize="30dp" />
+
     <EditText
         android:id="@+id/editTextBabyID"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="200dp"
+        android:layout_marginTop="120dp"
         android:hint="NigID"
         android:inputType="text"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editTextDOB"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="180dp"
+        android:hint="Date of Birth"
+        android:inputType="date"
         android:textSize="18sp" />
 
     <EditText
         android:id="@+id/editTextGestAge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextBabyID"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="240dp"
         android:hint="Gestational Age (Weeks)"
         android:inputType="number"
         android:textSize="18sp" />
@@ -45,50 +76,31 @@
         android:id="@+id/editTextWeight"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextBabyID"
-        android:layout_marginTop="61dp"
+        android:layout_marginTop="300dp"
         android:hint="Weight (kg)"
         android:inputType="number"
         android:textSize="18sp" />
 
-    <!-- Date of Birth Input -->
-
-    <EditText
-        android:id="@+id/editTextDOB"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Date of Birth"
-        android:inputType="date"
-        android:layout_marginTop="8dp"
-        android:textSize="18sp"/>
-
-    <!-- Group Selector -->
     <Spinner
         android:id="@+id/spinnerGroup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/editTextDOB"
-        android:layout_marginTop="8dp"
-        android:textSize="18sp">
-    </Spinner>
-
-    <!-- Display Button -->
+        android:layout_marginTop="360dp"
+        android:textSize="18sp"></Spinner>
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/spinnerGroup"
-        android:layout_marginTop="292dp"
+        android:layout_marginTop="420dp"
         android:text="Add baby" />
 
     <TextView
         android:id="@+id/outputText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="480dp"
         android:hint="Output: "
-        android:layout_below="@id/addButton"
-        android:layout_marginTop="10dp"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
 
 </RelativeLayout>
