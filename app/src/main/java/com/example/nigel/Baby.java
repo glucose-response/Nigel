@@ -18,6 +18,8 @@ public class Baby {
     private double gestationalAge;
     private String group;
 
+    private String additionalNotes;
+
     /**
      * Constructor for a Baby object with all fields
      */
@@ -38,14 +40,14 @@ public class Baby {
     /**
      * Constructor for a Baby object without TimeSeries List
      */
-    public Baby(int id, long birthDate, double weight, double gestationalAge, String group) {
+    public Baby(int id, long birthDate, double weight, double gestationalAge, String group, String additonalNotes) {
         try{
             this.id = id;
             this.birthDate = birthDate;
             this.gestationalAge = gestationalAge;
             this.weight = weight;
             this.group = group;
-            this.timeSeriesData = new ArrayList<Entry>();
+            this.additionalNotes = additonalNotes;
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
         }
@@ -96,6 +98,12 @@ public class Baby {
 
     public String getBirthDateString(){
         return convertUnixToString(birthDate);
+    }
+
+    public String getAdditionalNotes() {return additionalNotes;}
+
+    public void setAdditionalNotes(String additionalNotes) {
+        this.additionalNotes = additionalNotes;
     }
 
     public int[] getAge(){

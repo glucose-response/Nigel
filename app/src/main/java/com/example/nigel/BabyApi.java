@@ -16,7 +16,4 @@ public interface BabyApi {
     @PUT("/addBaby")
     Call<ResponseBody> addBaby(@Body Baby baby);
 
-    // Makes a GET request for all baby profiles
-    @GET("/getBaby")
-    Call<ResponseBody> getBabies();
 }

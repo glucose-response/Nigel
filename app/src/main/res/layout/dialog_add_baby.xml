@@ -3,6 +3,7 @@
 <!-- Used ChatGPT -->
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -22,19 +23,22 @@
     <!-- Display Button -->
     <Button
         android:id="@+id/exitButton"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_marginLeft="310dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_marginTop="1dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignRight="@+id/editTextBabyID"
         android:background="@color/black"
         android:text="X"
-        android:textSize="10dp" />
+        android:textSize="10dp"
+        tools:ignore="TextSizeCheck" />
 
     <ImageView
         android:layout_width="112dp"
         android:layout_height="76dp"
         android:layout_marginTop="20dp"
-        android:src="@drawable/favicon" />
+        android:src="@drawable/favicon"
+        android:contentDescription="Nigel Logo" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -43,7 +47,7 @@
         android:layout_marginTop="35dp"
         android:text="Add Baby"
         android:textColor="@color/black"
-        android:textSize="30dp" />
+        android:textSize="30sp" />
 
     <EditText
         android:id="@+id/editTextBabyID"
@@ -51,16 +55,58 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="120dp"
         android:hint="NigID"
-        android:inputType="text"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:textSize="18sp" />
+
+    <TextView
+        android:id="@+id/dateOfBirthTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="190dp"
+        android:layout_alignParentStart="true"
+        android:hint="Date of Birth:"
         android:textSize="18sp" />
 
     <EditText
-        android:id="@+id/editTextDOB"
-        android:layout_width="match_parent"
+        android:id="@+id/editTextDOBDay"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="180dp"
+        android:layout_toEndOf="@+id/dateOfBirthTextView"
+        android:hint="DD"
+        android:inputType="number"
+        android:maxLength="2"
+        android:minWidth="48dp"
+        android:minHeight="48dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editTextDOBMonth"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="180dp"
-        android:hint="Date of Birth"
-        android:inputType="date"
+        android:layout_toLeftOf="@+id/editTextDOBYear"
+        android:layout_marginLeft = "30dp"
+        android:maxLength="2"
+        android:layout_toRightOf="@+id/editTextDOBDay"
+        android:hint="MM"
+        android:inputType="number"
+        android:minHeight="48dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editTextDOBYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="180dp"
+        android:layout_marginLeft="30dp"
+        android:hint="YYYY"
+        android:maxLength="4"
+        android:inputType="number"
+        android:minHeight="48dp"
         android:textSize="18sp" />
 
     <EditText
@@ -70,6 +116,7 @@
         android:layout_marginTop="240dp"
         android:hint="Gestational Age (Weeks)"
         android:inputType="number"
+        android:minHeight="48dp"
         android:textSize="18sp" />
 
     <EditText
@@ -78,7 +125,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="300dp"
         android:hint="Weight (kg)"
-        android:inputType="number"
+        android:inputType="numberDecimal"
+        android:minHeight="48dp"
         android:textSize="18sp" />
 
     <Spinner
@@ -86,20 +134,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="360dp"
-        android:textSize="18sp"></Spinner>
+        android:minHeight="48dp"
+        android:textSize="18sp" />
+
+    <EditText
+        android:id="@+id/editAdditionalNotes"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:layout_marginTop="420dp"
+        android:hint="Additional Notes"
+        android:inputType="textMultiLine"
+        android:minHeight="48dp"
+        android:textSize="18sp" />
 
     <Button
         android:id="@+id/addButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="420dp"
+        android:layout_marginTop="520dp"
         android:text="Add baby" />
 
     <TextView
         android:id="@+id/outputText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="480dp"
+        android:layout_marginTop="580dp"
         android:hint="Output: "
         android:textSize="12sp" />
 
