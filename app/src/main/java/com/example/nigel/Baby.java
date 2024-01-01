@@ -11,24 +11,21 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class Baby {
-    private int id;
-    private List<Entry> timeSeriesData;
-    private long birthDate;
-    private double weight;
+    private int NigelID;
+    private long dateOfBirth;
+    private double birthWeight;
     private double gestationalAge;
-    private String group;
-
-    private String additionalNotes;
+    private String notes;
+    private List<Entry> timeSeriesData;
 
     /**
      * Constructor for a Baby object with all fields
      */
-    public Baby(int id, long birthDate, double weight, double gestationalAge, String group, List<Entry> timeSeriesData) {
-        this.id = id;
-        this.birthDate = birthDate;
-        this.weight = weight;
+    public Baby(int NigelID, long dateOfBirth, double birthWeight, double gestationalAge, String notes, List<Entry> timeSeriesData) {
+        this.NigelID = NigelID;
+        this.dateOfBirth = dateOfBirth;
+        this.birthWeight = birthWeight;
         this.gestationalAge = gestationalAge;
-        this.group = group;
         try{
             this.timeSeriesData = timeSeriesData;
         } catch (NullPointerException e){
@@ -40,14 +37,13 @@ public class Baby {
     /**
      * Constructor for a Baby object without TimeSeries List
      */
-    public Baby(int id, long birthDate, double weight, double gestationalAge, String group, String additonalNotes) {
+    public Baby(int NigelID, long dateOfBirth, double birthWeight, double gestationalAge, String notes) {
         try{
-            this.id = id;
-            this.birthDate = birthDate;
+            this.NigelID = NigelID;
+            this.dateOfBirth = dateOfBirth;
             this.gestationalAge = gestationalAge;
-            this.weight = weight;
-            this.group = group;
-            this.additionalNotes = additonalNotes;
+            this.birthWeight = birthWeight;
+            this.notes = notes;
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
         }
@@ -57,57 +53,49 @@ public class Baby {
      * Getters and Setters
      */
     public int getId() {
-        return id;
+        return NigelID;
     }
-    public long getBirthDate() {
-        return birthDate;
+    public long getdateOfBirth() {
+        return dateOfBirth;
     }
-    public double getWeight() {
-        return weight;
-    }
-    public String getGroup() {
-        return group;
+    public double getbirthWeight() {
+        return birthWeight;
     }
     public List<Entry> getTimeSeriesData() {
         return timeSeriesData;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setId(int NigelID) {
+        this.NigelID = NigelID;
     }
 
     public void setTimeSeriesData(List<Entry> timeSeriesData) {
         this.timeSeriesData = timeSeriesData;
     }
 
-    public void setBirthDate(long birthDate) {
-        this.birthDate = birthDate;
+    public void setdateOfBirth(long dateOfBirth) {
+        this.dateOfBirth = dateOfBirth;
     }
-
-    public void setWeight(double weight) {
-        this.weight = weight;
-    }
-
-    public void setGroup(String group) {
-        this.group = group;
+    public void setbirthWeight(double birthWeight) {
+        this.birthWeight = birthWeight;
     }
 
     public double getGestationalAge() {return gestationalAge;}
 
     public void setGestationalAge(double gestationalAge) {this.gestationalAge = gestationalAge;}
 
-    public String getBirthDateString(){
-        return convertUnixToString(birthDate);
+    public String getdateOfBirthString(){
+        return convertUnixToString(dateOfBirth);
     }
 
-    public String getAdditionalNotes() {return additionalNotes;}
+    public String getNotes() {return notes;}
 
-    public void setAdditionalNotes(String additionalNotes) {
-        this.additionalNotes = additionalNotes;
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     public int[] getAge(){
-        long difference = System.currentTimeMillis()/1000 - birthDate;
+        long difference = System.currentTimeMillis()/1000 - dateOfBirth;
         String[] details = convertUnixToString(difference).split("-");
         int size = details.length;
         int[] age = new int[size];
@@ -125,7 +113,7 @@ public class Baby {
      * @return an int array of the age of the baby              *
      */
     public int[] getAgeForTest(){
-        long difference = 1706572800L - birthDate;
+        long difference = 1706572800L - dateOfBirth;
         String[] details = convertUnixToString(difference).split("-");
         int size = details.length;
         int[] age = new int[size];

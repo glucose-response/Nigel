@@ -7,6 +7,8 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.github.mikephil.charting.data.Entry;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -19,7 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.Executor;
@@ -28,6 +32,11 @@ import java.util.concurrent.Executors;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 // MainActivity.java
 public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
@@ -87,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private void fetchDataInBackground() {
         // Perform data fetching from CSV file or server
         executor.execute(() -> {
-            List<Baby> result = fetchData();
+            List<Baby> result = fetchDataFromDatabaseViaAPI();
 
             // Update UI with the fetched data
             runOnUiThread(() -> {
@@ -130,6 +139,68 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             e.printStackTrace();
             return null;
         }
+    }
+    private List<Baby> fetchDataFromDatabaseViaAPI(){
+
+        String url = "https://nigel-c0b396b99759.herokuapp.com/profiles";
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url) // Replace with your base URL
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        BabyApi babyApi = retrofit.create(BabyApi.class);
+
+        // Fetch profiles (assuming your endpoint returns JSON data)
+        Call<ResponseBody> call = babyApi.getBabies(); // Assuming the response is a JSON string
+        List<Baby> babyList = new ArrayList<>();
+
+        try {
+            retrofit2.Response<ResponseBody> response = call.execute();
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonResponse = response.body().string();
+                babyList = parseJSONResponse(jsonResponse);
+            } else {
+                System.out.println("Request unsuccessful");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return babyList;
+
+
+    }
+
+    private List<Baby> parseJSONResponse(String responseBody){
+
+        List<Baby> babyList = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(responseBody);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                int id = jsonObject.getInt("NigelID");
+                long dateOfBirth = jsonObject.getInt("DateOfBirth");
+                double weight = (double) jsonObject.getDouble("BirthWeight");
+                double gestationalAge = jsonObject.getDouble("GestationalAge");
+                String notes = jsonObject.getString("Notes");
+
+                // Now you can use the id and name as needed
+                babyList.add(
+                        new Baby(
+                                id,
+                                dateOfBirth,
+                                weight,
+                                gestationalAge,
+                                notes,
+                                generateRandomTimeSeriesData())
+                );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return babyList;
     }
     private List<Baby> parseResponse(String responseBody) {
         // Implement logic to parse the response and convert it to a List<Bebe>

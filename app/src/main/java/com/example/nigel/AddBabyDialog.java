@@ -15,6 +15,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -65,22 +68,18 @@ public class AddBabyDialog extends Dialog {
         editTextDOBYear = findViewById(R.id.editTextDOBYear);
         editTextGestAge = findViewById(R.id.editTextGestAge);
         editTextWeight = findViewById(R.id.editTextWeight);
-        spinnerGroup = findViewById(R.id.spinnerGroup);
+        //spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
         exitButton = findViewById(R.id.exitButton);
         editAdditionalNotes= findViewById(R.id.editAdditionalNotes);
 
-        // Set up the spinner with an array adapter
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                context,
-                R.array.group_options, // Create an array resource in res/values/arrays.xml with your group options
-                android.R.layout.simple_spinner_item
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGroup.setAdapter(adapter);
+        /* Set up the spinner with an array adapter
+        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.group_options, // Create an array resource in res/values/arrays.xml with your group optionsandroid.R.layout.simple_spinner_item);
+        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //spinnerGroup.setAdapter(adapter);
         // Example of setting text (a string) in TextView
-        outputText.setText("Output: This is where you can place the values you get from the DataBase");
+        // outputText.setText("Output: This is where you can place the values you get from the DataBase");
 
         spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
@@ -92,7 +91,8 @@ public class AddBabyDialog extends Dialog {
             public void onNothingSelected(AdapterView<?> parentView) {
                 // Do nothing here
             }
-        });
+        });*/
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -109,8 +109,7 @@ public class AddBabyDialog extends Dialog {
                 String DobYear = "";
                 String Age  = "";
                 String Weight  = "";
-                String selectedGroup = "";
-                String additionalNotes = "";
+                String notes = "";
 
                 boolean valid = false;
                 while(!valid){
@@ -121,11 +120,10 @@ public class AddBabyDialog extends Dialog {
                     DobYear = editTextDOBYear.getText().toString();
                     Age  = editTextGestAge.getText().toString();
                     Weight  = editTextWeight.getText().toString();
-                    selectedGroup = spinnerGroup.getSelectedItem().toString();
-                    additionalNotes = editAdditionalNotes.getText().toString();
+                    notes = editAdditionalNotes.getText().toString();
 
                     valid = checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
-                    valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Integer.parseInt(Weight));
+                    valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Double.parseDouble(Weight));
                 }
                 if (valid){
                     // Convert Strings into Data
@@ -135,17 +133,15 @@ public class AddBabyDialog extends Dialog {
                     double age  = Double.parseDouble(Age);
                     double weight  = Double.parseDouble(Weight);
                     // Create a Baby object with the entered data
-                    Baby baby = new Baby(nigID, dob, weight, age, selectedGroup, additionalNotes);
+                    Baby baby = new Baby(nigID, dob, weight, age, notes);
 
                     // Send the Baby object in the PUT request
                     sendRequest(PUT, "addBaby", baby);
-
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age +
                             "\nDOB:" + DobDay + " " + DobMonth + " " + DobYear +
-                            "\nGroup: " + selectedGroup +
                             "\nWeight: " + Weight +
-                            "\nAdditional Notes: " + additionalNotes;
+                            "\nAdditional Notes: " + notes;
                     details = details + "\nBaby added to the database, please close this tab";
                     outputText.setText(details);
                     resetFields();
@@ -214,7 +210,7 @@ public class AddBabyDialog extends Dialog {
      * @param Weight the weight of the baby
      * @return true if the input is valid, false otherwise
      */
-    private boolean checkInput(int NigID, int DobDay, int DobMonth, int DobYear, int Age, int Weight){
+    private boolean checkInput(int NigID, int DobDay, int DobMonth, int DobYear, int Age, double Weight){
         if (NigID < 0){
             editTextBabyID.setError("The NigID cannot be negative");
             return false;
@@ -244,13 +240,17 @@ public class AddBabyDialog extends Dialog {
         }
     }
 
-    // This method sends a request to add the babys details to the server and database
+    /**This method sends a request to add the babys details to the server and database
+     * @param type of HTTP request
+     * @param method of HTTP request
+     * @param baby the baby object to be added to the database
+     */
     void sendRequest(String type, String method, Baby baby) {
         Call<ResponseBody> call;
 
-        if (type.equals(PUT)) {
-            call = babyApi.addBaby(baby);
-        } else {
+        if (type.equals(PUT) && method.equals("addBaby")){
+            call = babyApi.addBaby(baby);}
+        else {
             // Handle other types or methods if needed
             return;
         }
