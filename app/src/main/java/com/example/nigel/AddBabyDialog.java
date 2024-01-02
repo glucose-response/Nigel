@@ -40,7 +40,6 @@ public class AddBabyDialog extends Dialog {
     private EditText editTextGestAge;
     private EditText editTextWeight;
     private EditText editAdditionalNotes;
-    private Spinner spinnerGroup;
     private TextView outputText;
     private Button addButton;
     private Button exitButton;
@@ -74,24 +73,6 @@ public class AddBabyDialog extends Dialog {
         exitButton = findViewById(R.id.exitButton);
         editAdditionalNotes= findViewById(R.id.editAdditionalNotes);
 
-        /* Set up the spinner with an array adapter
-        //ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(context, R.array.group_options, // Create an array resource in res/values/arrays.xml with your group optionsandroid.R.layout.simple_spinner_item);
-        //adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //spinnerGroup.setAdapter(adapter);
-        // Example of setting text (a string) in TextView
-        // outputText.setText("Output: This is where you can place the values you get from the DataBase");
-
-        spinnerGroup.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                // Handle the selected item change if needed
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> parentView) {
-                // Do nothing here
-            }
-        });*/
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
@@ -166,7 +147,6 @@ public class AddBabyDialog extends Dialog {
         editTextDOBYear.setText("");
         editTextGestAge.setText("");
         editTextWeight.setText("");
-        spinnerGroup.resetPivot();
         editAdditionalNotes.setText("");
     }
     /**

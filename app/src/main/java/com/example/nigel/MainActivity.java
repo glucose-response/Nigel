@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
     private List<Baby> fetchDataFromDatabaseViaAPI(){
 
-        String url = "https://nigel-c0b396b99759.herokuapp.com/profiles";
+        String url = "https://nigel-c0b396b99759.herokuapp.com/";
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url) // Replace with your base URL
                 .addConverterFactory(GsonConverterFactory.create())
@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             retrofit2.Response<ResponseBody> response = call.execute();
             if (response.isSuccessful() && response.body() != null) {
                 String jsonResponse = response.body().string();
+                jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
                 babyList = parseJSONResponse(jsonResponse);
             } else {
                 System.out.println("Request unsuccessful");
@@ -171,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     }
 
     private List<Baby> parseJSONResponse(String responseBody){
-
         List<Baby> babyList = new ArrayList<>();
 
         try {
@@ -181,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 int id = jsonObject.getInt("NigelID");
-                long dateOfBirth = jsonObject.getInt("DateOfBirth");
+                long dateOfBirth = jsonObject.getLong("DateOfBirth");
                 double weight = (double) jsonObject.getDouble("BirthWeight");
                 double gestationalAge = jsonObject.getDouble("GestationalAge");
                 String notes = jsonObject.getString("Notes");
