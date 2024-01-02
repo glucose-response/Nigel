@@ -1,7 +1,10 @@
 package com.example.nigel;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,6 +15,9 @@ import com.google.gson.reflect.TypeToken;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -39,23 +45,18 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 // MainActivity.java
-public class MainActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener {
+public class MainActivity extends AppCompatActivity {
+    private AccountSettings settings;
+    private ConstraintLayout mContentMain;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
-    private Executor executor = Executors.newSingleThreadExecutor();
-    private OkHttpClient client = new OkHttpClient();
-    private List<Baby> babyList = new ArrayList<>();
-    private RecyclerView recyclerView;
-    private BabyListAdapter adapter;
-    private EditText searchEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_dashboard);
+        setContentView(R.layout.main_layout);
+        mContentMain = findViewById(R.id.main_layout);
 
-        fetchDataInBackground();
-
+        displayFragment(new MainBabyFragment());
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -86,8 +87,10 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
         addBabyDialog.show();
     }
-
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     public void onRefresh() {
         // Fetch data
         fetchDataInBackground();
@@ -112,6 +115,18 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
             });
         });
     }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.account_settings) {
+            displayFragment(new LogoutFragment());
+            return true;
+        }
+        if (id == R.id.home_button) {
+            displayFragment(new MainBabyFragment());
+            return true;
+        }
 
     private List<Baby> fetchData() {
         // Implement the logic to fetch data from CSV file or server
@@ -252,6 +267,15 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         });
     }
 
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void displayFragment(final Fragment fragment){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(mContentMain.getId(),fragment)
+                .commit();
     // Replace this method with your actual data fetching logic
     private List<Entry> generateRandomTimeSeriesData() {
         List<Entry> data = new ArrayList<>();
