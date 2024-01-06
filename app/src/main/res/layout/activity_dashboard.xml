@@ -20,7 +20,7 @@
             android:id="@+id/searchEditText"
             android:layout_width="287dp"
             android:layout_height="45dp"
-            android:hint="Search NigelID"
+            android:hint="@string/enter_baby_id"
             android:inputType="text"
             android:padding="8dp"
             app:layout_constraintHorizontal_bias="0.0"
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:text="Button"
+            android:text="@string/search"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             android:layout_alignParentRight="true" />
