@@ -3,6 +3,7 @@ package com.example.nigel;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -12,8 +13,12 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+
+import com.google.gson.Gson;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Date;
 
 import okhttp3.ResponseBody;
@@ -75,6 +80,7 @@ public class AddBabyDialog extends Dialog{
         babyApi = retrofit.create(BabyApi.class);
 
         addButton.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
                 String NigID = "";
@@ -102,18 +108,18 @@ public class AddBabyDialog extends Dialog{
                 if (valid){
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
-                    Date currentDate = new Date(DobDay + "/" + DobMonth + "/" + DobYear);
-                    long dob = currentDate.getTime() / 1000;
+                    LocalDate birthdayDate = LocalDate.of(Integer.parseInt(DobYear), Integer.parseInt(DobMonth), Integer.parseInt(DobDay));
+                    String birthdayString = DobYear + "-" + DobMonth + "-" + DobDay;
                     double age  = Double.parseDouble(Age);
                     double weight  = Double.parseDouble(Weight);
                     // Create a Baby object with the entered data
-                    Baby baby = new Baby(nigID, dob, weight, age, notes);
+                    Baby baby = new Baby(nigID, birthdayString, weight, age, notes);
 
                     // Send the Baby object in the PUT request
                     sendRequest(PUT, "addBaby", baby);
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age +
-                            "\nDOB:" + DobDay + " " + DobMonth + " " + DobYear +
+                            "\nDOB:" + birthdayString +
                             "\nWeight: " + Weight +
                             "\nAdditional Notes: " + notes;
                     details = details + "\nBaby added to the database, please close this tab";

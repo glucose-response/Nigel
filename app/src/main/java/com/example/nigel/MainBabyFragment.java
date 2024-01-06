@@ -1,5 +1,6 @@
 package com.example.nigel;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,6 +23,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -44,6 +48,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private BabyListAdapter adapter;
     private EditText searchEditText;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public View onCreateView(LayoutInflater inflater,
                              ViewGroup container,
                              Bundle savedInstanceState) {
@@ -56,6 +61,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         return view;
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onRefresh() {
         // Fetch data
@@ -77,6 +83,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
 
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void fetchDataInBackground() {
         // Perform data fetching from CSV file or server
         executor.execute(() -> {
@@ -180,6 +187,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         return data;
     }
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Baby> fetchDataFromDatabaseViaAPI(){
 
         String url = "https://nigel-c0b396b99759.herokuapp.com/";
@@ -211,6 +219,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private List<Baby> parseJSONResponse(String responseBody){
         List<Baby> babyList = new ArrayList<>();
 
@@ -221,7 +230,8 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 int id = jsonObject.getInt("NigelID");
-                long dateOfBirth = jsonObject.getLong("DateOfBirth");
+                String[] dateOfBirth = jsonObject.getString("DateOfBirth").split("-");
+                LocalDate dateOfBirthObject = LocalDate.of(Integer.parseInt(dateOfBirth[0]), Integer.parseInt(dateOfBirth[1]), Integer.parseInt(dateOfBirth[2]));
                 double weight = (double) jsonObject.getDouble("BirthWeight");
                 double gestationalAge = jsonObject.getDouble("GestationalAge");
                 String notes = jsonObject.getString("Notes");
@@ -230,7 +240,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 babyList.add(
                         new Baby(
                                 id,
-                                dateOfBirth,
+                                dateOfBirthObject,
                                 weight,
                                 gestationalAge,
                                 notes,
