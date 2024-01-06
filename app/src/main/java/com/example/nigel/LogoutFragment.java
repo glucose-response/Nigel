@@ -90,6 +90,9 @@ public class LogoutFragment extends Fragment {
         signOutButton.setEnabled(settings.getmAccount() != null);
     }
 
+    /**
+     * Make an HTTP request to obtain MSGraph data
+     */
     private void callGraphAPI(final IAuthenticationResult authenticationResult) {
         if (authenticationResult != null && authenticationResult.getAccessToken() != null) {
             Log.e(TAG, "Authentication result success");

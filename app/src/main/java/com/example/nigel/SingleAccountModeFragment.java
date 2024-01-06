@@ -83,7 +83,7 @@ public class SingleAccountModeFragment extends Fragment {
 
                     @Override
                     public void onError(MsalException exception) {
-                        displayError(exception);
+                        Log.d(TAG, exception.toString());
                     }
                 });
 
@@ -97,7 +97,7 @@ public class SingleAccountModeFragment extends Fragment {
      */
     private void initializeUI(@NonNull final View view) {
         signInButton = view.findViewById(R.id.loginButton);
-        this.logTextView = view.findViewById(R.id.txt_logs);
+       // this.logTextView = view.findViewById(R.id.txt_logs);
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -173,7 +173,7 @@ public class SingleAccountModeFragment extends Fragment {
 
             @Override
             public void onError(@NonNull MsalException exception) {
-                displayError(exception);
+                Log.d(TAG, exception.toString());
             }
         });
     }
@@ -200,7 +200,6 @@ public class SingleAccountModeFragment extends Fragment {
             public void onError(MsalException exception) {
                 /* Failed to acquireToken */
                 Log.d(TAG, "Authentication failed: " + exception.toString());
-                displayError(exception);
 
                 if (exception instanceof MsalClientException) {
                     /* Exception inside MSAL, more info inside MsalError.java */
@@ -241,15 +240,12 @@ public class SingleAccountModeFragment extends Fragment {
                 Intent intent = new Intent(getActivity(), MainActivity.class);
                 startActivity(intent);
 
-                /* call graph */
-                // callGraphAPI(authenticationResult);
             }
 
             @Override
             public void onError(MsalException exception) {
                 /* Failed to acquireToken */
                 Log.d(TAG, "Authentication failed: " + exception.toString());
-                displayError(exception);
             }
 
             @Override
@@ -258,67 +254,6 @@ public class SingleAccountModeFragment extends Fragment {
                 Log.d(TAG, "User cancelled login.");
             }
         };
-    }
-
-//    /**
-//     * Make an HTTP request to obtain MSGraph data
-//     */
-//    private void callGraphAPI(final IAuthenticationResult authenticationResult) {
-//        MSGraphRequestWrapper.callGraphAPIUsingVolley(
-//                getContext(),
-//                authenticationResult.getAccessToken(),
-//                new Response.Listener<JSONObject>() {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        /* Successfully called graph, process data and send to UI */
-//                        Log.d(TAG, "Response: " + response.toString());
-//                        displayUserInfo(response);
-//                    }
-//                },
-//                new Response.ErrorListener() {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        Log.d(TAG, "Error: " + error.toString());
-//                        displayError(error);
-//                    }
-//                });
-//    }
-
-    //
-    // Helper methods manage UI updates
-    // ================================
-    // displayGraphResult() - Display the graph response
-    // displayError() - Display the graph response
-    // updateSignedInUI() - Updates UI when the user is signed in
-    // updateSignedOutUI() - Updates UI when app sign out succeeds
-    //
-
-    /**
-     * Display the graph response
-     */
-    private void displayUserInfo(@NonNull final JSONObject userInfo) {
-        try {
-            String displayName = userInfo.getString("displayName");
-            String mail = userInfo.getString("mail");
-            String positionTitle = userInfo.getString("jobTitle");
-            String userPrincipalName = userInfo.getString("userPrincipalName");
-            String displayText = "Display Name: " + displayName + "\n" +
-                    "Job Title: " + positionTitle + "\n" +
-                    "Email: " + mail + "\n" +
-                    "User Principal Name: " + userPrincipalName;
-            logTextView.setText(displayText);
-
-        } catch (Exception e) {
-            Log.d(TAG, "Error processing user information: " + e.toString());
-            displayError(new VolleyError("Error processing user information"));
-        }
-    }
-
-    /**
-     * Display the error message
-     */
-    private void displayError(@NonNull final Exception exception) {
-        logTextView.setText(exception.toString());
     }
 
     /**
