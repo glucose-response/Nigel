@@ -9,6 +9,7 @@ import com.opencsv.exceptions.CsvException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Iterator;
 import java.util.List;
 
 public class CSVHandler {
@@ -29,12 +30,15 @@ public class CSVHandler {
             resultList = csvReader.readAll();
             Log.d("CSVHandler", "Size of list: " + resultList.size());
             // Delete empty rows
-            for (String[] result : resultList) {
-                if (result[0].equals("")) {
-                    Log.d("CSVHandler", "Empty row found");
-                    resultList.remove(result);
+            Iterator<String[]> iterator = resultList.iterator();
+            while (iterator.hasNext()) {
+                String[] row = iterator.next();
+                // Check if the first element of the row is empty and remove the row if it is
+                if (row.length > 0 && row[0].isEmpty()) {
+                    iterator.remove();
                 }
             }
+
             resultList.remove(0); // Remove the header row
             // Close the reader to prevent memory leaks
             csvReader.close();

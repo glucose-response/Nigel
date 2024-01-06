@@ -321,7 +321,11 @@ public class SingleAccountModeFragment extends Fragment {
      * Display the error message
      */
     private void displayError(@NonNull final Exception exception) {
-        logTextView.setText(exception.toString());
+        try{
+            logTextView.setText(exception.toString());
+        } catch (Exception e){
+            Log.d("Hello", "Single Account Model Fragment is null");
+        }
     }
 
     /**
