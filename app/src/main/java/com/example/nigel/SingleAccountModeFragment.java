@@ -14,7 +14,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.IAccount;
@@ -73,7 +72,7 @@ public class SingleAccountModeFragment extends Fragment {
                     @Override
                     public void onCreated(ISingleAccountPublicClientApplication application) {
                         /**
-                         * This test app assumes that the app is only going to support one account.
+                         * This app assumes that the app is only going to support one account.
                          * This requires "account_mode" : "SINGLE" in the config json file.
                          **/
                         mSingleAccountApp = application;
@@ -122,8 +121,6 @@ public class SingleAccountModeFragment extends Fragment {
         Log.println(Log.INFO, TAG, "ON RESUME CALL TIME: " + System.currentTimeMillis());
         /**
          * The account may have been removed from the device (if broker is in use).
-         *
-         * In shared device mode, the account might be signed in/out by other apps while this app is not in focus.
          * Therefore, we want to update the account state by invoking loadAccount() here.
          */
         loadAccount();
