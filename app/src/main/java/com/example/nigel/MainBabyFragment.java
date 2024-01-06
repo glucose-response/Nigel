@@ -9,7 +9,6 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -31,6 +30,10 @@ import java.util.concurrent.Executors;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
     private SwipeRefreshLayout swipeRefreshLayout;
@@ -65,11 +68,19 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
+        Button addBabyButton = view.findViewById(R.id.addBabyButton);
+        addBabyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openAddBabyDialog();
+            }
+        });
+
     }
     private void fetchDataInBackground() {
         // Perform data fetching from CSV file or server
         executor.execute(() -> {
-            List<Baby> result = fetchData();
+            List<Baby> result = fetchDataFromDatabaseViaAPI();
 
             // Update UI with the fetched data
             requireActivity().runOnUiThread(() -> {
@@ -134,14 +145,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 int timeOfBirth = jsonObject.getInt("Time of Birth");
 
                 // Now you can use the id and name as needed
-                babyList.add(
-                        new Baby(
-                                id,
-                                timeOfBirth,
-                                weight,
-                                group,
-                                generateRandomTimeSeriesData())
-                );
+
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -175,6 +179,76 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
 
         return data;
+    }
+    private List<Baby> fetchDataFromDatabaseViaAPI(){
+
+        String url = "https://nigel-c0b396b99759.herokuapp.com/";
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(url) // Replace with your base URL
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        BabyApi babyApi = retrofit.create(BabyApi.class);
+
+        // Fetch profiles (assuming your endpoint returns JSON data)
+        Call<ResponseBody> call = babyApi.getBabies(); // Assuming the response is a JSON string
+        List<Baby> babyList = new ArrayList<>();
+
+        try {
+            retrofit2.Response<ResponseBody> response = call.execute();
+            if (response.isSuccessful() && response.body() != null) {
+                String jsonResponse = response.body().string();
+                jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
+                babyList = parseJSONResponse(jsonResponse);
+            } else {
+                System.out.println("Request unsuccessful");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return babyList;
+
+
+    }
+
+    private List<Baby> parseJSONResponse(String responseBody){
+        List<Baby> babyList = new ArrayList<>();
+
+        try {
+            JSONArray jsonArray = new JSONArray(responseBody);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                int id = jsonObject.getInt("NigelID");
+                long dateOfBirth = jsonObject.getLong("DateOfBirth");
+                double weight = (double) jsonObject.getDouble("BirthWeight");
+                double gestationalAge = jsonObject.getDouble("GestationalAge");
+                String notes = jsonObject.getString("Notes");
+
+                // Now you can use the id and name as needed
+                babyList.add(
+                        new Baby(
+                                id,
+                                dateOfBirth,
+                                weight,
+                                gestationalAge,
+                                notes,
+                                generateRandomTimeSeriesData())
+                );
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return babyList;
+    }
+
+    private void openAddBabyDialog() {
+        AddBabyDialog addBabyDialog = new AddBabyDialog(getActivity(), new AddBabyDialog.OnAddBabyListener() {
+            @Override
+            public void onAddBaby() {}
+        });
+        addBabyDialog.show();
     }
 
 }

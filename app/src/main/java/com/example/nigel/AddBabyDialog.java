@@ -1,27 +1,20 @@
 package com.example.nigel;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -31,7 +24,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 // Used ChatGPT to create a dialog
-public class AddBabyDialog extends Dialog {
+public class AddBabyDialog extends Dialog{
     private Context context;
     private EditText editTextBabyID;
     private EditText editTextDOBDay;
@@ -49,7 +42,7 @@ public class AddBabyDialog extends Dialog {
     private BabyApi babyApi;
     private OnAddBabyListener onAddBabyListener;
 
-    public AddBabyDialog(@NonNull Context context, OnAddBabyListener onAddBabyListener) {
+    public AddBabyDialog(@NonNull Activity context, OnAddBabyListener onAddBabyListener){
         super(context);
         this.context = context;
         this.onAddBabyListener = onAddBabyListener;
@@ -258,6 +251,6 @@ public class AddBabyDialog extends Dialog {
 
     // This is the interface that will be used to communicate with the activity that created the dialog
     public interface OnAddBabyListener {
-        void onAddBaby(String babyID, String dob, String group);
+        void onAddBaby();
     }
 }

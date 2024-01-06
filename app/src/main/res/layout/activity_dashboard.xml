@@ -20,7 +20,7 @@
             android:id="@+id/searchEditText"
             android:layout_width="287dp"
             android:layout_height="45dp"
-            android:hint="Search"
+            android:hint="Search NigelID"
             android:inputType="text"
             android:padding="8dp"
             app:layout_constraintHorizontal_bias="0.0"
@@ -34,7 +34,8 @@
             android:layout_alignParentEnd="true"
             android:text="Button"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_alignParentRight="true" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
