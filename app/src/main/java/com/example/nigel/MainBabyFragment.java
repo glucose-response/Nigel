@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -136,7 +137,13 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                             glucoseValue,
                             lactateValue
                     );
-                    babyList.get(babyID).insertEvent(bloodSample);
+                    try{
+                        fetchedBabyList.get(babyID).insertEvent(bloodSample);
+                    }catch (NullPointerException e){
+                        Log.d("BloodSampleList", "Baby ID not found");
+                    }
+
+
                 } catch (NumberFormatException e) {
                     Log.d("BloodSampleList", "Error converting to float");
                 }
@@ -166,7 +173,11 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                         calciumValue
                 );
 
-                babyList.get(babyID).insertEvent(sweatSample);
+                try{
+                    fetchedBabyList.get(babyID).insertEvent(sweatSample);
+                } catch (NullPointerException e){
+                    Log.d("SweatSampleList", "Baby ID not found");
+                }
             }
 
             for (String[] row : feedingCSV) {
