@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private AccountSettings settings;
     private ConstraintLayout mContentMain;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (id == R.id.home_button) {
             displayFragment(new MainBabyFragment());
+            return true;
+        }
+        if (id == R.id.upload_download) {
+            displayFragment(new UploadDownloadFragment());
             return true;
         }
 
