@@ -66,6 +66,10 @@ public class MainActivity extends AppCompatActivity {
             displayFragment(new MainBabyFragment());
             return true;
         }
+        if (id == R.id.upload_download) {
+            displayFragment(new UploadDownloadFragment());
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }

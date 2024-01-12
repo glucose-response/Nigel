@@ -97,7 +97,7 @@ public class SingleAccountModeFragment extends Fragment {
      */
     private void initializeUI(@NonNull final View view) {
         signInButton = view.findViewById(R.id.loginButton);
-       // this.logTextView = view.findViewById(R.id.txt_logs);
+
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
