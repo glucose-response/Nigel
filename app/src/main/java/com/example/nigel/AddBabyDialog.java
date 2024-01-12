@@ -19,7 +19,9 @@ import com.google.gson.Gson;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -102,7 +104,7 @@ public class AddBabyDialog extends Dialog{
                     Weight  = editTextWeight.getText().toString();
                     notes = editAdditionalNotes.getText().toString();
 
-                    valid = checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
+                    valid = valid && checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
                     valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Double.parseDouble(Weight));
                 }
                 if (valid){
@@ -116,14 +118,14 @@ public class AddBabyDialog extends Dialog{
                     Baby baby = new Baby(nigID, birthdayString, weight, age, notes);
 
                     // Send the Baby object in the PUT request
-                    sendRequest(PUT, "addBaby", baby);
+                    sendRequest(PUT, "addBaby", baby, 0);
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age +
                             "\nDOB:" + birthdayString +
                             "\nWeight: " + Weight +
                             "\nAdditional Notes: " + notes;
                     details = details + "\nBaby added to the database, please close this tab";
-                    outputText.setText(details);
+                    outputText.setText("Added Succesfully");
                     resetFields();
                 }
 
@@ -224,7 +226,7 @@ public class AddBabyDialog extends Dialog{
      * @param method of HTTP request
      * @param baby the baby object to be added to the database
      */
-    void sendRequest(String type, String method, Baby baby) {
+    void sendRequest(String type, String method, Baby baby, int id) {
         Call<ResponseBody> call;
 
         if (type.equals(PUT) && method.equals("addBaby")){

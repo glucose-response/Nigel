@@ -21,6 +21,7 @@ import com.github.mikephil.charting.data.Entry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -206,7 +207,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
             retrofit2.Response<ResponseBody> response = call.execute();
             if (response.isSuccessful() && response.body() != null) {
                 String jsonResponse = response.body().string();
-                jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
+                //jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
                 babyList = parseJSONResponse(jsonResponse);
             } else {
                 System.out.println("Request unsuccessful");
@@ -216,7 +217,6 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         }
         return babyList;
 
-
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -224,17 +224,19 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         List<Baby> babyList = new ArrayList<>();
 
         try {
-            JSONArray jsonArray = new JSONArray(responseBody);
+            JSONObject object = new JSONObject(responseBody);
+            JSONArray jsonArray  = object.getJSONArray("profiles");
+            //JSONArray jsonArray = new JSONArray(responseBody);
 
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
 
                 int id = jsonObject.getInt("NigelID");
-                String[] dateOfBirth = jsonObject.getString("DateOfBirth").split("-");
+                String[] dateOfBirth = jsonObject.getString("birthday").split("-");
                 LocalDate dateOfBirthObject = LocalDate.of(Integer.parseInt(dateOfBirth[0]), Integer.parseInt(dateOfBirth[1]), Integer.parseInt(dateOfBirth[2]));
-                double weight = (double) jsonObject.getDouble("BirthWeight");
-                double gestationalAge = jsonObject.getDouble("GestationalAge");
-                String notes = jsonObject.getString("Notes");
+                double weight = (double) jsonObject.getDouble("birthWeight");
+                double gestationalAge = jsonObject.getDouble("gestationalAge");
+                String notes = jsonObject.getString("notes");
 
                 // Now you can use the id and name as needed
                 babyList.add(
