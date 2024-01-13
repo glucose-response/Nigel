@@ -8,31 +8,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
+
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.android.volley.VolleyError;
-import com.microsoft.identity.client.AuthenticationCallback;
 import com.microsoft.identity.client.IAccount;
 import com.microsoft.identity.client.IAuthenticationResult;
 import com.microsoft.identity.client.IPublicClientApplication;
 import com.microsoft.identity.client.ISingleAccountPublicClientApplication;
 import com.microsoft.identity.client.PublicClientApplication;
-import com.microsoft.identity.client.SignInParameters;
 import com.microsoft.identity.client.SilentAuthenticationCallback;
-import com.microsoft.identity.client.exception.MsalClientException;
 import com.microsoft.identity.client.exception.MsalException;
-import com.microsoft.identity.client.exception.MsalServiceException;
-import com.microsoft.identity.client.exception.MsalUiRequiredException;
-
-import org.json.JSONObject;
-
-import java.util.Arrays;
 
 /**
  * Implementation sample for 'Single account' mode.
@@ -173,14 +162,6 @@ public class LoginBufferFragment extends Fragment {
             public void onError(MsalException exception) {
                 /* Failed to acquireToken */
                 Log.d(TAG, "Authentication failed: " + exception.toString());
-
-                if (exception instanceof MsalClientException) {
-                    /* Exception inside MSAL, more info inside MsalError.java */
-                } else if (exception instanceof MsalServiceException) {
-                    /* Exception when communicating with the STS, likely config issue */
-                } else if (exception instanceof MsalUiRequiredException) {
-                    /* Tokens expired or no session, retry with interactive */
-                }
             }
         };
     }

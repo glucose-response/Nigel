@@ -5,7 +5,6 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 
 
