@@ -118,7 +118,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 int babyID = Integer.parseInt(row[0]);
                 Baby baby = new Baby(
                         babyID,
-                        String.valueOf(row[1]),
+                        Integer.valueOf(row[1]),
                         birthDate,
                         Double.parseDouble(row[3]),
                         row[4]);
@@ -237,14 +237,14 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                 int id = jsonObject.getInt("Nigel ID");
                 float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
-                String group = jsonObject.getString("Group");
+                int gestationalAge = jsonObject.getInt("Gestational Age");
                 int timeOfBirth = jsonObject.getInt("Time of Birth");
                 String notes = jsonObject.getString("Notes");
                 // Now you can use the id and name as needed
                 babyList.put(id,
                         new Baby(
                                 id,
-                                group,
+                                gestationalAge,
                                 timeOfBirth,
                                 weight,
                                 notes)

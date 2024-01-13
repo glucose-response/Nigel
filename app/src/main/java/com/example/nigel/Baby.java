@@ -13,6 +13,7 @@ public class Baby {
     private int id;
     private String group;
     private long birthDate;
+    private int gestationalAge;
     private double weight;
     private String notes;
 
@@ -20,12 +21,12 @@ public class Baby {
 
 
     public Baby(int id,
-                String group,
+                int gestationalAge,
                 long birthDate,
                 double weight,
                 String notes) {
         this.id = id;
-        this.group = group;
+        this.gestationalAge = gestationalAge;
         this.birthDate = birthDate;
         this.weight = weight;
 
@@ -36,8 +37,8 @@ public class Baby {
     public int getId() {
         return id;
     }
-    public String getGroup() {
-        return group;
+    public int getGestationalAge() {
+        return gestationalAge;
     }
     public long getBirthDate() {
         return birthDate;
