@@ -1,18 +1,23 @@
 package com.example.nigel;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 public class DetailedActivity extends AppCompatActivity {
-    private LineChart skinGlucoseChart;
+    private LineChart glucoseChart;
     // Helper method to format the date
     private String formatDate(long timestamp) {
         // Create a DateFormatter object for displaying date in specified format.
@@ -42,21 +47,58 @@ public class DetailedActivity extends AppCompatActivity {
 
         // populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
-
         if (birthdate != -1) {
             String dateString = formatDate(birthdate);
             dateOfBirthTextView.setText("Date of Birth: " + dateString);
         } else {
             dateOfBirthTextView.setText("Date of Birth: N/A");
         }
-
-        gestationalAgeTextView.setText("Gestational Age: "+String.valueOf(gestationalAge)+" weeks");
-
-        birthWeightTextView.setText("Birth Weight: "+String.valueOf(weight)+" kg");
+        gestationalAgeTextView.setText("Gestational Age: " + String.valueOf(gestationalAge) + " weeks");
+        birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
 
 
+        // Onto the graphing
+        glucoseChart = findViewById(R.id.glucoseChart);
+        configureChart(glucoseChart);
+    }
 
-        skinGlucoseChart = findViewById(R.id.skinGlucoseChart);
+    private void configureChart(LineChart chart) {
+        // Example axis configuration
+        XAxis xAxis = chart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setDrawGridLines(false); // remove grid lines
+        xAxis.setDrawAxisLine(true);
+        //... other axis configurations
+
+        YAxis leftAxis = chart.getAxisLeft();
+        leftAxis.setDrawGridLines(false); // remove grid lines
+        //... other axis configurations
+
+        // Set the same for the right axis if necessary
+        YAxis rightAxis = chart.getAxisRight();
+        rightAxis.setDrawGridLines(false); // remove grid lines
+        //... other axis configurations
+
+        // Prepare the data sets (without actual data for now)
+        LineDataSet bloodDataSet = new LineDataSet(null, "Blood Glucose");
+        LineDataSet sweatDataSet = new LineDataSet(null, "Sweat Glucose");
+        // Configure data set appearance
+        bloodDataSet.setColor(Color.RED);
+        sweatDataSet.setColor(Color.GREEN);
+        //... other data set configurations
+
+        // Combine the data
+        LineData data = new LineData();
+        data.addDataSet(bloodDataSet);
+        // Set the combined data to the chart
+        chart.setData(data);
+
+        // Any additional chart configurations
+        // For example, if you want to animate the chart:
+        chart.animateX(1000);
+
+        // Refresh the chart
+        chart.invalidate();
 
     }
 

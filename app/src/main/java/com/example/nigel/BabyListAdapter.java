@@ -26,6 +26,7 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -87,6 +88,9 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 intent.putExtra("Date of Birth", baby.getBirthDate());
                 intent.putExtra("Weight", baby.getWeight());
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
+
+                //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
+
                 v.getContext().startActivity(intent);
             }
         });
