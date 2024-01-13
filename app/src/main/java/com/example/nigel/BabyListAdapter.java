@@ -84,15 +84,21 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
+                intent.putExtra("Baby object", baby); // Make sure Baby class implements Serializable
+                v.getContext().startActivity(intent);
                 intent.putExtra("BEBE_KEY", baby.getId());
-                intent.putExtra("Date of Birth", baby.getBirthDate());
-                intent.putExtra("Weight", baby.getWeight());
-                intent.putExtra("Gestational Age", baby.getGestationalAge());
+
+
+                //intent.putExtra("Date of Birth", baby.getBirthDate());
+                //intent.putExtra("Weight", baby.getWeight());
+                //intent.putExtra("Gestational Age", baby.getGestationalAge());
 
                 //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
 
                 v.getContext().startActivity(intent);
             }
+
+
         });
 
         // Customize this method based on your data and chart setup

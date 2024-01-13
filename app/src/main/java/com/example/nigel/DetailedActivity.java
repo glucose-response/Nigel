@@ -39,10 +39,12 @@ public class DetailedActivity extends AppCompatActivity {
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
         TextView birthWeightTextView = findViewById(R.id.birthWeightTextView);
 
-        // get values from BabyListAdapter
-        int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
-        int gestationalAge = (int) getIntent().getSerializableExtra("Gestational Age");
-        double weight = (double) getIntent().getSerializableExtra("Weight");
+        // get baby object from BabyListAdapter
+        Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
+        // int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
+        int bebeInt = baby.getId();
+        int gestationalAge = baby.getGestationalAge();
+        double weight = baby.getWeight();
         long birthdate = getIntent().getLongExtra("Date of Birth", -1);
 
         // populate text views

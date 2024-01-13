@@ -3,13 +3,14 @@ package com.example.nigel;
 import com.example.nigel.dataclasses.DataSample;
 import com.github.mikephil.charting.data.Entry;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-public class Baby {
+public class Baby implements Serializable {
     private int id;
     private String group;
     private long birthDate;
