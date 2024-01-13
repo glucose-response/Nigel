@@ -12,7 +12,7 @@ public class DetailedActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detailed);
 
         TextView textView = findViewById(R.id.nameTextView);
-        int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
+        int bebeInt = (int) getIntent().getSerializableExtra("Nigel ID");
         // Now you can use the 'bebe' variable to populate your views...
 
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
