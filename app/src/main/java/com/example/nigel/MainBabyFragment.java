@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -55,6 +56,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private BabyListAdapter adapter;
     private EditText searchEditText;
     private Map<Integer, Baby> dataset;
+    private ProgressBar progressBar;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public View onCreateView(LayoutInflater inflater,
@@ -63,7 +65,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.content_main, container, false);
-        fetchDataInBackground();
+        progressBar = view.findViewById(R.id.progressBar);
+
+        fetchDataInBackground(true);
         initializeUI(view);
         setupSearch(view);
 
@@ -73,10 +77,13 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         // Fetch data
-        fetchDataInBackground();
+        fetchDataInBackground(false);
     }
     private void initializeUI(@NonNull final View view) {
+
         recyclerView = view.findViewById(R.id.recyclerView);
+
+
         adapter = new BabyListAdapter(new HashMap<>());
 
         recyclerView.setAdapter(adapter);
@@ -98,8 +105,24 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
     }
+
+    private void showProgressBar(final boolean show) {
+        if(getActivity() != null && progressBar != null) { // Check progressBar is not null
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        }
+    }
+
+
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void fetchDataInBackground() {
+    private void fetchDataInBackground(boolean showCentralProgressBar) {
+        if (showCentralProgressBar) {
+            showProgressBar(true); // Show loading
+        }
         fetchDataUsingJSONParser();
     }
 
@@ -148,7 +171,8 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                                 adapter.setOriginalList(dataSet);
                                 // Notify adapter about data set change on main/UI thread
                                 adapter.notifyDataSetChanged();
-                                swipeRefreshLayout.setRefreshing(false); // Stop the refresh animation
+                                swipeRefreshLayout.setRefreshing(false);// Stop the refresh animation
+                                showProgressBar(false); // Hide loading
                             }
                         });
                     } else {
@@ -156,6 +180,8 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
+                } finally {
+                    showProgressBar(false); // Hide loading
                 }
             }
         }).start();
