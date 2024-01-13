@@ -71,6 +71,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Log the name of the person to the TextView
         Log.d("BabyListAdapter", "onBindViewHolder: " +
                 baby.getId() + " " +
+                baby.getGestationalAge() + " " +
                 baby.getDateOfBirth() + " " +
                 baby.getBirthWeight() + " " +
                 baby.getNotes() + " " +
@@ -83,6 +84,9 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
                 intent.putExtra("BEBE_KEY", baby.getId());
+                intent.putExtra("Date of Birth", baby.getDateOfBirth().toString());
+                intent.putExtra("Weight", baby.getBirthWeight());
+                intent.putExtra("Gestational Age", baby.getGestationalAge());
                 v.getContext().startActivity(intent);
             }
         });
