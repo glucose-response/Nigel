@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.nigel.dataclasses.DataSample;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
@@ -64,9 +65,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         });
 
         // Customize this method based on your data and chart setup
-        setupPersonChart(holder.personChart,
-                baby.getTimeSeriesData(),
-                commonAxisConfig);
+        //setupPersonChart(holder.personChart,baby.getTimeSeriesData(),commonAxisConfig);
     }
 
     @Override

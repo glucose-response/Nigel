@@ -25,7 +25,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -46,6 +48,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private RecyclerView recyclerView;
     private BabyListAdapter adapter;
     private EditText searchEditText;
+    private Map<Integer, Baby> dataset;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public View onCreateView(LayoutInflater inflater,
@@ -84,79 +87,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fetchDataInBackground() {
-        // Perform data fetching from CSV file or server
-        executor.execute(() -> {
-            List<Baby> result = fetchDataFromDatabaseViaAPI();
-
-            // Update UI with the fetched data
-            requireActivity().runOnUiThread(() -> {
-                if (result != null) {
-                    babyList.clear();
-                    babyList.addAll(result);
-                    Log.d("MainBabyFragment", "Baby list size: " + babyList.size());
-
-                    adapter = new BabyListAdapter(babyList);
-                    recyclerView.setAdapter(adapter);
-
-                    swipeRefreshLayout.setRefreshing(false);
-                } else {
-                    // Handle the case where 'result' is null
-                    Log.e("MainBabyFragment", "Error: Result is null");
-                }
-            });
-        });
-    }
-
-    private List<Baby> fetchData() {
-        // Implement the logic to fetch data from CSV file or server
-        // Return the fetched data as a List<Bebe>
-        // ...
-        String url = "https://jaminhu19.pythonanywhere.com/api/data";
-        Request request = new Request.Builder()
-                .url(url)
-                .build();
-
-        try {
-            // Synchronous request (executes on the background thread)
-            Response response = client.newCall(request).execute();
-            Log.d("MainActivity", "Response: " + response.toString());
-
-            if (response.isSuccessful()) {
-                // Parse the response and return the data as a List<Bebe>
-                return parseResponse(response.body().string());
-            } else {
-                // Handle unsuccessful response
-                return null;
-            }
-        } catch (IOException e) {
-            // Handle exceptions
-            e.printStackTrace();
-            return null;
-        }
-    }
-    private List<Baby> parseResponse(String responseBody) {
-        // Implement logic to parse the response and convert it to a List<Bebe>
-        // ...
-        Log.d("MainActivity", "Response body: " + responseBody);
-        List<Baby> babyList = new ArrayList<>();
-        try {
-            JSONArray jsonArray = new JSONArray(responseBody);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                int id = jsonObject.getInt("Nigel ID");
-                float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
-                String group = jsonObject.getString("Group");
-                int timeOfBirth = jsonObject.getInt("Time of Birth");
-
-                // Now you can use the id and name as needed
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return babyList;
+        fetchDataUsingJSONParser();
     }
 
     private void setupSearch(View view) {
@@ -175,82 +106,40 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
-    // Replace this method with your actual data fetching logic
-    private List<Entry> generateRandomTimeSeriesData() {
-        List<Entry> data = new ArrayList<>();
-        Random random = new Random();
-
-        for (int i = 0; i < 10; i++) {
-            data.add(new Entry(i, random.nextFloat()));
-        }
-
-        return data;
-    }
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Baby> fetchDataFromDatabaseViaAPI(){
+    private void fetchDataUsingJSONParser(){
 
-        String url = "https://nigel-c0b396b99759.herokuapp.com/";
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(url) // Replace with your base URL
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        Thread backgroundThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "https://nigel-c0b396b99759.herokuapp.com/";
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(url) // Replace with your base URL
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-        BabyApi babyApi = retrofit.create(BabyApi.class);
+                BabyApi babyApi = retrofit.create(BabyApi.class);
 
-        // Fetch profiles (assuming your endpoint returns JSON data)
-        Call<ResponseBody> call = babyApi.getBabies(); // Assuming the response is a JSON string
-        List<Baby> babyList = new ArrayList<>();
-
-        try {
-            retrofit2.Response<ResponseBody> response = call.execute();
-            if (response.isSuccessful() && response.body() != null) {
-                String jsonResponse = response.body().string();
-                //jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
-                babyList = parseJSONResponse(jsonResponse);
-            } else {
-                System.out.println("Request unsuccessful");
+                // Fetch profiles (assuming your endpoint returns JSON data)
+                Call<ResponseBody> call = babyApi.getData(); // Assuming the response is a JSON string
+                try {
+                    retrofit2.Response<ResponseBody> response = call.execute();
+                    if (response.isSuccessful() && response.body() != null) {
+                        String jsonResponse = response.body().string();
+                        JSONParser parser = new JSONParser(jsonResponse);
+                        dataset = parser.getData();
+                    } else {
+                        System.out.println("Request unsuccessful");
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return babyList;
+        });
 
-    }
+        backgroundThread.start();
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Baby> parseJSONResponse(String responseBody){
-        List<Baby> babyList = new ArrayList<>();
 
-        try {
-            JSONObject object = new JSONObject(responseBody);
-            JSONArray jsonArray  = object.getJSONArray("profiles");
-            //JSONArray jsonArray = new JSONArray(responseBody);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                int id = jsonObject.getInt("NigelID");
-                String[] dateOfBirth = jsonObject.getString("birthday").split("-");
-                LocalDate dateOfBirthObject = LocalDate.of(Integer.parseInt(dateOfBirth[0]), Integer.parseInt(dateOfBirth[1]), Integer.parseInt(dateOfBirth[2]));
-                double weight = (double) jsonObject.getDouble("birthWeight");
-                double gestationalAge = jsonObject.getDouble("gestationalAge");
-                String notes = jsonObject.getString("notes");
-
-                // Now you can use the id and name as needed
-                babyList.add(
-                        new Baby(
-                                id,
-                                dateOfBirthObject,
-                                weight,
-                                gestationalAge,
-                                notes,
-                                generateRandomTimeSeriesData())
-                );
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return babyList;
     }
 
     private void openAddBabyDialog(List<Baby> babyList) {

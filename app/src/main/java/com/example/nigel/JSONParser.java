@@ -39,8 +39,14 @@ public class JSONParser {
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Map<Integer,Baby> getData() throws JSONException {
-        JSONArray jsonArray = new JSONArray(response);
+
+        // Assuming jsonString is your JSON response string
+        JSONObject jsonResponse = new JSONObject(response);
+
+        // Extract the "data" array
+        JSONArray jsonArray = jsonResponse.getJSONArray("data");
         for (int i = 0; i < jsonArray.length(); i++) {
+            System.out.println(i);
 
             // Define the JSON object of interest
             JSONObject jsonObject = jsonArray.getJSONObject(i);
@@ -51,7 +57,7 @@ public class JSONParser {
             String[] dateOfBirth = jsonObject.getString("birthday").split("-");
             LocalDate birthday = LocalDate.of(Integer.parseInt(dateOfBirth[0]), Integer.parseInt(dateOfBirth[1]), Integer.parseInt(dateOfBirth[2]));
             double gestationalAge = jsonObject.getDouble("gestationalAge");
-            String notes = jsonObject.getString("Notes");
+            String notes = jsonObject.getString("notes");
 
             // Define the babys data samples
             List<BloodSample> bloodSamples = parseBloodSample(jsonObject.getJSONObject("blood"),id);
@@ -111,7 +117,7 @@ public class JSONParser {
             JSONArray records = response.getJSONArray(date);
             for (int i = 0; i < records.length(); i++) {
                 JSONObject record = records.getJSONObject(i);
-                float calcium = (float) record.getDouble("Calcium Alb corrected");
+                float calcium = (float) record.getDouble("Calcium");
                 float chloride = (float) record.getDouble("Chloride");
                 int clinicianID = record.getInt("ClinicianID");
                 double duration = record.getDouble("Duration /h");

@@ -4,6 +4,7 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
+import com.example.nigel.dataclasses.DataSample;
 import com.github.mikephil.charting.data.Entry;
 
 import java.text.SimpleDateFormat;
@@ -21,12 +22,12 @@ public class Baby {
     private double birthWeight;
     private double gestationalAge;
     private String notes;
-    private List<Entry> timeSeriesData;
+    private List<DataSample> timeSeriesData;
 
     /**
      * Constructor for a Baby object with all fields
      */
-    public Baby(int NigelID, LocalDate dateOfBirth, double birthWeight, double gestationalAge, String notes, List<Entry> timeSeriesData) {
+    public Baby(int NigelID, LocalDate dateOfBirth, double birthWeight, double gestationalAge, String notes, List<DataSample> timeSeriesData) {
         this.NigelID = NigelID;
         this.dateOfBirth = dateOfBirth;
         this.birthWeight = birthWeight;
@@ -80,7 +81,7 @@ public class Baby {
     public double getBirthWeight() {
         return birthWeight;
     }
-    public List<Entry> getTimeSeriesData() {
+    public List<DataSample> getTimeSeriesData() {
         return timeSeriesData;
     }
     public double getGestationalAge() {return gestationalAge;}
@@ -92,7 +93,7 @@ public class Baby {
     public void setId(int NigelID) {
         this.NigelID = NigelID;
     }
-    public void setTimeSeriesData(List<Entry> timeSeriesData) {
+    public void setTimeSeriesData(List<DataSample> timeSeriesData) {
         this.timeSeriesData = timeSeriesData;}
     public void setdateOfBirth(LocalDate dateOfBirth) {
         this.dateOfBirth = dateOfBirth;
