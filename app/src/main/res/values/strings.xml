@@ -5,4 +5,6 @@
     <string name="signout">Sign-out</string>
     <string name="signin">Sign-in with Microsoft</string>
     <string name="search">Search</string>
+    <string name="enter_baby_id">Enter NigelID</string>
+
 </resources>

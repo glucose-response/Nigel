@@ -40,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private AccountSettings settings;
     private ConstraintLayout mContentMain;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
