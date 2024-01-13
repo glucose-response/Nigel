@@ -77,7 +77,13 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
     private void initializeUI(@NonNull final View view) {
         recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter = new BabyListAdapter(new HashMap<>());
+
+        recyclerView.setAdapter(adapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -89,6 +95,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 openAddBabyDialog(babyList);
             }
         });
+
 
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -113,39 +120,54 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private void fetchDataUsingJSONParser(){
-
-        Thread backgroundThread = new Thread(new Runnable() {
+    private void fetchDataUsingJSONParser() {
+        new Thread(new Runnable() {
             @Override
             public void run() {
                 String url = "https://nigel-c0b396b99759.herokuapp.com/";
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(url) // Replace with your base URL
+                        .baseUrl(url)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
 
                 BabyApi babyApi = retrofit.create(BabyApi.class);
 
-                // Fetch profiles (assuming your endpoint returns JSON data)
-                Call<ResponseBody> call = babyApi.getData(); // Assuming the response is a JSON string
+                Call<ResponseBody> call = babyApi.getData();
                 try {
                     retrofit2.Response<ResponseBody> response = call.execute();
                     if (response.isSuccessful() && response.body() != null) {
-                        String jsonResponse = response.body().string();
-                        JSONParser parser = new JSONParser(jsonResponse);
-                        dataset = parser.getData();
+                        final String jsonResponse = response.body().string();
+                        final JSONParser parser = new JSONParser(jsonResponse);
+                        final Map<Integer, Baby> dataSet = parser.getData();
+                        Log.d("My Log", dataSet.toString());
+
+                        // Updating the adapter with the fetched data should be done on the main thread
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.setOriginalList(dataSet);
+                                // Notify adapter about data set change on main/UI thread
+                                adapter.notifyDataSetChanged();
+                                swipeRefreshLayout.setRefreshing(false); // Stop the refresh animation
+                            }
+                        });
                     } else {
-                        System.out.println("Request unsuccessful");
+                        Log.e("MainBabyFragment", "Request unsuccessful: " + response.errorBody().string());
                     }
                 } catch (IOException | JSONException e) {
                     e.printStackTrace();
                 }
             }
-        });
+        }).start();
+    }
 
-        backgroundThread.start();
 
-
+    private List<Baby> getBabiesFromDataset(Map<Integer, Baby> dataset) {
+        List<Baby> babyList = new ArrayList<>();
+        for (Map.Entry<Integer, Baby> entry : dataset.entrySet()) {
+            babyList.add(entry.getValue());
+        }
+        return babyList;
     }
 
     private void openAddBabyDialog(List<Baby> babyList) {

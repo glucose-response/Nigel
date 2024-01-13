@@ -44,7 +44,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
         this.filteredList = new HashMap<>(babyList); // Initialize filtered list with all items
 
-        Log.d("BabyListAdapter", "Baby 1: " + babyList.get(1).getId());
+        // Log.d("BabyListAdapter", "Baby 1: " + babyList.get(1).getId());
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
@@ -71,9 +71,8 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Log the name of the person to the TextView
         Log.d("BabyListAdapter", "onBindViewHolder: " +
                 baby.getId() + " " +
-                baby.getGroup() + " " +
-                baby.getBirthDate() + " " +
-                baby.getWeight() + " " +
+                baby.getDateOfBirth() + " " +
+                baby.getBirthWeight() + " " +
                 baby.getNotes() + " " +
                 baby.getTimeSeriesData().size() + " " +
                 baby.getTimeSeriesData().get(0).getTimestamp());
@@ -144,19 +143,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         Log.d("BabyListAdapter", "SweatSampleEntries size: " + sweatSampleEntries.size() +
                 " BloodSampleEntries size: " + bloodSampleEntries.size());
 
-        /*LineData sweatData = new LineData(sweatDataset);
-        CombinedData combinedData = new CombinedData();
-        combinedData.setData(sweatData);
-
-        combinedChart.setData(combinedData);
-
-        combinedChart.getAxisLeft().setAxisMinimum(axisConfig.getMinY());
-        combinedChart.getAxisLeft().setAxisMaximum(axisConfig.getMaxY());
-
-        combinedChart.getXAxis().setAxisMinimum(axisConfig.getMinX());
-        combinedChart.getXAxis().setAxisMaximum(axisConfig.getMaxX());
-
-        combinedChart.invalidate();*/
 
 
 
@@ -221,6 +207,14 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     public Map<Integer, Baby> getOriginalList() {
         return originalList;
+    }
+
+    public void setOriginalList(Map<Integer, Baby> newList) {
+        Log.d("BabyListAdapter", "setOriginalList: " + newList.size());
+        this.originalList = newList;
+        this.filteredList = newList;
+
+        notifyDataSetChanged();
     }
 
 }
