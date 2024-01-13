@@ -10,17 +10,24 @@ import androidx.fragment.app.FragmentTransaction;
 
 
 
-public class LoginActivity extends AppCompatActivity
+public class LoginActivity extends AppCompatActivity implements LoginBufferFragment.OnFragmentInteractionListener
 {
     private ConstraintLayout mContentMain;
-
+    private AccountSettings settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mContentMain = findViewById(R.id.activity_main);
-        displayFragment(new SingleAccountModeFragment());
+        this.settings = (AccountSettings) this.getApplication();
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(mContentMain.getId(),new LoginBufferFragment())
+                .commit();
+        // main login fragment is launched from this buffer fragment after checking if there is any account logged in
     }
 
 
@@ -29,6 +36,14 @@ public class LoginActivity extends AppCompatActivity
                 .beginTransaction()
                 .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
                 .replace(mContentMain.getId(),fragment)
+                .commit();
+    }
+    @Override
+    public void onLaunchLoginFragment(){
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(mContentMain.getId(),new SingleAccountModeFragment())
                 .commit();
     }
 }

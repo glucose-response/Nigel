@@ -147,6 +147,9 @@ public class LogoutFragment extends Fragment {
         logTextView.setText(exception.toString());
     }
 
+    /**
+     * Display "Signed out" after logout button clicked
+     */
     private void showToastOnSignOut() {
         final String signOutText = "Signed Out.";
         Toast.makeText(getContext(), signOutText, Toast.LENGTH_SHORT)
