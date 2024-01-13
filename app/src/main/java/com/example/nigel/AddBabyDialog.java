@@ -48,10 +48,12 @@ public class AddBabyDialog extends Dialog{
     private String GET = "GET";
     private BabyApi babyApi;
     private OnAddBabyListener onAddBabyListener;
+    private List babyList;
 
-    public AddBabyDialog(@NonNull Activity context, OnAddBabyListener onAddBabyListener){
+    public AddBabyDialog(List babyList, @NonNull Activity context, OnAddBabyListener onAddBabyListener){
         super(context);
         this.context = context;
+        this.babyList = babyList;
         this.onAddBabyListener = onAddBabyListener;
     }
 
@@ -93,20 +95,23 @@ public class AddBabyDialog extends Dialog{
                 String Weight  = "";
                 String notes = "";
 
-                boolean valid = false;
-                while(!valid){
-                    // Display details in the TextBox
-                    NigID = editTextBabyID.getText().toString();
-                    DobDay = editTextDOBDay.getText().toString();
-                    DobMonth = editTextDOBMonth.getText().toString();
-                    DobYear = editTextDOBYear.getText().toString();
-                    Age  = editTextGestAge.getText().toString();
-                    Weight  = editTextWeight.getText().toString();
-                    notes = editAdditionalNotes.getText().toString();
+                // Display details in the TextBox
+                NigID = editTextBabyID.getText().toString();
+                DobDay = editTextDOBDay.getText().toString();
+                DobMonth = editTextDOBMonth.getText().toString();
+                DobYear = editTextDOBYear.getText().toString();
+                Age  = editTextGestAge.getText().toString();
+                Weight  = editTextWeight.getText().toString();
+                notes = editAdditionalNotes.getText().toString();
 
-                    valid = valid && checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
+
+                boolean valid = checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
+                if(valid){
+                    valid = valid && !idExists(Integer.parseInt(NigID));
                     valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Double.parseDouble(Weight));
                 }
+
+
                 if (valid){
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
@@ -162,22 +167,22 @@ public class AddBabyDialog extends Dialog{
      */
     private boolean checkEmpty(String NigID, String DobDay, String DobMonth, String DobYear, String Age, String Weight){
         if (NigID.isEmpty()) {
-            editTextBabyID.setError("The NigID cannot be empty");
+            outputText.setError("The NigID cannot be empty");
             return false;}
         if (DobDay.isEmpty()){
-            editTextDOBDay.setError("The day of birth cannot be empty");
+            outputText.setError("The day of birth cannot be empty");
             return false;}
         if (DobMonth.isEmpty()) {
-            editTextDOBMonth.setError("The month of birth cannot be empty");
+            outputText.setError("The month of birth cannot be empty");
             return false;}
         if (DobYear.isEmpty()){
-            editTextDOBYear.setError("The year of birth cannot be empty");
+            outputText.setError("The year of birth cannot be empty");
             return false;}
         if (Age.isEmpty()){
-            editTextGestAge.setError("The age cannot be empty");
+            outputText.setError("The age cannot be empty");
             return false;}
         if (Weight.isEmpty()) {
-            editTextWeight.setError("The weight cannot be empty");
+            outputText.setError("The weight cannot be empty");
             return false;}
         return true;
     }
@@ -255,6 +260,22 @@ public class AddBabyDialog extends Dialog{
                 t.printStackTrace();
             }
         });
+    }
+
+    /**
+     * This method checks if the ID already exist
+     * @param id the ID to be checked
+     * @return true if the ID already exists, false otherwise
+     */
+    private boolean idExists(int id){
+        for (int i = 0; i < babyList.size(); i++){
+            Baby baby = (Baby) babyList.get(i);
+            if (baby.getId() == id){
+                editTextBabyID.setError("The ID already exists");
+                return true;
+            }
+        }
+        return false;
     }
 
     // This is the interface that will be used to communicate with the activity that created the dialog

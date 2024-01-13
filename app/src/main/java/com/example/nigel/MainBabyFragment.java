@@ -21,11 +21,9 @@ import com.github.mikephil.charting.data.Entry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -79,7 +77,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         addBabyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddBabyDialog();
+                openAddBabyDialog(babyList);
             }
         });
 
@@ -255,8 +253,8 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         return babyList;
     }
 
-    private void openAddBabyDialog() {
-        AddBabyDialog addBabyDialog = new AddBabyDialog(getActivity(), new AddBabyDialog.OnAddBabyListener() {
+    private void openAddBabyDialog(List<Baby> babyList) {
+        AddBabyDialog addBabyDialog = new AddBabyDialog(babyList, getActivity(), new AddBabyDialog.OnAddBabyListener() {
             @Override
             public void onAddBaby() {}
         });
