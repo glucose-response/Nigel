@@ -30,14 +30,9 @@ public class LoginActivity extends AppCompatActivity implements LoginBufferFragm
         // main login fragment is launched from this buffer fragment after checking if there is any account logged in
     }
 
-
-    private void displayFragment(final Fragment fragment){
-        getSupportFragmentManager()
-                .beginTransaction()
-                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(mContentMain.getId(),fragment)
-                .commit();
-    }
+    /**
+     * Launching a fragment from another fragment as an implementation
+     */
     @Override
     public void onLaunchLoginFragment(){
         getSupportFragmentManager()

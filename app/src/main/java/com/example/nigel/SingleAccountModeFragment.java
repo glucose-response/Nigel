@@ -33,13 +33,9 @@ import org.json.JSONObject;
 import java.util.Arrays;
 
 /**
- * Implementation sample for 'Single account' mode.
- * <p>
- * If your app only supports one account being signed-in at a time, this is for you.
- * This requires "account_mode" to be set as "SINGLE" in the configuration file.
- * (Please see res/raw/auth_config_single_account.json for more info).
- * <p>
- * Please note that switching mode (between 'single' and 'multiple' might cause a loss of data.
+ * Implementation for 'Single account' mode.
+ * Adapted the identity-platform specific methods from the sample provided by the tutorial :
+ * "https://learn.microsoft.com/en-us/entra/identity-platform/tutorial-v2-android"
  */
 public class SingleAccountModeFragment extends Fragment {
     private static final String TAG = SingleAccountModeFragment.class.getSimpleName();
@@ -112,8 +108,7 @@ public class SingleAccountModeFragment extends Fragment {
     }
 
     /**
-     * Extracts a scope array from a text field,
-     * i.e. from "User.Read User.ReadWrite" to ["user.read", "user.readwrite"]
+     * Extracts a scope array from a text field
      */
     private String[] getScopes() {
         String txt = "User.Read openid";

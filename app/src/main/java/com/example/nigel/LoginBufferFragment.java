@@ -97,9 +97,6 @@ public class LoginBufferFragment extends Fragment {
          * Therefore, we want to update the account state by invoking loadAccount() here.
          */
         loadAccount();
-
-
-
     }
 
     /**
@@ -189,7 +186,7 @@ public class LoginBufferFragment extends Fragment {
     }
 
     /**
-     * Launch login page after checking for the presence of an account
+     * Launch login page from the hosting activity
      */
     private void launchLoginFragment() {
         if (mListener != null) {
@@ -197,6 +194,9 @@ public class LoginBufferFragment extends Fragment {
         }
     }
 
+    /**
+     * check if the hosting context (activity) implements a specific interface
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -208,6 +208,9 @@ public class LoginBufferFragment extends Fragment {
         }
     }
 
+    /**
+     * signals that the fragment is no longer associated with its hosting context
+     */
     @Override
     public void onDetach() {
         super.onDetach();
@@ -220,6 +223,9 @@ public class LoginBufferFragment extends Fragment {
                 .show();
     }
 
+    /**
+     * to launch the login fragment from the hosting activity
+     */
     public interface OnFragmentInteractionListener {
         void onLaunchLoginFragment();
     }
