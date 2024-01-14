@@ -4,6 +4,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,11 +49,13 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView personNameTextView;
+        public TextView personBirthdayTextView;
         public CombinedChart personChart;
 
         public ViewHolder(View itemView) {
             super(itemView);
-            personNameTextView = itemView.findViewById(R.id.nameTextView);
+            personNameTextView = itemView.findViewById(R.id.idTextView);
+            personBirthdayTextView = itemView.findViewById(R.id.bebeTextView1);
             personChart = itemView.findViewById(R.id.personChart);
         }
     }
@@ -83,6 +86,10 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 baby.getTimeSeriesData().size() + " " +
                 baby.getTimeSeriesData().get(0).getTimestamp());
         holder.personNameTextView.setText(String.valueOf(baby.getId()));
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            holder.personBirthdayTextView.setText(baby.dateOfBirthToString());
+        }
+
         Log.d("BabyListAdapter", "Setting up person text " + holder.personNameTextView.getId());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
