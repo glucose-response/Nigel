@@ -43,3 +43,4 @@ google-services.json
 /captures
 .externalNativeBuild
 .cxx
+/gradle/debug.keystore.textClipping

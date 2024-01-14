@@ -1,29 +1,27 @@
 package com.example.nigel;
 
-import android.app.Activity;
-import android.content.Intent;
-import android.database.Cursor;
+import android.Manifest;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
-
-import com.example.nigel.Api;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -35,19 +33,19 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class UploadDownloadFragment extends Fragment implements ActivityResultCallback<Uri> {
+public class UploadDownloadFragment extends Fragment {
 
     private static final String HEROKU_URL = "https://nigel-c0b396b99759.herokuapp.com/";
     private static final int PICK_EXCEL_REQUEST = 123;
 
-    private ActivityResultLauncher<String> pickExcelLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            uri -> {
-                if (uri != null) {
-                    handleSelectedExcelFile(uri);
-                }
-            }
-    );
+    // Permissions for accessing the storage
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
+    private ActivityResultLauncher<String> pickExcelLauncher;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -61,9 +59,14 @@ public class UploadDownloadFragment extends Fragment implements ActivityResultCa
         uploadButton.setOnClickListener(v -> uploadData());
         allDataButton.setOnClickListener(v -> download("allDataButton"));
 
+        pickExcelLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), result -> {
+            if (result != null) {
+                handleSelectedExcelFile(result);
+            }
+        });
+
         return view;
     }
-
 
     private void download(String buttonId){
         // Retrofit setup
@@ -71,7 +74,7 @@ public class UploadDownloadFragment extends Fragment implements ActivityResultCa
                 .baseUrl(HEROKU_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        Api api= retrofit.create(Api.class);
+        BabyApi api= retrofit.create(BabyApi.class);
         // API call
         Call<ResponseBody> call;
         String successText;
@@ -90,7 +93,6 @@ public class UploadDownloadFragment extends Fragment implements ActivityResultCa
             errorText = "Error downloading all the data";
             fileName = "all_data.xlsx";
         } else {
-            // Handle unknown button
             return;
         }
         call.enqueue(new Callback<ResponseBody>() {
@@ -139,62 +141,135 @@ public class UploadDownloadFragment extends Fragment implements ActivityResultCa
             }
         });
     }
+
+
     private void uploadData() {
+        // Log the start of the uploadData method
+        Log.d("UploadData", "uploadData: Launching pickExcelLauncher.");
         pickExcelLauncher.launch("*/*");
     }
 
-    @Override
-    public void onActivityResult(Uri result) {
-        if (result != null) {
-            handleSelectedExcelFile(result);
-        }
-    }
-
     private void handleSelectedExcelFile(Uri selectedFile) {
-        String excelFilePath = getFilePath(selectedFile);
+        // Log the start of the handleSelectedExcelFile method
+        Log.d("UploadData", "handleSelectedExcelFile: Handling selected file.");
+        Log.d("UploadData", "uri: "+selectedFile);
 
-        if (excelFilePath != null && !excelFilePath.isEmpty()) {
-            File excelFile = new File(excelFilePath);
-            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), excelFile);
-            MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", excelFile.getName(), reqBody);
+        String excelFilePath = getFilePathFromDocumentFile(selectedFile);
 
-            Retrofit retrofit = new Retrofit.Builder()
-                    .baseUrl(HEROKU_URL)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-            Api api = retrofit.create(Api.class);
+        File testFile = new File(excelFilePath);
 
-            Call<ResponseBody> upload = api.uploadExcelFile(partFile);
-            upload.enqueue(new Callback<ResponseBody>() {
-                @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
-                    if (response.isSuccessful()) {
-                        Toast.makeText(requireContext(), "Excel File Uploaded", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(requireContext(), "Error uploading Excel file", Toast.LENGTH_SHORT).show();
-                    }
-                }
+        if (testFile.exists() && isExcelFile(testFile)) {
+            // Log that the file exists and is a valid Excel file
+            Log.d("UploadData", "File exists and is a valid Excel file");
 
-                @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
-                    Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show();
-                }
-            });
+            // Log the file details before uploading
+            Log.d("UploadData", "handleSelectedExcelFile: File to upload - Name: " + testFile.getName() + ", Path: " + testFile.getAbsolutePath());
+
+            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), testFile);
+            MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", testFile.getName(), reqBody);
+
+            uploadFile(partFile,excelFilePath);
+        } else {
+            // Log an error if the file does not exist or is not a valid Excel file
+            Log.e("UploadData", "File does not exist at the specified path or is not a valid Excel file");
+            Toast.makeText(requireContext(), "Error: Invalid file", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private String getFilePath(Uri uri) {
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = requireActivity().getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String filePath = cursor.getString(column_index);
-            cursor.close();
-            return filePath;
+    /*Add this method to check if the file has a valid Excel extension*/
+    private boolean isExcelFile(File file) {
+        String filename = file.getName();
+        return filename.endsWith(".xlsx") || filename.endsWith(".xls");
+    }
+    private void uploadFile(MultipartBody.Part partFile, String excelFilePath) {
+        // Log the start of the uploadFile method
+        Log.d("UploadData", "uploadFile: Uploading file.");
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(HEROKU_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        BabyApi api = retrofit.create(BabyApi.class);
+
+        Call<ResponseBody> upload = api.uploadExcelFile(partFile);
+        upload.enqueue(new Callback<ResponseBody>() {
+            @Override
+            public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (response.isSuccessful()) {
+                    // Log the successful upload
+                    Log.d("UploadData", "uploadFile: Excel File Uploaded");
+                    Toast.makeText(requireContext(), "Excel File Uploaded", Toast.LENGTH_SHORT).show();
+                    deleteTempFile(excelFilePath);
+                } else {
+                    // Log an error if the upload fails
+                    Log.e("UploadData", "uploadFile: Error uploading Excel file. Code: " + response.code());
+                    // Additional logging for debugging
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("UploadData", "uploadFile: Error Body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Toast.makeText(requireContext(), "Error uploading Excel file", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ResponseBody> call, Throwable t) {
+                // Log a network error
+                Log.e("UploadData", "uploadFile: Network error");
+                Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
+    private String getFilePathFromDocumentFile(Uri uri) {
+        try {
+            DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
+            if (documentFile != null && documentFile.exists()) {
+                // Create a temporary file in your app's private storage
+                File tempFile = new File(requireActivity().getCacheDir(), "tempFile.xlsx");
+
+                try (InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
+                     OutputStream outputStream = new FileOutputStream(tempFile)) {
+
+                    // Copy the content from InputStream to FileOutputStream
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    // Log the file path of the temporary file
+                    Log.d("UploadData", "Temporary file path: " + tempFile.getAbsolutePath());
+
+                    return tempFile.getAbsolutePath();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }
 
+    private void deleteTempFile(String filePath) {
+        if (filePath != null && !filePath.isEmpty()) {
+            File tempFile = new File(filePath);
+            if (tempFile.exists()) {
+                if (tempFile.delete()) {
+                    Log.d("UploadData", "Temporary file deleted successfully");
+                } else {
+                    Log.e("UploadData", "Failed to delete temporary file");
+                }
+            } else {
+                Log.e("UploadData", "Temporary file does not exist");
+            }
+        } else {
+            Log.e("UploadData", "Invalid file path");
+        }
+    }
 }
 
