@@ -1,12 +1,13 @@
 package com.example.nigel;
 
+import com.example.nigel.dataclasses.DataSample;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import com.example.nigel.dataclasses.DataSample;
 import com.github.mikephil.charting.data.Entry;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
@@ -15,23 +16,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-public class Baby {
-    private int NigelID;
+public class Baby implements Serializable{
+    private int id;
+    private List<DataSample> timeSeriesData;
+    private long birthDate;
     private LocalDate dateOfBirth;
     private String birthday;
-    private double birthWeight;
+    private double weight;
     private double gestationalAge;
     private String notes;
-    private List<DataSample> timeSeriesData;
 
-    /**
-     * Constructor for a Baby object with all fields
-     */
-    public Baby(int NigelID, LocalDate dateOfBirth, double birthWeight, double gestationalAge, String notes, List<DataSample> timeSeriesData) {
-        this.NigelID = NigelID;
-        this.dateOfBirth = dateOfBirth;
-        this.birthWeight = birthWeight;
+    public Baby(int id,
+                double gestationalAge,
+                long birthDate,
+                double weight,
+                String notes,
+                List<DataSample> timeSeriesData) {
+        this.id = id;
         this.gestationalAge = gestationalAge;
+        this.birthDate = birthDate;
+        this.weight = weight;
         this.notes = notes;
         try{
             this.timeSeriesData = timeSeriesData;
@@ -43,15 +47,13 @@ public class Baby {
 
     /**
      * Constructor for a Baby object for database
-     * dateofBirth is a string not a localDate object
-     * timeSeries data is not included
      */
-    public Baby(int NigelID, String birthday, double birthWeight, double gestationalAge, String notes) {
+    public Baby(int id, String birthday, double weight, double gestationalAge, String notes) {
         try{
-            this.NigelID = NigelID;
+            this.id = id;
             this.birthday = birthday;
             this.gestationalAge = gestationalAge;
-            this.birthWeight = birthWeight;
+            this.weight = weight;
             this.notes = notes;
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
@@ -61,12 +63,12 @@ public class Baby {
     /**
      * Constructor for a Baby object without TimeSeries List
      */
-    public Baby(int NigelID, LocalDate dateOfBirth, double birthWeight, double gestationalAge, String notes) {
+    public Baby(int id, LocalDate dateOfBirth, double weight, double gestationalAge, String notes) {
         try{
-            this.NigelID = NigelID;
+            this.id = id;
             this.dateOfBirth = dateOfBirth;
             this.gestationalAge = gestationalAge;
-            this.birthWeight = birthWeight;
+            this.weight = weight;
             this.notes = notes;
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
@@ -77,35 +79,49 @@ public class Baby {
      * Getters
      */
     public int getId() {
-        return NigelID;
+        return id;
     }
-    public LocalDate getDateOfBirth() {return dateOfBirth;}
-    public double getBirthWeight() {
-        return birthWeight;
+    public double getGestationalAge() {
+        return gestationalAge;
     }
+    public long getBirthDate() {
+        return birthDate;
+    }
+    public double getWeight() {
+        return weight;
+    }
+    public String getNotes() {
+        return notes;
+    }
+
     public List<DataSample> getTimeSeriesData() {
         return timeSeriesData;
     }
-    public double getGestationalAge() {return gestationalAge;}
-    public String getNotes() {return notes;}
 
     /**
      * Setters
      */
-    public void setId(int NigelID) {
-        this.NigelID = NigelID;
+    public void setId(int id) {
+        this.id = id;
     }
-    public void setTimeSeriesData(List<DataSample> timeSeriesData) {
-        this.timeSeriesData = timeSeriesData;}
-    public void setdateOfBirth(LocalDate dateOfBirth) {
-        this.dateOfBirth = dateOfBirth;
+
+    public void setBirthDate(long birthDate){
+        this.birthDate = birthDate;
     }
-    public void setbirthWeight(double birthWeight) {
-        this.birthWeight = birthWeight;
+
+    public void setWeight(double weight) {
+        this.weight = weight;
     }
     public void setGestationalAge(double gestationalAge) {this.gestationalAge = gestationalAge;}
+
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+    public void setTimeSeriesData(List<DataSample> timeSeriesData) {
+        this.timeSeriesData = timeSeriesData;
+    }
+    public void insertEvent(DataSample dataSample){
+        timeSeriesData.add(dataSample);
     }
 
     /**
@@ -126,7 +142,6 @@ public class Baby {
         Period period = Period.between(dateOfBirth, LocalDate.of(2024,2,1));
         return period.getYears() + " years, " + period.getMonths() + " months, " + period.getDays() + " days";
     }
-
     /**
      * Function returns a readable string of the date of birth
      */

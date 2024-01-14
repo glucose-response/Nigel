@@ -27,13 +27,17 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
@@ -91,8 +95,8 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         Log.d("BabyListAdapter", "onBindViewHolder: " +
                 baby.getId() + " " +
                 baby.getGestationalAge() + " " +
-                baby.getDateOfBirth() + " " +
-                baby.getBirthWeight() + " " +
+                baby.getBirthDate() + " " +
+                baby.getWeight() + " " +
                 baby.getNotes() + " " +
                 baby.getTimeSeriesData().size() + " " +
                 baby.getTimeSeriesData().get(0).getTimestamp());
@@ -107,9 +111,47 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
                 intent.putExtra("Nigel ID ", baby.getId());
-                intent.putExtra("Date of Birth", baby.getDateOfBirth().toString());
-                intent.putExtra("Weight", baby.getBirthWeight());
+                intent.putExtra("Date of Birth", baby.getBirthDate());
+                intent.putExtra("Weight", baby.getWeight());
+                //v.getContext().startActivity(intent);
+
+                //intent.putExtra("Baby object", baby);
+                intent.putExtra("BEBE_KEY", baby.getId());
+                intent.putExtra("Date of Birth", baby.getBirthDate());
+                intent.putExtra("Weight", baby.getWeight());
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
+                intent.putExtra("Notes", baby.getNotes());
+
+                // Extract blood glucose entries
+                ArrayList<Entry> bloodGlucoseEntries = new ArrayList<>();
+                ArrayList<Entry> sweatGlucoseEntries = new ArrayList<>();
+                ArrayList<Float> feedingTimes = new ArrayList<>();
+
+
+                for (DataSample event : baby.getTimeSeriesData()) {
+                    if (event instanceof BloodSample) {
+                        BloodSample bloodSample = (BloodSample) event;
+                        bloodGlucoseEntries.add(new Entry(bloodSample.getTimestamp(), bloodSample.getGlucoseValue()));
+                    }
+                    else if (event instanceof SweatSample){
+                        SweatSample sweatsample = (SweatSample) event;
+                        sweatGlucoseEntries.add(new Entry(sweatsample.getTimestamp(), sweatsample.getGlucoseValue()));
+                    }
+                    else if (event instanceof FeedingDataSample) {
+                        FeedingDataSample feedingSample = (FeedingDataSample) event;
+                        feedingTimes.add((float) feedingSample.getTimestamp());
+                    }
+                }
+
+
+                // Add the extracted entries to the intent
+                intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
+                intent.putExtra("SweatGlucoseEntries", sweatGlucoseEntries);
+                intent.putExtra("feedingTimes", feedingTimes);
+
+
+                //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
+
                 v.getContext().startActivity(intent);
             }
         });
@@ -136,7 +178,15 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Customize this method based on how you want to display the chart
         Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
         XAxis xAxis = combinedChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
 
+            @Override
+            public String getFormattedValue(float value) {
+                // Assuming the value is in milliseconds since epoch
+                return dateFormat.format(new Date((long) value));
+            }
+        });
         // Categorize the events
         ArrayList<Entry> bloodSampleEntries = new ArrayList<>();
         ArrayList<Entry> sweatSampleEntries = new ArrayList<>();

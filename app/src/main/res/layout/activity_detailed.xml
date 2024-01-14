@@ -137,7 +137,7 @@
         android:layout_height="100dp"
         android:background="@drawable/rounded_corners_background"
         android:backgroundTint="#ffffff"
-        android:hint="Enter notes here..."
+        android:text="Enter notes here..."
         android:textColorHint="#313678"
         android:textColor="#313678"
         android:padding="16dp"
@@ -149,9 +149,9 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <!-- Graph for Skin Glucose -->
+    <!-- Graph for Blood and Skin Glucose -->
     <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/skinGlucoseChart"
+        android:id="@+id/glucoseChart"
         android:layout_width="0dp"
         android:layout_height="300dp"
         android:layout_marginTop="20dp"
