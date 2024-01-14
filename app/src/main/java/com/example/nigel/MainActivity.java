@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -39,7 +40,6 @@ import okhttp3.Response;
 public class MainActivity extends AppCompatActivity {
     private AccountSettings settings;
     private ConstraintLayout mContentMain;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,11 +70,25 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void displayFragment(final Fragment fragment){
+    private void displayFragment(final Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
                 .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                .replace(mContentMain.getId(),fragment)
+                .replace(mContentMain.getId(), fragment)
+                .addToBackStack(null)  // Add this line to add the transaction to the back stack
                 .commit();
+    }
+    @Override
+    public void onBackPressed() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        // Check if there are any fragments in the back stack
+        if (fragmentManager.getBackStackEntryCount() > 0) {
+            // Pop the top fragment from the back stack
+            fragmentManager.popBackStack();
+        } else {
+            // If no fragments in the back stack, let the system handle the back button
+            super.onBackPressed();
+        }
     }
 }

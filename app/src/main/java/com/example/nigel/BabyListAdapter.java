@@ -129,8 +129,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
                 v.getContext().startActivity(intent);
             }
-
-
         });
 
         // Customize this method based on your data and chart setup
