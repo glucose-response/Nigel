@@ -30,6 +30,7 @@ public class Baby implements Serializable {
         this.gestationalAge = gestationalAge;
         this.birthDate = birthDate;
         this.weight = weight;
+        this.notes = notes;
 
         this.timeSeriesData = new ArrayList<DataSample>();
 
@@ -69,6 +70,10 @@ public class Baby implements Serializable {
 
     public void setGroup(String group) {
         this.group = group;
+    }
+
+    public void setNotes(String notes){
+        this.notes = notes;
     }
 
     public void setTimeSeriesData(List<DataSample> timeSeriesData) {

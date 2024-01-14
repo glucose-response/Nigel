@@ -38,8 +38,10 @@ public class DetailedActivity extends AppCompatActivity {
         TextView dateOfBirthTextView = findViewById(R.id.dateOfBirthTextView);
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
         TextView birthWeightTextView = findViewById(R.id.birthWeightTextView);
+        TextView futureNotesEditText = findViewById(R.id.futureNotesEditText);
 
-        // get baby object from BabyListAdapter
+        /*
+        // Get baby object from BabyListAdapter
         Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
         // int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
         int bebeInt = baby.getId();
@@ -47,17 +49,27 @@ public class DetailedActivity extends AppCompatActivity {
         double weight = baby.getWeight();
         long birthdate = getIntent().getLongExtra("Date of Birth", -1);
 
-        // populate text views
+         */
+        //Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
+        int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
+        long birthdate = getIntent().getLongExtra("Date of Birth", -1);
+        int gestationalAge = (int) getIntent().getIntExtra("Gestational Age", -1);
+        double weight = (double) getIntent().getSerializableExtra("Weight");
+        String notes = (String) getIntent().getSerializableExtra("notes");
+
+
+        // Populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
+        gestationalAgeTextView.setText("Gestational Age: " + String.valueOf(gestationalAge) + " weeks");
+        birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
+        futureNotesEditText.setText(notes);
+
         if (birthdate != -1) {
             String dateString = formatDate(birthdate);
             dateOfBirthTextView.setText("Date of Birth: " + dateString);
         } else {
             dateOfBirthTextView.setText("Date of Birth: N/A");
         }
-        gestationalAgeTextView.setText("Gestational Age: " + String.valueOf(gestationalAge) + " weeks");
-        birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
-
 
         // Onto the graphing
         glucoseChart = findViewById(R.id.glucoseChart);

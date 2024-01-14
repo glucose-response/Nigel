@@ -137,7 +137,7 @@
         android:layout_height="100dp"
         android:background="@drawable/rounded_corners_background"
         android:backgroundTint="#ffffff"
-        android:hint="Enter notes here..."
+        android:text="Enter notes here..."
         android:textColorHint="#313678"
         android:textColor="#313678"
         android:padding="16dp"
