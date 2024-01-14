@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class Baby implements Serializable{
-    private int id;
+    private int NigelID;
     private double gestationalAge;
 
     private long birthDate; // in milliseconds for graphing
@@ -38,7 +38,7 @@ public class Baby implements Serializable{
                 double weight,
                 String notes,
                 List<DataSample> timeSeriesData) {
-        this.id = id;
+        this.NigelID = id;
         this.gestationalAge = gestationalAge;
         this.birthDate = birthDate;
         this.weight = weight;
@@ -58,7 +58,7 @@ public class Baby implements Serializable{
      */
     public Baby(int id, double gestationalAge, String birthday, double weight, String notes) {
         try{
-            this.id = id;
+            this.NigelID = id;
             this.birthday = birthday;
             this.gestationalAge = gestationalAge;
             this.weight = weight;
@@ -73,7 +73,7 @@ public class Baby implements Serializable{
      */
     public Baby(int id, double gestationalAge, LocalDate dateOfBirth, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
-            this.id = id;
+            this.NigelID = id;
             this.gestationalAge = gestationalAge;
             this.dateOfBirth = dateOfBirth;
             this.weight = weight;
@@ -88,7 +88,7 @@ public class Baby implements Serializable{
      * Getters
      */
     public int getId() {
-        return id;
+        return NigelID;
     }
     public double getGestationalAge() {
         return gestationalAge;
@@ -113,7 +113,7 @@ public class Baby implements Serializable{
      * Setters
      */
     public void setId(int id) {
-        this.id = id;
+        this.NigelID = id;
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {this.dateOfBirth = dateOfBirth;}
