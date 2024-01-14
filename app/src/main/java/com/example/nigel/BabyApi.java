@@ -28,5 +28,11 @@ public interface BabyApi {
      */
     @GET("/profiles")
     Call<ResponseBody> getBabies();
+    /**
+     * Makes a GET request to receive all data
+     * @return a list of JSON Baby Files
+     */
+    @GET("/bsp")
+    Call<ResponseBody> getData();
 
 }

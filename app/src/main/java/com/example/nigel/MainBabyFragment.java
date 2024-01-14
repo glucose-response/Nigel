@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -26,11 +27,9 @@ import com.github.mikephil.charting.data.Entry;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONTokener;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,10 +51,12 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private SwipeRefreshLayout swipeRefreshLayout;
     private Executor executor = Executors.newSingleThreadExecutor();
     private OkHttpClient client = new OkHttpClient();
-    private Map<Integer, Baby> babyList = new HashMap<>();
+    private List<Baby> babyList = new ArrayList<>();
     private RecyclerView recyclerView;
     private BabyListAdapter adapter;
     private EditText searchEditText;
+    private Map<Integer, Baby> dataset;
+    private ProgressBar progressBar;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public View onCreateView(LayoutInflater inflater,
@@ -64,7 +65,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.content_main, container, false);
-        fetchDataInBackground();
+        progressBar = view.findViewById(R.id.progressBar);
+
+        fetchDataInBackground(true);
         initializeUI(view);
         setupSearch(view);
 
@@ -74,11 +77,18 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     @Override
     public void onRefresh() {
         // Fetch data
-        fetchDataInBackground();
+        fetchDataInBackground(false);
     }
     private void initializeUI(@NonNull final View view) {
+
         recyclerView = view.findViewById(R.id.recyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        adapter = new BabyListAdapter(new HashMap<>());
+        recyclerView.setAdapter(adapter);
+
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        recyclerView.setLayoutManager(layoutManager);
+
 
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
@@ -91,190 +101,38 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
             }
         });
 
+
     }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private void fetchDataInBackground() {
-        // Perform data fetching from CSV file or server
-        executor.execute(() -> {
-            Map<Integer, Baby> result = fetchData(true);
-            // List<Baby> result = fetchDataFromDatabaseViaAPI();
 
-            // Update UI with the fetched data
-            requireActivity().runOnUiThread(() -> {
-                if (result != null) {
-                    babyList.clear();
-                    babyList.putAll(result);
-                    Log.d("MainBabyFragment", "Baby list size: " + babyList.size());
-
-                    adapter = new BabyListAdapter(babyList);
-                    recyclerView.setAdapter(adapter);
-
-                    swipeRefreshLayout.setRefreshing(false);
-                } else {
-                    // Handle the case where 'result' is null
-                    Log.e("MainBabyFragment", "Error: Result is null");
+    private void showProgressBar(final boolean show) {
+        if(getActivity() != null && progressBar != null) { // Check progressBar is not null
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    progressBar.setVisibility(show ? View.VISIBLE : View.GONE);
                 }
             });
-        });
-    }
-
-    private Map<Integer, Baby> fetchData(boolean useLocalCSV) {
-        // Implement the logic to fetch data from CSV file or server
-        // Return the fetched data as a List<Bebe>
-        // ...
-
-        if (useLocalCSV) {
-
-            List<String[]> bloodSampleCSV = CSVHandler.readCSVFromAssets(getActivity(), "bloodsamplelist.csv");
-            List<String[]> sweatSampleCSV = CSVHandler.readCSVFromAssets(getActivity(), "sweatsamplelist.csv");
-            List<String[]> feedingCSV = CSVHandler.readCSVFromAssets(getActivity(), "feedinglist.csv");
-            List<String[]> babiesCSV = CSVHandler.readCSVFromAssets(getActivity(), "babieslist.csv");
-
-            Map<Integer, Baby> fetchedBabyList = new HashMap<>();
-            Log.d("MainActivity", "CSV's Read");
-
-            for (String[] row : babiesCSV) {
-                long birthDate = DebugTimestampConverter.convertToUnixTimestamp(row[2]);
-                int babyID = Integer.parseInt(row[0]);
-                Baby baby = new Baby(
-                        babyID,
-                        String.valueOf(row[1]),
-                        birthDate,
-                        Double.parseDouble(row[3]),
-                        row[4]);
-                fetchedBabyList.put(babyID, baby);
-            }
-
-            for (String[] row : bloodSampleCSV) {
-                try {
-                    long timestamp = DebugTimestampConverter.convertToUnixTimestamp(row[1]);
-                    int babyID = Integer.parseInt(row[0]);
-                    float glucoseValue = Float.parseFloat(row[5]);
-                    float lactateValue = Float.parseFloat(row[6]);
-                    BloodSample bloodSample = new BloodSample(
-                            timestamp,
-                            babyID,
-                            glucoseValue,
-                            lactateValue
-                    );
-                    try{
-                        fetchedBabyList.get(babyID).insertEvent(bloodSample);
-                    }catch (NullPointerException e){
-                        Log.d("BloodSampleList", "Baby ID not found");
-                    }
-
-
-                } catch (NumberFormatException e) {
-                    Log.d("BloodSampleList", "Error converting to float");
-                }
-            }
-
-            Log.d("MainActivity", "Adding Sweat Samples");
-            // Add sweat sample rows to their corresponding babies
-            for (String[] row : sweatSampleCSV) {
-                Log.d("MainActivity", row[0] + " " + row[1] + " " + row[2] + " " + row[3] + " " + row[4] + " " + row[5] + " " + row[6] + " " + row[7] + " " + row[8] + " " + row[9]);
-                int babyID = Integer.parseInt(row[0]);
-                long timestamp = DebugTimestampConverter.convertToUnixTimestamp(row[1]);
-                float glucoseValue = Float.parseFloat(row[4]);
-                float sodiumValue = Float.parseFloat(row[5]);
-                float lactateValue = Float.parseFloat(row[6]);
-                float potassiumValue = Float.parseFloat(row[7]);
-                float chlorideValue = Float.parseFloat(row[8]);
-                float calciumValue = Float.parseFloat(row[9]);
-
-                SweatSample sweatSample = new SweatSample(
-                        timestamp,
-                        babyID,
-                        glucoseValue,
-                        sodiumValue,
-                        lactateValue,
-                        potassiumValue,
-                        chlorideValue,
-                        calciumValue
-                );
-
-                try{
-                    fetchedBabyList.get(babyID).insertEvent(sweatSample);
-                } catch (NullPointerException e){
-                    Log.d("SweatSampleList", "Baby ID not found");
-                }
-            }
-
-            for (String[] row : feedingCSV) {
-                int babyID = Integer.parseInt(row[0]);
-                long timestamp = DebugTimestampConverter.convertToUnixTimestamp(row[1]);
-                String type = row[2];
-                FeedingDataSample feeding = new FeedingDataSample(
-                        timestamp,
-                        babyID,
-                        type);
-                fetchedBabyList.get(babyID).insertEvent(feeding);
-            }
-
-            Log.d("MainActivity", "Babies, BloodSamples, and SweatSamples Added");
-            Log.d("BabyList", fetchedBabyList.toString());
-
-            return fetchedBabyList;
-        } else {
-            String url = "https://jaminhu19.pythonanywhere.com/api/data";
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
-            try {
-                // Synchronous request (executes on the background thread)
-                Response response = client.newCall(request).execute();
-                Log.d("MainActivity", "Response: " + response.toString());
-
-                if (response.isSuccessful()) {
-                    // Parse the response and return the data as a List<Bebe>
-                    return parseResponse(response.body().string());
-                } else {
-                    // Handle unsuccessful response
-                    return null;
-                }
-            } catch (IOException e) {
-                // Handle exceptions
-                e.printStackTrace();
-                return null;
-            }
         }
     }
-    private List<Baby> parseResponse(String responseBody) {
-        // Implement logic to parse the response and convert it to a List<Bebe>
-        // ...
-        Log.d("MainActivity", "Response body: " + responseBody);
-        Map<Integer, Baby> babyList = new HashMap<>();
-        try {
-            JSONArray jsonArray = new JSONArray(responseBody);
 
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
 
-                int id = jsonObject.getInt("Nigel ID");
-                float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
-                String group = jsonObject.getString("Group");
-                int timeOfBirth = jsonObject.getInt("Time of Birth");
-                String notes = jsonObject.getString("Notes");
-                // Now you can use the id and name as needed
-                babyList.put(id,
-                        new Baby(
-                                id,
-                                group,
-                                timeOfBirth,
-                                weight,
-                                notes)
-                );
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+    /**
+     * Fetches data in the background with progressbar
+     */
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    private void fetchDataInBackground(boolean showCentralProgressBar) {
+        if (showCentralProgressBar) {
+            showProgressBar(true); // Show loading
         }
-        return babyList;
+        fetchDataUsingJSONParser();
     }
 
+    /**
+     * Searches the current database for the specified query
+     */
     private void setupSearch(View view) {
-        searchEditText = view.findViewById(R.id.searchEditText); // Replace with your actual EditText ID
-        Button searchButton = view.findViewById(R.id.searchButton); // Replace with your actual Button ID
+        searchEditText = view.findViewById(R.id.searchEditText);
+        Button searchButton = view.findViewById(R.id.searchButton);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -288,86 +146,73 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
-    // Replace this method with your actual data fetching logic
-    private List<Entry> generateRandomTimeSeriesData() {
-        List<Entry> data = new ArrayList<>();
-        Random random = new Random();
-
-        for (int i = 0; i < 10; i++) {
-            data.add(new Entry(i, random.nextFloat()));
-        }
-
-        return data;
-    }
+    /**
+     * Fetches data from the server using the JSONParser class
+     * Fills the dataset hashmap
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Baby> fetchDataFromDatabaseViaAPI(){
+    private void fetchDataUsingJSONParser() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String url = "https://nigel-c0b396b99759.herokuapp.com/";
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(url)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
 
-        String url = "https://nigel-c0b396b99759.herokuapp.com/";
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(url) // Replace with your base URL
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+                BabyApi babyApi = retrofit.create(BabyApi.class);
 
-        BabyApi babyApi = retrofit.create(BabyApi.class);
+                Call<ResponseBody> call = babyApi.getData();
+                try {
+                    retrofit2.Response<ResponseBody> response = call.execute();
+                    if (response.isSuccessful() && response.body() != null) {
+                        final String jsonResponse = response.body().string();
+                        final JSONParser parser = new JSONParser(jsonResponse);
+                        dataset = parser.getData();
+                        Log.d("My Log", dataset.toString());
 
-        // Fetch profiles (assuming your endpoint returns JSON data)
-        Call<ResponseBody> call = babyApi.getBabies(); // Assuming the response is a JSON string
-        List<Baby> babyList = new ArrayList<>();
-
-        try {
-            retrofit2.Response<ResponseBody> response = call.execute();
-            if (response.isSuccessful() && response.body() != null) {
-                String jsonResponse = response.body().string();
-                //jsonResponse = jsonResponse.substring(13, jsonResponse.length() - 2);
-                babyList = parseJSONResponse(jsonResponse);
-            } else {
-                System.out.println("Request unsuccessful");
+                        // Updating the adapter with the fetched data should be done on the main thread
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.setOriginalList(dataset);
+                                // Notify adapter about data set change on main/UI thread
+                                adapter.notifyDataSetChanged();
+                                swipeRefreshLayout.setRefreshing(false);// Stop the refresh animation
+                                showProgressBar(false); // Hide loading
+                            }
+                        });
+                    } else {
+                        Log.e("MainBabyFragment", "Request unsuccessful: " + response.errorBody().string());
+                    }
+                } catch (IOException | JSONException e) {
+                    e.printStackTrace();
+                } finally {
+                    showProgressBar(false); // Hide loading
+                }
             }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return babyList;
-
+        }).start();
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    private List<Baby> parseJSONResponse(String responseBody){
+
+    /**
+     * Function turns dataset hashmap into a list
+     * @return List of Babies
+     */
+    private List<Baby> getBabiesFromDataset(Map<Integer, Baby> dataset) {
         List<Baby> babyList = new ArrayList<>();
-
-        try {
-            JSONObject object = new JSONObject(responseBody);
-            JSONArray jsonArray  = object.getJSONArray("profiles");
-            //JSONArray jsonArray = new JSONArray(responseBody);
-
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-
-                int id = jsonObject.getInt("NigelID");
-                String[] dateOfBirth = jsonObject.getString("birthday").split("-");
-                LocalDate dateOfBirthObject = LocalDate.of(Integer.parseInt(dateOfBirth[0]), Integer.parseInt(dateOfBirth[1]), Integer.parseInt(dateOfBirth[2]));
-                double weight = (double) jsonObject.getDouble("birthWeight");
-                double gestationalAge = jsonObject.getDouble("gestationalAge");
-                String notes = jsonObject.getString("notes");
-
-                // Now you can use the id and name as needed
-                babyList.add(
-                        new Baby(
-                                id,
-                                dateOfBirthObject,
-                                weight,
-                                gestationalAge,
-                                notes,
-                                generateRandomTimeSeriesData())
-                );
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        for (Map.Entry<Integer, Baby> entry : dataset.entrySet()) {
+            babyList.add(entry.getValue());
         }
         return babyList;
     }
 
+    /**
+     * Function opens pop-up to add a baby object to the database
+     */
     private void openAddBabyDialog() {
-        AddBabyDialog addBabyDialog = new AddBabyDialog(getActivity(), new AddBabyDialog.OnAddBabyListener() {
+        AddBabyDialog addBabyDialog = new AddBabyDialog(dataset, getActivity(), new AddBabyDialog.OnAddBabyListener() {
             @Override
             public void onAddBaby() {}
         });

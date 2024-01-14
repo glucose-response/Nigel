@@ -14,6 +14,7 @@ public abstract class DataSample {
     public long getTimestamp() {
         return timestamp;
     }
+
     public int getNigelID() {
         return NigelID;
     }

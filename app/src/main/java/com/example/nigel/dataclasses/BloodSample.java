@@ -1,6 +1,8 @@
 package com.example.nigel.dataclasses;
 
-public class BloodSample extends DataSample {
+import java.io.Serializable;
+
+public class BloodSample extends DataSample implements Serializable {
     // Make a class that has a constructor that takes in a timestamp and a glucose value
     private Float glucoseValue;
     private Float lactateValue;

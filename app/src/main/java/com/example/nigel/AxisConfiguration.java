@@ -7,6 +7,7 @@ public class AxisConfiguration {
     private float minY;
     private float maxY;
 
+    /**Constructor*/
     public AxisConfiguration(float minX, float maxX, float minY, float maxY) {
         // Negative values are set to 0.
         this.minX = (minX < 0) ? 0 : minX;
@@ -15,6 +16,7 @@ public class AxisConfiguration {
         this.maxY = (maxY < 0) ? 0 : maxY;
     }
 
+    /**Getters*/
     public float getMinX() {
         return minX;
     }

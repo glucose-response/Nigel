@@ -15,13 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -48,43 +45,54 @@ public class AddBabyDialog extends Dialog{
     private String GET = "GET";
     private BabyApi babyApi;
     private OnAddBabyListener onAddBabyListener;
+    private Map<Integer,Baby> babyMap;
 
-    public AddBabyDialog(@NonNull Activity context, OnAddBabyListener onAddBabyListener){
+    /**
+     * This is the constructor for the dialog
+     * @param babyMap the map of babies
+     * @param context the context of the dialog
+     * @param onAddBabyListener the listener for the dialog
+     */
+    public AddBabyDialog(Map<Integer, Baby> babyMap, @NonNull Activity context, OnAddBabyListener onAddBabyListener){
         super(context);
         this.context = context;
+        this.babyMap = babyMap;
         this.onAddBabyListener = onAddBabyListener;
     }
 
-    // This method is called when the dialog is created
+    /**This method is called when the dialog is created*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_add_baby);
 
+        // Define the variable for each item in the interface
         editTextBabyID = findViewById(R.id.editTextBabyID);
         editTextDOBDay = findViewById(R.id.editTextDOBDay);
         editTextDOBMonth = findViewById(R.id.editTextDOBMonth);
         editTextDOBYear = findViewById(R.id.editTextDOBYear);
         editTextGestAge = findViewById(R.id.editTextGestAge);
         editTextWeight = findViewById(R.id.editTextWeight);
-        //spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
         exitButton = findViewById(R.id.exitButton);
         editAdditionalNotes= findViewById(R.id.editAdditionalNotes);
 
 
+        // Create a Retrofit object for communiation with the database
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        // Define the API for the Retrofit object
         babyApi = retrofit.create(BabyApi.class);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
+                // Default variables for each item in the interface
                 String NigID = "";
                 String DobDay = "";
                 String DobMonth = "";
@@ -93,39 +101,48 @@ public class AddBabyDialog extends Dialog{
                 String Weight  = "";
                 String notes = "";
 
-                boolean valid = false;
-                while(!valid){
-                    // Display details in the TextBox
-                    NigID = editTextBabyID.getText().toString();
-                    DobDay = editTextDOBDay.getText().toString();
-                    DobMonth = editTextDOBMonth.getText().toString();
-                    DobYear = editTextDOBYear.getText().toString();
-                    Age  = editTextGestAge.getText().toString();
-                    Weight  = editTextWeight.getText().toString();
-                    notes = editAdditionalNotes.getText().toString();
+                // Retrieve details in the TextBox
+                NigID = editTextBabyID.getText().toString();
+                DobDay = editTextDOBDay.getText().toString();
+                DobMonth = editTextDOBMonth.getText().toString();
+                DobYear = editTextDOBYear.getText().toString();
+                Age  = editTextGestAge.getText().toString();
+                Weight  = editTextWeight.getText().toString();
+                notes = editAdditionalNotes.getText().toString();
 
-                    valid = valid && checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
+
+                // Check if the input is valid
+                boolean valid = checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
+                if(valid){
+                    valid = valid && !idExists(Integer.parseInt(NigID));
                     valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Double.parseDouble(Weight));
                 }
+
+                // If the input is correct (not empty, reasonable values, id does not exist)
                 if (valid){
+
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
-                    LocalDate birthdayDate = LocalDate.of(Integer.parseInt(DobYear), Integer.parseInt(DobMonth), Integer.parseInt(DobDay));
                     String birthdayString = DobYear + "-" + DobMonth + "-" + DobDay;
                     double age  = Double.parseDouble(Age);
                     double weight  = Double.parseDouble(Weight);
+
                     // Create a Baby object with the entered data
-                    Baby baby = new Baby(nigID, birthdayString, weight, age, notes);
+                    Baby baby = new Baby(nigID, age, birthdayString, weight, notes);
 
                     // Send the Baby object in the PUT request
-                    sendRequest(PUT, "addBaby", baby, 0);
+                    sendRequest(baby);
+
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age +
                             "\nDOB:" + birthdayString +
                             "\nWeight: " + Weight +
                             "\nAdditional Notes: " + notes;
+
                     details = details + "\nBaby added to the database, please close this tab";
                     outputText.setText("Added Succesfully");
+
+                    // Function to empty fields for the next set of data to input
                     resetFields();
                 }
 
@@ -162,22 +179,22 @@ public class AddBabyDialog extends Dialog{
      */
     private boolean checkEmpty(String NigID, String DobDay, String DobMonth, String DobYear, String Age, String Weight){
         if (NigID.isEmpty()) {
-            editTextBabyID.setError("The NigID cannot be empty");
+            outputText.setError("The NigID cannot be empty");
             return false;}
         if (DobDay.isEmpty()){
-            editTextDOBDay.setError("The day of birth cannot be empty");
+            outputText.setError("The day of birth cannot be empty");
             return false;}
         if (DobMonth.isEmpty()) {
-            editTextDOBMonth.setError("The month of birth cannot be empty");
+            outputText.setError("The month of birth cannot be empty");
             return false;}
         if (DobYear.isEmpty()){
-            editTextDOBYear.setError("The year of birth cannot be empty");
+            outputText.setError("The year of birth cannot be empty");
             return false;}
         if (Age.isEmpty()){
-            editTextGestAge.setError("The age cannot be empty");
+            outputText.setError("The age cannot be empty");
             return false;}
         if (Weight.isEmpty()) {
-            editTextWeight.setError("The weight cannot be empty");
+            outputText.setError("The weight cannot be empty");
             return false;}
         return true;
     }
@@ -222,20 +239,10 @@ public class AddBabyDialog extends Dialog{
     }
 
     /**This method sends a request to add the babys details to the server and database
-     * @param type of HTTP request
-     * @param method of HTTP request
      * @param baby the baby object to be added to the database
      */
-    void sendRequest(String type, String method, Baby baby, int id) {
-        Call<ResponseBody> call;
-
-        if (type.equals(PUT) && method.equals("addBaby")){
-            call = babyApi.addBaby(baby);}
-        else {
-            // Handle other types or methods if needed
-            return;
-        }
-
+    void sendRequest(Baby baby) {
+        Call<ResponseBody> call = babyApi.addBaby(baby);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -257,7 +264,23 @@ public class AddBabyDialog extends Dialog{
         });
     }
 
-    // This is the interface that will be used to communicate with the activity that created the dialog
+    /**
+     * This method checks if the ID already exist
+     * @param id the ID to be checked
+     * @return true if the ID already exists, false otherwise
+     */
+    private boolean idExists(int id){
+        Set<Integer> babyIDs = babyMap.keySet();
+        for (int babyID : babyIDs){
+            if (babyID == id){
+                editTextBabyID.setError("The ID already exists");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**his is the interface that will be used to communicate with the activity that created the dialog*/
     public interface OnAddBabyListener {
         void onAddBaby();
     }
