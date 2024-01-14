@@ -56,31 +56,30 @@ public class DetailedActivity extends AppCompatActivity {
 
          */
         //Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
-        int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
-        long birthdate = getIntent().getLongExtra("Date of Birth", -1);
-        int gestationalAge = (int) getIntent().getIntExtra("Gestational Age", -1);
+        int bebeInt = (int) getIntent().getSerializableExtra("Nigel ID");
+        double gestationalAge = (double) getIntent().getSerializableExtra("Gestational Age");
+        String birthdate = (String) getIntent().getSerializableExtra("Date of Birth");
         double weight = (double) getIntent().getSerializableExtra("Weight");
-        String notes = (String) getIntent().getSerializableExtra("notes");
+        String notes = (String) getIntent().getSerializableExtra("Notes");
 
         // Retrieve the Blood, Sweat and Feeding entries
         ArrayList<Entry> bloodGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("bloodGlucoseEntries");
         ArrayList<Entry> sweatGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("SweatGlucoseEntries");
         ArrayList<Long> feedingTimes = (ArrayList<Long>) getIntent().getSerializableExtra("FeedingTimes");
 
-
-
         // Populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
         gestationalAgeTextView.setText("Gestational Age: " + String.valueOf(gestationalAge) + " weeks");
         birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
+        dateOfBirthTextView.setText("Date of Birth: " + birthdate);
         futureNotesEditText.setText(notes);
 
-        if (birthdate != -1) {
+        /*if (birthdate != -1) {
             String dateString = formatDate(birthdate);
             dateOfBirthTextView.setText("Date of Birth: " + dateString);
         } else {
             dateOfBirthTextView.setText("Date of Birth: N/A");
-        }
+        }*/
 
         // Onto the graphing
         glucoseChart = findViewById(R.id.glucoseChart);

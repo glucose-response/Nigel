@@ -18,14 +18,20 @@ import java.util.TimeZone;
 
 public class Baby implements Serializable{
     private int id;
-    private List<DataSample> timeSeriesData;
-    private long birthDate;
-    private LocalDate dateOfBirth;
-    private String birthday;
-    private double weight;
     private double gestationalAge;
+
+    private long birthDate; // in milliseconds for graphing
+    private LocalDate dateOfBirth; // for age calculation
+    private String birthday; // for database communications
+
+    private double weight;
     private String notes;
 
+    private List<DataSample> timeSeriesData;
+
+    /**
+     * Constructor for graphing
+     */
     public Baby(int id,
                 double gestationalAge,
                 long birthDate,
@@ -46,9 +52,11 @@ public class Baby implements Serializable{
     }
 
     /**
-     * Constructor for a Baby object for database
+     * Constructor for a Baby object to be send to the database
+     * note: birthday is a string, not a localdate
+     * note: timeSeriesdata is empty
      */
-    public Baby(int id, String birthday, double weight, double gestationalAge, String notes) {
+    public Baby(int id, double gestationalAge, String birthday, double weight, String notes) {
         try{
             this.id = id;
             this.birthday = birthday;
@@ -61,17 +69,18 @@ public class Baby implements Serializable{
     }
 
     /**
-     * Constructor for a Baby object without TimeSeries List
+     * Constructor for a Baby object for dataset
      */
-    public Baby(int id, LocalDate dateOfBirth, double weight, double gestationalAge, String notes) {
+    public Baby(int id, double gestationalAge, LocalDate dateOfBirth, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
             this.id = id;
-            this.dateOfBirth = dateOfBirth;
             this.gestationalAge = gestationalAge;
+            this.dateOfBirth = dateOfBirth;
             this.weight = weight;
             this.notes = notes;
+            this.timeSeriesData = timeSeriesData;
         } catch (NullPointerException e){
-            System.out.println("Null Time Series Data");
+                System.out.println("Null Time Series Data");
         }
     }
 
@@ -87,6 +96,8 @@ public class Baby implements Serializable{
     public long getBirthDate() {
         return birthDate;
     }
+    public LocalDate getDateOfBirth() {return dateOfBirth;}
+    public String getBirthday() {return birthday;}
     public double getWeight() {
         return weight;
     }
@@ -105,15 +116,15 @@ public class Baby implements Serializable{
         this.id = id;
     }
 
+    public void setDateOfBirth(LocalDate dateOfBirth) {this.dateOfBirth = dateOfBirth;}
+    public void setBirthday(String birthday) {this.birthday = birthday;}
     public void setBirthDate(long birthDate){
         this.birthDate = birthDate;
     }
-
     public void setWeight(double weight) {
         this.weight = weight;
     }
     public void setGestationalAge(double gestationalAge) {this.gestationalAge = gestationalAge;}
-
     public void setNotes(String notes) {
         this.notes = notes;
     }

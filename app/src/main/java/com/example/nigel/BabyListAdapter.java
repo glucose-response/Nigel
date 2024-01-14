@@ -87,6 +87,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
      *                 item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         List<Baby> babyList = mapToList();
@@ -97,9 +98,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 baby.getGestationalAge() + " " +
                 baby.getBirthDate() + " " +
                 baby.getWeight() + " " +
-                baby.getNotes() + " " +
-                baby.getTimeSeriesData().size() + " " +
-                baby.getTimeSeriesData().get(0).getTimestamp());
+                baby.getNotes());
         holder.personNameTextView.setText(String.valueOf(baby.getId()));
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             holder.personBirthdayTextView.setText(baby.dateOfBirthToString());
@@ -110,16 +109,10 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
-                intent.putExtra("Nigel ID ", baby.getId());
-                intent.putExtra("Date of Birth", baby.getBirthDate());
-                intent.putExtra("Weight", baby.getWeight());
-                //v.getContext().startActivity(intent);
-
-                //intent.putExtra("Baby object", baby);
-                intent.putExtra("BEBE_KEY", baby.getId());
-                intent.putExtra("Date of Birth", baby.getBirthDate());
-                intent.putExtra("Weight", baby.getWeight());
+                intent.putExtra("Nigel ID", baby.getId());
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
+                intent.putExtra("Date of Birth", baby.dateOfBirthToString());
+                intent.putExtra("Weight", baby.getWeight());
                 intent.putExtra("Notes", baby.getNotes());
 
                 // Extract blood glucose entries
@@ -148,7 +141,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
                 intent.putExtra("SweatGlucoseEntries", sweatGlucoseEntries);
                 intent.putExtra("feedingTimes", feedingTimes);
-
 
                 //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
 

@@ -128,7 +128,7 @@ public class AddBabyDialog extends Dialog{
                     double weight  = Double.parseDouble(Weight);
 
                     // Create a Baby object with the entered data
-                    Baby baby = new Baby(nigID, birthdayString, weight, age, notes);
+                    Baby baby = new Baby(nigID, age, birthdayString, weight, notes);
 
                     // Send the Baby object in the PUT request
                     sendRequest(baby);

@@ -71,7 +71,7 @@ public class JSONParser {
             dataSamples.addAll(feedingDataSamples);
 
             // Create a new baby object and add it to the dataset
-            Baby baby = new Baby(id,birthday, weight, gestationalAge, notes, dataSamples);
+            Baby baby = new Baby(id,gestationalAge, birthday, weight, notes, dataSamples);
             dataset.put(baby.getId(),baby);
         }
         return dataset;
