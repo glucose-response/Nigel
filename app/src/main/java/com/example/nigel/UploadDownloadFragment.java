@@ -179,29 +179,29 @@ public class UploadDownloadFragment extends Fragment {
 
         File testFile = new File(excelFilePath);
 
-        if (testFile.exists()) {
-            Log.d("UploadData", "File exists");
-        }else {
-            Log.e("UploadData", "File does not exist at the specified path");
-        }
-
-        if (excelFilePath != null && !excelFilePath.isEmpty()) {
-            File excelFile = new File(excelFilePath);
+        if (testFile.exists() && isExcelFile(testFile)) {
+            // Log that the file exists and is a valid Excel file
+            Log.d("UploadData", "File exists and is a valid Excel file");
 
             // Log the file details before uploading
-            Log.d("UploadData", "handleSelectedExcelFile: File to upload - Name: " + excelFile.getName() + ", Path: " + excelFile.getAbsolutePath());
+            Log.d("UploadData", "handleSelectedExcelFile: File to upload - Name: " + testFile.getName() + ", Path: " + testFile.getAbsolutePath());
 
-            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), excelFile);
-            MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", excelFile.getName(), reqBody);
+            RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), testFile);
+            MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", testFile.getName(), reqBody);
 
             uploadFile(partFile);
         } else {
-            // Log an error if the file path is null or empty
-            Log.e("UploadData", "handleSelectedExcelFile: Excel file path is null or empty.");
+            // Log an error if the file does not exist or is not a valid Excel file
+            Log.e("UploadData", "File does not exist at the specified path or is not a valid Excel file");
             Toast.makeText(requireContext(), "Error: Invalid file", Toast.LENGTH_SHORT).show();
         }
     }
 
+    // Add this method to check if the file has a valid Excel extension
+    private boolean isExcelFile(File file) {
+        String filename = file.getName();
+        return filename.endsWith(".xlsx") || filename.endsWith(".xls");
+    }
     private void uploadFile(MultipartBody.Part partFile) {
         // Log the start of the uploadFile method
         Log.d("UploadData", "uploadFile: Uploading file.");
@@ -292,7 +292,7 @@ public class UploadDownloadFragment extends Fragment {
             DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
             if (documentFile != null && documentFile.exists()) {
                 // Create a temporary file in your app's private storage
-                File tempFile = new File(requireActivity().getCacheDir(), "tempFile");
+                File tempFile = new File(requireActivity().getCacheDir(), "tempFile.xlsx");
 
                 try (InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
                      OutputStream outputStream = new FileOutputStream(tempFile)) {
