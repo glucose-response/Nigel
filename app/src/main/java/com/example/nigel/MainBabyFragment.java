@@ -261,9 +261,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 babyList.add(
                         new Baby(
                                 id,
-                                dateOfBirthObject,
-                                weight,
                                 gestationalAge,
+                                weight,
+                                dateOfBirthObject,
                                 notes,
                                 generateRandomTimeSeriesData())
                 );
