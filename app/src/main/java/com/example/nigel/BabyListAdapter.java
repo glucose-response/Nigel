@@ -100,7 +100,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 // Extract blood glucose entries
                 ArrayList<Entry> bloodGlucoseEntries = new ArrayList<>();
                 ArrayList<Entry> sweatGlucoseEntries = new ArrayList<>();
-                //ArrayList<Entry> feedingEntries = new ArrayList<>();
+                ArrayList<Float> feedingTimes = new ArrayList<>();
 
 
                 for (DataSample event : baby.getTimeSeriesData()) {
@@ -112,12 +112,17 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                         SweatSample sweatsample = (SweatSample) event;
                         sweatGlucoseEntries.add(new Entry(sweatsample.getTimestamp(), sweatsample.getGlucoseValue()));
                     }
+                    else if (event instanceof FeedingDataSample) {
+                        FeedingDataSample feedingSample = (FeedingDataSample) event;
+                        feedingTimes.add((float) feedingSample.getTimestamp());
+                    }
                 }
+
 
                 // Add the extracted entries to the intent
                 intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
-                intent.putExtra("SweatGlucoseEntries", new ArrayList<>(sweatGlucoseEntries));
-                //intent.putExtra("feedingEntries", bloodGlucoseEntries);
+                intent.putExtra("SweatGlucoseEntries", sweatGlucoseEntries);
+                intent.putExtra("feedingTimes", feedingTimes);
 
 
                 //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));

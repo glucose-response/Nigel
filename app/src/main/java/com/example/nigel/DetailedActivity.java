@@ -7,6 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -45,7 +46,7 @@ public class DetailedActivity extends AppCompatActivity {
         TextView futureNotesEditText = findViewById(R.id.futureNotesEditText);
 
         /*
-        // Get baby object from BabyListAdapter
+        // Get whole baby object from BabyListAdapter
         Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
         // int bebeInt = (int) getIntent().getSerializableExtra("BEBE_KEY");
         int bebeInt = baby.getId();
@@ -64,6 +65,9 @@ public class DetailedActivity extends AppCompatActivity {
         // Retrieve the Blood, Sweat and Feeding entries
         ArrayList<Entry> bloodGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("bloodGlucoseEntries");
         ArrayList<Entry> sweatGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("SweatGlucoseEntries");
+        ArrayList<Long> feedingTimes = (ArrayList<Long>) getIntent().getSerializableExtra("FeedingTimes");
+
+
 
         // Populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
@@ -80,10 +84,11 @@ public class DetailedActivity extends AppCompatActivity {
 
         // Onto the graphing
         glucoseChart = findViewById(R.id.glucoseChart);
-        configureChart(glucoseChart, bloodGlucoseEntries, sweatGlucoseEntries);
+        configureChart(glucoseChart, bloodGlucoseEntries, sweatGlucoseEntries , feedingTimes);
     }
 
-    private void configureChart(LineChart chart, ArrayList<Entry> bloodGlucoseEntries,ArrayList<Entry> sweatGlucoseEntries) {
+
+    private void configureChart(LineChart chart, ArrayList<Entry> bloodGlucoseEntries,ArrayList<Entry> sweatGlucoseEntries, ArrayList<Long> feedingTimes) {
         // Setup the X and Y axis configurations
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -104,6 +109,19 @@ public class DetailedActivity extends AppCompatActivity {
                 return dateFormat.format(new Date((long) value));
             }
         });
+
+        xAxis.removeAllLimitLines();
+        if (feedingTimes != null && !feedingTimes.isEmpty()) {
+            for (Long feedingTime : feedingTimes) {
+                // Assuming feedingTime is in milliseconds since epoch and corresponds to the X values
+                LimitLine limitLine = new LimitLine(feedingTime.floatValue()*1000f);
+                limitLine.setLineColor(Color.BLACK);
+                limitLine.setLineWidth(1f);
+                // Add any other setup for limitLine such as label, text size, etc.
+                xAxis.addLimitLine(limitLine);
+            }
+
+        }
 
         // Create the dataset for blood glucose if entries are available
         if (bloodGlucoseEntries != null && !bloodGlucoseEntries.isEmpty()) {
@@ -132,9 +150,11 @@ public class DetailedActivity extends AppCompatActivity {
                 chart.setData(data);
             }
 
-            // Refresh the chart
+        }
+
         chart.invalidate();
+
     }
 
 
-}}
+}
