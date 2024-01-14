@@ -33,20 +33,25 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Fragment responsible for handling data upload and download operations
+ * Utilises a layout defined in R.layout.upload_download_test
+ */
 public class UploadDownloadFragment extends Fragment {
 
     private static final String HEROKU_URL = "https://nigel-c0b396b99759.herokuapp.com/";
     private static final int PICK_EXCEL_REQUEST = 123;
 
-    // Permissions for accessing the storage
+/*    // Permissions for accessing the storage
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
+    };*/
     private ActivityResultLauncher<String> pickExcelLauncher;
 
+    /**This method is called when the fragment is created*/
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.upload_download_test, container, false);
@@ -68,6 +73,11 @@ public class UploadDownloadFragment extends Fragment {
         return view;
     }
 
+    /** Sourced: ChatGPT and https://www.simplecoding.dev/articles/nilmadhab/let-s-develop-an-android-app-to-upload-files-and-images-1cob
+     * This method allows the download functions to work when a button is clicked
+     *
+     * @param buttonId The identifier for the button triggering the download ("templateButton" or "allDataButton")
+     *  */
     private void download(String buttonId){
         // Retrofit setup
         Retrofit retrofit = new Retrofit.Builder()
@@ -142,13 +152,18 @@ public class UploadDownloadFragment extends Fragment {
         });
     }
 
-
+    /** Initiates the process of uploading data by launching the pickExcelLauncher to select an Excel file.
+     * */
     private void uploadData() {
         // Log the start of the uploadData method
         Log.d("UploadData", "uploadData: Launching pickExcelLauncher.");
         pickExcelLauncher.launch("*/*");
     }
 
+    /** Handles the selected excel file, checks if it is a valid excel file before initiating the upload process
+     *
+     * @param selectedFile  The URI of the selected Excel file.
+     * */
     private void handleSelectedExcelFile(Uri selectedFile) {
         // Log the start of the handleSelectedExcelFile method
         Log.d("UploadData", "handleSelectedExcelFile: Handling selected file.");
@@ -176,11 +191,20 @@ public class UploadDownloadFragment extends Fragment {
         }
     }
 
-    /*Add this method to check if the file has a valid Excel extension*/
+    /** Checks if the given file is a valid excel file
+     *
+     * @param file The File object representing the excel file to be checked
+     * @return true If the file is a valid Excel file (has ".xlsx" or ".xls" extension), false otherwise.*/
     private boolean isExcelFile(File file) {
         String filename = file.getName();
         return filename.endsWith(".xlsx") || filename.endsWith(".xls");
     }
+
+    /** Uploads the selected Excel File to a server using Retrofit API
+     *
+     * @param partFile The MultipartBody.Part representing the Excel file to be uploaded
+     *  @param excelFilePath The local file path of the Excel file being uploaded
+     **/
     private void uploadFile(MultipartBody.Part partFile, String excelFilePath) {
         // Log the start of the uploadFile method
         Log.d("UploadData", "uploadFile: Uploading file.");
@@ -224,6 +248,12 @@ public class UploadDownloadFragment extends Fragment {
 
     }
 
+
+    /** Converts the excel's URI to a local file path and creates a temporary file for further processing
+     *
+     * @param uri The content URI of the selected file.
+     * @return The local file path of the temporary file created from the content URI, or null if an error occurs
+     */
     private String getFilePathFromDocumentFile(Uri uri) {
         try {
             DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
@@ -255,6 +285,10 @@ public class UploadDownloadFragment extends Fragment {
         return null;
     }
 
+    /** Deletes a temporary file specified by the provided file path.
+     *
+     * @param filePath The absolute path of the temporary file to be deleted.
+     */
     private void deleteTempFile(String filePath) {
         if (filePath != null && !filePath.isEmpty()) {
             File tempFile = new File(filePath);

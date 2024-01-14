@@ -15,7 +15,6 @@ import retrofit2.http.PUT;
 import retrofit2.http.Part;
 import retrofit2.http.Query;
 
-//https://reintech.io/blog/developing-android-app-restful-backend-flask-flask-restful
 public interface BabyApi {
 
     /**
