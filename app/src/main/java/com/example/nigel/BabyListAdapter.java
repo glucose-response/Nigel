@@ -40,7 +40,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     public BabyListAdapter(Map<Integer, Baby> babyList) {
         Log.d("BabyListAdapter", "BabyListAdapter: " + babyList.size());
         this.originalList = babyList;
-        this.filteredList = this.originalList;
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
         this.filteredList = new HashMap<>(babyList); // Initialize filtered list with all items
 
@@ -65,9 +64,15 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         return new ViewHolder(view);
     }
 
+    /**
+     * @param holder   The ViewHolder which should be updated to represent the contents of the
+     *                 item at the given position in the data set.
+     * @param position The position of the item within the adapter's data set.
+     */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Baby baby = filteredList.get(position+1);
+        List<Baby> babyList = mapToList();
+        Baby baby = babyList.get(position);
         // Log the name of the person to the TextView
         Log.d("BabyListAdapter", "onBindViewHolder: " +
                 baby.getId() + " " +
@@ -83,7 +88,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
-                intent.putExtra("BEBE_KEY", baby.getId());
+                intent.putExtra("Nigel ID ", baby.getId());
                 intent.putExtra("Date of Birth", baby.getDateOfBirth().toString());
                 intent.putExtra("Weight", baby.getBirthWeight());
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
@@ -195,7 +200,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         } else {
             for (Baby baby : originalList.values()) {
                 Log.d("FILTER", "filterByName: " + baby.getId());
-                if (String.valueOf(baby.getId()).toLowerCase().contains(query.toLowerCase())) {
+                if (query.toLowerCase().contains(String.valueOf(baby.getId()).toLowerCase())) {
                     Log.d("FILTER", "baby added: " + baby.getId());
                     filteredList.put(baby.getId(), baby);
                 }
@@ -216,9 +221,16 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     public void setOriginalList(Map<Integer, Baby> newList) {
         Log.d("BabyListAdapter", "setOriginalList: " + newList.size());
         this.originalList = newList;
-        this.filteredList = newList;
-
+        this.filteredList = new HashMap<>(newList);
         notifyDataSetChanged();
+    }
+
+    public List<Baby> mapToList(){
+        List<Baby> babyList = new ArrayList<>();
+        for (Map.Entry<Integer, Baby> entry : filteredList.entrySet()) {
+            babyList.add(entry.getValue());
+        }
+        return babyList;
     }
 
 }

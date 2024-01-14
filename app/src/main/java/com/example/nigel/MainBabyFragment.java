@@ -83,9 +83,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         recyclerView = view.findViewById(R.id.recyclerView);
 
-
         adapter = new BabyListAdapter(new HashMap<>());
-
         recyclerView.setAdapter(adapter);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
@@ -118,6 +116,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
 
+    /**
+     * Fetches data in the background with progressbar
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fetchDataInBackground(boolean showCentralProgressBar) {
         if (showCentralProgressBar) {
@@ -126,9 +127,12 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         fetchDataUsingJSONParser();
     }
 
+    /**
+     * Searches the current database for the specified query
+     */
     private void setupSearch(View view) {
-        searchEditText = view.findViewById(R.id.searchEditText); // Replace with your actual EditText ID
-        Button searchButton = view.findViewById(R.id.searchButton); // Replace with your actual Button ID
+        searchEditText = view.findViewById(R.id.searchEditText);
+        Button searchButton = view.findViewById(R.id.searchButton);
 
         searchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,6 +146,10 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
+    /**
+     * Fetches data from the server using the JSONParser class
+     * Fills the dataset hashmap
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fetchDataUsingJSONParser() {
         new Thread(new Runnable() {
@@ -161,14 +169,14 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                     if (response.isSuccessful() && response.body() != null) {
                         final String jsonResponse = response.body().string();
                         final JSONParser parser = new JSONParser(jsonResponse);
-                        final Map<Integer, Baby> dataSet = parser.getData();
-                        Log.d("My Log", dataSet.toString());
+                        dataset = parser.getData();
+                        Log.d("My Log", dataset.toString());
 
                         // Updating the adapter with the fetched data should be done on the main thread
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                adapter.setOriginalList(dataSet);
+                                adapter.setOriginalList(dataset);
                                 // Notify adapter about data set change on main/UI thread
                                 adapter.notifyDataSetChanged();
                                 swipeRefreshLayout.setRefreshing(false);// Stop the refresh animation
@@ -188,6 +196,10 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     }
 
 
+    /**
+     * Function turns dataset hashmap into a list
+     * @return List of Babies
+     */
     private List<Baby> getBabiesFromDataset(Map<Integer, Baby> dataset) {
         List<Baby> babyList = new ArrayList<>();
         for (Map.Entry<Integer, Baby> entry : dataset.entrySet()) {
@@ -196,6 +208,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         return babyList;
     }
 
+    /**
+     * Function opens pop-up to add a baby object to the database
+     */
     private void openAddBabyDialog(List<Baby> babyList) {
         AddBabyDialog addBabyDialog = new AddBabyDialog(babyList, getActivity(), new AddBabyDialog.OnAddBabyListener() {
             @Override
