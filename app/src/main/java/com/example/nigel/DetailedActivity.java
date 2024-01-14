@@ -6,13 +6,18 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.charts.ScatterChart;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
@@ -44,6 +49,7 @@ public class DetailedActivity extends AppCompatActivity {
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
         TextView birthWeightTextView = findViewById(R.id.birthWeightTextView);
         TextView futureNotesEditText = findViewById(R.id.futureNotesEditText);
+        TextView chartTitleTextView = findViewById(R.id.chartTitleTextView);
 
         /*
         // Get whole baby object from BabyListAdapter
@@ -73,6 +79,7 @@ public class DetailedActivity extends AppCompatActivity {
         birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
         dateOfBirthTextView.setText("Date of Birth: " + birthdate);
         futureNotesEditText.setText(notes);
+        chartTitleTextView.setText("Glucose Measurements (Blood and Sweat)");
 
         /*if (birthdate != -1) {
             String dateString = formatDate(birthdate);
@@ -82,21 +89,21 @@ public class DetailedActivity extends AppCompatActivity {
         }*/
 
         // Onto the graphing
-        glucoseChart = findViewById(R.id.glucoseChart);
+        CombinedChart glucoseChart = findViewById(R.id.glucoseChart);
         configureChart(glucoseChart, bloodGlucoseEntries, sweatGlucoseEntries , feedingTimes);
     }
 
 
-    private void configureChart(LineChart chart, ArrayList<Entry> bloodGlucoseEntries,ArrayList<Entry> sweatGlucoseEntries, ArrayList<Long> feedingTimes) {
+    private void configureChart(CombinedChart combinedChart, ArrayList<Entry> bloodGlucoseEntries, ArrayList<Entry> sweatGlucoseEntries, ArrayList<Long> feedingTimes) {
         // Setup the X and Y axis configurations
-        XAxis xAxis = chart.getXAxis();
+        XAxis xAxis = combinedChart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
 
-        YAxis leftAxis = chart.getAxisLeft();
+        YAxis leftAxis = combinedChart.getAxisLeft();
         leftAxis.setDrawGridLines(false);
 
-        YAxis rightAxis = chart.getAxisRight();
+        YAxis rightAxis = combinedChart.getAxisRight();
         rightAxis.setDrawGridLines(false);
 
         xAxis.setValueFormatter(new ValueFormatter() {
@@ -123,35 +130,28 @@ public class DetailedActivity extends AppCompatActivity {
         }
 
         // Create the dataset for blood glucose if entries are available
-        if (bloodGlucoseEntries != null && !bloodGlucoseEntries.isEmpty()) {
-            LineDataSet bloodDataSet = new LineDataSet(bloodGlucoseEntries, "Blood Glucose");
-            bloodDataSet.setColor(Color.RED);
-            bloodDataSet.setCircleColor(Color.RED);
-            bloodDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        ScatterDataSet bloodDataSet = new ScatterDataSet(bloodGlucoseEntries, "Blood Glucose");
+        bloodDataSet.setColor(Color.argb(255, 190, 46, 23));
+        bloodDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
+        ScatterData bloodData = new ScatterData(bloodDataSet);
 
-            // Configure more properties of the dataset as needed
 
-            LineData data = new LineData(bloodDataSet);
-            chart.setData(data);
-        }
+        LineDataSet sweatDataSet = new LineDataSet(sweatGlucoseEntries, "Sweat Glucose");
+        sweatDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        sweatDataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        sweatDataSet.setCubicIntensity(0.1f);
+        sweatDataSet.setColor(Color.argb(255, 142, 186, 140));
+        sweatDataSet.setCircleColor(Color.argb(255, 142, 186, 140));
+        sweatDataSet.setCircleHoleColor(Color.argb(255, 142, 186, 140));
+        LineData sweatData = new LineData(sweatDataSet);
 
-        if (sweatGlucoseEntries != null && !sweatGlucoseEntries.isEmpty()) {
-            LineDataSet sweatDataSet = new LineDataSet(sweatGlucoseEntries, "Sweat Glucose");
-            sweatDataSet.setColor(Color.GREEN);
-            sweatDataSet.setCircleColor(Color.GREEN);
-            sweatDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
 
-            LineData data = chart.getData();
-            if (data != null) {
-                data.addDataSet(sweatDataSet);
-            } else {
-                data = new LineData(sweatDataSet);
-                chart.setData(data);
-            }
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(bloodData);
+        combinedData.setData(sweatData);
 
-        }
-
-        chart.invalidate();
+        combinedChart.setData(combinedData);
+        combinedChart.invalidate();
 
     }
 
