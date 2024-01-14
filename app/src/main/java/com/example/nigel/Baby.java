@@ -25,7 +25,7 @@ public class Baby implements Serializable{
     private LocalDate dateOfBirth; // for age calculation
     private String birthday; // for database communications
 
-    private double weight;
+    private double birthWeight;
     private String notes;
 
     private List<DataSample> timeSeriesData;
@@ -41,7 +41,7 @@ public class Baby implements Serializable{
             this.birthDate = birthDate;
             this.dateOfBirth = LocalDate.ofEpochDay(birthDate);
             this.birthday = dateOfBirthToString();
-            this.weight = weight;
+            this.birthWeight = weight;
             this.notes = notes;
             if(timeSeriesData == null){
                 this.timeSeriesData = new ArrayList<>();
@@ -64,13 +64,9 @@ public class Baby implements Serializable{
         try{
             this.NigelID = id;
             this.birthday = birthday;
-            String[] birthdays = birthday.split("-");
-            this.dateOfBirth = LocalDate.of(Integer.parseInt(birthdays[0]),Integer.parseInt(birthdays[1]),Integer.parseInt(birthdays[2]));
-            this.birthday = dateOfBirthToString();
             this.gestationalAge = gestationalAge;
-            this.weight = weight;
+            this.birthWeight = weight;
             this.notes = notes;
-            timeSeriesData = new ArrayList<>();
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
         }
@@ -87,7 +83,7 @@ public class Baby implements Serializable{
             this.dateOfBirth = dateOfBirth;
             this.birthday = dateOfBirthToString();
             this.birthDate = dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
-            this.weight = weight;
+            this.birthWeight = weight;
             this.notes = notes;
             if(timeSeriesData == null){
                 this.timeSeriesData = new ArrayList<>();
@@ -114,7 +110,7 @@ public class Baby implements Serializable{
     public LocalDate getDateOfBirth() {return dateOfBirth;}
     public String getBirthday() {return birthday;}
     public double getWeight() {
-        return weight;
+        return birthWeight;
     }
     public String getNotes() {
         return notes;
@@ -137,7 +133,7 @@ public class Baby implements Serializable{
         this.birthDate = birthDate;
     }
     public void setWeight(double weight) {
-        this.weight = weight;
+        this.birthWeight = weight;
     }
     public void setGestationalAge(double gestationalAge) {this.gestationalAge = gestationalAge;}
     public void setNotes(String notes) {

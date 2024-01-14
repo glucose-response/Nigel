@@ -49,13 +49,13 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     /**
      * Constructor for the adapter
-     * @param babyList The list of babies to display
+     * @param babyMap The list of babies to display
      */
-    public BabyListAdapter(Map<Integer, Baby> babyList) {
-        Log.d("BabyListAdapter", "BabyListAdapter: " + babyList.size());
-        this.originalList = babyList;
+    public BabyListAdapter(Map<Integer, Baby> babyMap) {
+        Log.d("BabyListAdapter", "BabyListAdapter: " + babyMap.size());
+        this.originalList = babyMap;
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
-        this.filteredList = new HashMap<>(babyList); // Initialize filtered list with all items
+        this.filteredList = new HashMap<>(babyMap); // Initialize filtered list with all items
 
         // Log.d("BabyListAdapter", "Baby 1: " + babyList.get(1).getId());
     }

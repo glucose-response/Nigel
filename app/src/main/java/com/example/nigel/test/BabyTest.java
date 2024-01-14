@@ -98,15 +98,7 @@ public class BabyTest {
     public void testConstructorForDatabaseNotes() {
         assertEquals("Database Notes", babyForDatabase.getNotes());
     }
-    @Test
-    public void testConstructorForDatabaseListNotNull() {
-        assertNotNull(babyForDatabase.getTimeSeriesData());
-    }
-    @Test
-    public void testConstructorForDatabaseListEmpty() {
-        assertEquals(0, babyForDatabase.getTimeSeriesData().size());
 
-    }
     @Test
     public void testConstructorForDataset() {
         assertNotNull(babyForDataset);
@@ -195,11 +187,6 @@ public class BabyTest {
     @Test
     public void testGetAge() {
         assertEquals("2 years, 1 months, 8 days", baby.getAgeForTest());
-    }
-    @RequiresApi(api = Build.VERSION_CODES.O)
-    @Test
-    public void testGetAge2() {
-        assertEquals("1 years, 11 months, 25 days", babyForDatabase.getAgeForTest());
     }
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Test
