@@ -47,6 +47,12 @@ public class AddBabyDialog extends Dialog{
     private OnAddBabyListener onAddBabyListener;
     private Map<Integer,Baby> babyMap;
 
+    /**
+     * This is the constructor for the dialog
+     * @param babyMap the map of babies
+     * @param context the context of the dialog
+     * @param onAddBabyListener the listener for the dialog
+     */
     public AddBabyDialog(Map<Integer, Baby> babyMap, @NonNull Activity context, OnAddBabyListener onAddBabyListener){
         super(context);
         this.context = context;
@@ -54,36 +60,39 @@ public class AddBabyDialog extends Dialog{
         this.onAddBabyListener = onAddBabyListener;
     }
 
-    // This method is called when the dialog is created
+    /**This method is called when the dialog is created*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_add_baby);
 
+        // Define the variable for each item in the interface
         editTextBabyID = findViewById(R.id.editTextBabyID);
         editTextDOBDay = findViewById(R.id.editTextDOBDay);
         editTextDOBMonth = findViewById(R.id.editTextDOBMonth);
         editTextDOBYear = findViewById(R.id.editTextDOBYear);
         editTextGestAge = findViewById(R.id.editTextGestAge);
         editTextWeight = findViewById(R.id.editTextWeight);
-        //spinnerGroup = findViewById(R.id.spinnerGroup);
         outputText = findViewById(R.id.outputText);
         addButton = findViewById(R.id.addButton);
         exitButton = findViewById(R.id.exitButton);
         editAdditionalNotes= findViewById(R.id.editAdditionalNotes);
 
 
+        // Create a Retrofit object for communiation with the database
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(url)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        // Define the API for the Retrofit object
         babyApi = retrofit.create(BabyApi.class);
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onClick(View v) {
+                // Default variables for each item in the interface
                 String NigID = "";
                 String DobDay = "";
                 String DobMonth = "";
@@ -92,7 +101,7 @@ public class AddBabyDialog extends Dialog{
                 String Weight  = "";
                 String notes = "";
 
-                // Display details in the TextBox
+                // Retrieve details in the TextBox
                 NigID = editTextBabyID.getText().toString();
                 DobDay = editTextDOBDay.getText().toString();
                 DobMonth = editTextDOBMonth.getText().toString();
@@ -102,32 +111,38 @@ public class AddBabyDialog extends Dialog{
                 notes = editAdditionalNotes.getText().toString();
 
 
+                // Check if the input is valid
                 boolean valid = checkEmpty(NigID, DobDay, DobMonth, DobYear, Age, Weight);
                 if(valid){
                     valid = valid && !idExists(Integer.parseInt(NigID));
                     valid = valid && checkInput(Integer.parseInt(NigID), Integer.parseInt(DobDay), Integer.parseInt(DobMonth), Integer.parseInt(DobYear), Integer.parseInt(Age), Double.parseDouble(Weight));
                 }
 
-
+                // If the input is correct (not empty, reasonable values, id does not exist)
                 if (valid){
+
                     // Convert Strings into Data
                     int nigID = Integer.parseInt(NigID);
-                    LocalDate birthdayDate = LocalDate.of(Integer.parseInt(DobYear), Integer.parseInt(DobMonth), Integer.parseInt(DobDay));
                     String birthdayString = DobYear + "-" + DobMonth + "-" + DobDay;
                     double age  = Double.parseDouble(Age);
                     double weight  = Double.parseDouble(Weight);
+
                     // Create a Baby object with the entered data
                     Baby baby = new Baby(nigID, birthdayString, weight, age, notes);
 
                     // Send the Baby object in the PUT request
-                    sendRequest(PUT, "addBaby", baby, 0);
+                    sendRequest(baby);
+
                     // Display details in the TextBox
                     String details = "NigelID: " + NigID + "\nGestational Age: " + Age +
                             "\nDOB:" + birthdayString +
                             "\nWeight: " + Weight +
                             "\nAdditional Notes: " + notes;
+
                     details = details + "\nBaby added to the database, please close this tab";
                     outputText.setText("Added Succesfully");
+
+                    // Function to empty fields for the next set of data to input
                     resetFields();
                 }
 
@@ -224,20 +239,10 @@ public class AddBabyDialog extends Dialog{
     }
 
     /**This method sends a request to add the babys details to the server and database
-     * @param type of HTTP request
-     * @param method of HTTP request
      * @param baby the baby object to be added to the database
      */
-    void sendRequest(String type, String method, Baby baby, int id) {
-        Call<ResponseBody> call;
-
-        if (type.equals(PUT) && method.equals("addBaby")){
-            call = babyApi.addBaby(baby);}
-        else {
-            // Handle other types or methods if needed
-            return;
-        }
-
+    void sendRequest(Baby baby) {
+        Call<ResponseBody> call = babyApi.addBaby(baby);
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -275,7 +280,7 @@ public class AddBabyDialog extends Dialog{
         return false;
     }
 
-    // This is the interface that will be used to communicate with the activity that created the dialog
+    /**his is the interface that will be used to communicate with the activity that created the dialog*/
     public interface OnAddBabyListener {
         void onAddBaby();
     }

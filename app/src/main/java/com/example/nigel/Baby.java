@@ -43,6 +43,8 @@ public class Baby {
 
     /**
      * Constructor for a Baby object for database
+     * dateofBirth is a string not a localDate object
+     * timeSeries data is not included
      */
     public Baby(int NigelID, String birthday, double birthWeight, double gestationalAge, String notes) {
         try{

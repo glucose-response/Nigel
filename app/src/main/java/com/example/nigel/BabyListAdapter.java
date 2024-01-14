@@ -42,6 +42,10 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     private Map<Integer, Baby> filteredList = new HashMap<>(); // New list to store filtered results
     private AxisConfiguration commonAxisConfig;
 
+    /**
+     * Constructor for the adapter
+     * @param babyList The list of babies to display
+     */
     public BabyListAdapter(Map<Integer, Baby> babyList) {
         Log.d("BabyListAdapter", "BabyListAdapter: " + babyList.size());
         this.originalList = babyList;
@@ -51,6 +55,9 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Log.d("BabyListAdapter", "Baby 1: " + babyList.get(1).getId());
     }
 
+    /**
+     * A ViewHolder describes an item view and metadata about its place within the RecyclerView.
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView personNameTextView;
         public TextView personBirthdayTextView;
@@ -114,11 +121,14 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 commonAxisConfig);
     }
 
-    @Override
-    public int getItemCount() {
-        return filteredList.size();
-    }
 
+    /**
+     * Sets up the chart for a person
+     *
+     * @param combinedChart The chart to set up
+     * @param baby          The person to set up the chart for
+     * @param axisConfig    The axis configuration to use
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupPersonChart(CombinedChart combinedChart,
                                   Baby baby,
@@ -126,6 +136,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Customize this method based on how you want to display the chart
         Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
         XAxis xAxis = combinedChart.getXAxis();
+
         // Categorize the events
         ArrayList<Entry> bloodSampleEntries = new ArrayList<>();
         ArrayList<Entry> sweatSampleEntries = new ArrayList<>();
@@ -166,13 +177,13 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
 
 
-
+        // Set the axis limits for blood data
         ScatterDataSet bloodDataset = new ScatterDataSet(bloodSampleEntries, "Blood Glucose");
         bloodDataset.setColor(Color.argb(255, 190, 46, 23));
         bloodDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
         ScatterData bloodData = new ScatterData(bloodDataset);
 
-
+        // Set the axis data for sweat data
         LineDataSet sweatDataset = new LineDataSet(sweatSampleEntries, "Sweat Glucose");
         sweatDataset.setAxisDependency(YAxis.AxisDependency.RIGHT);
         sweatDataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
@@ -189,6 +200,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             xAxis.addLimitLine(limitLine);
         }
 
+        // Combine the data
         CombinedData combinedData = new CombinedData();
         combinedData.setData(bloodData);
         combinedData.setData(sweatData);
@@ -204,6 +216,11 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         combinedChart.invalidate();
     }
 
+    /**
+     * Filters the list of babies by name for the main page
+     *
+     * @param query The query to filter by
+     */
     public void filterByName(String query) {
         Log.d("FILTER", "filterByName: " + query);
         filteredList.clear();
@@ -222,27 +239,41 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         notifyDataSetChanged(); // Notify the adapter that the data has changed
     }
 
-    public Map<Integer, Baby> getFilteredList() {
-        return filteredList;
-    }
 
-    public Map<Integer, Baby> getOriginalList() {
-        return originalList;
-    }
-
-    public void setOriginalList(Map<Integer, Baby> newList) {
-        Log.d("BabyListAdapter", "setOriginalList: " + newList.size());
-        this.originalList = newList;
-        this.filteredList = new HashMap<>(newList);
-        notifyDataSetChanged();
-    }
-
+    /**
+     * Converts the map into a list
+     * To be used for the filter
+     */
     public List<Baby> mapToList(){
         List<Baby> babyList = new ArrayList<>();
         for (Map.Entry<Integer, Baby> entry : filteredList.entrySet()) {
             babyList.add(entry.getValue());
         }
         return babyList;
+    }
+
+    /**
+     * Getters
+     */
+    public Map<Integer, Baby> getFilteredList() {
+        return filteredList;
+    }
+    public Map<Integer, Baby> getOriginalList() {
+        return originalList;
+    }
+    @Override
+    public int getItemCount() {
+        return filteredList.size();
+    }
+
+    /**
+     * Sets the original list
+     */
+    public void setOriginalList(Map<Integer, Baby> newList) {
+        Log.d("BabyListAdapter", "setOriginalList: " + newList.size());
+        this.originalList = newList;
+        this.filteredList = new HashMap<>(newList);
+        notifyDataSetChanged();
     }
 
 }
