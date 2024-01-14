@@ -8,16 +8,23 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TimeZone;
+
 import com.example.nigel.dataclasses.BloodSample;
 import com.example.nigel.dataclasses.DataSample;
 import com.example.nigel.dataclasses.SweatSample;
@@ -34,8 +41,9 @@ public class JSONParser {
     }
     /**
      * Parses the JSON response from the server into a Map
+     *
      * @return Map of Babies with their entire data set
-     * @throws JSONException
+     * @throws JSONException If there is an error while parsing the JSON response
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Map<Integer,Baby> getData() throws JSONException {
@@ -76,6 +84,15 @@ public class JSONParser {
         }
         return dataset;
     }
+
+    /**
+     * Parses a JSON response containing blood samples into a list of BloodSample objects
+     *
+     * @param response The JSON response containing blood samples
+     * @param NigelID The identifier associated with Nigel
+     * @return A list of BloodSample objects parsed from the JSON response
+     * @throws JSONException If there is an error while parsing the JSON response
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<BloodSample> parseBloodSample(JSONObject response, int NigelID) throws JSONException {
 
@@ -106,6 +123,14 @@ public class JSONParser {
         return bloodSamples;
     }
 
+    /**
+     * Parses a JSON response containing sweat samples into a list of SweatSample objects
+     *
+     * @param response The JSON response containing sweat samples
+     * @param NigelID The identifier associated with Nigel
+     * @return A list of SweatSample objects parsed from the JSON response
+     * @throws JSONException If there is an error while parsing the JSON response
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<SweatSample> parseSweatSample(JSONObject response, int NigelID) throws JSONException {
 
@@ -134,6 +159,14 @@ public class JSONParser {
         return sweatSamples;
     }
 
+    /**
+     * Parses a JSON response containing feeding data samples into a list of FeedingDataSample objects
+     *
+     * @param response The JSON response containing feeding data samples
+     * @param NigelID The identifier associated with Nigel
+     * @return A list of FeedingDataSample objects parsed from the JSON response
+     * @throws JSONException If there is an error while parsing the JSON response
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<FeedingDataSample> parseFeedingDataSample(JSONObject response, int NigelID) throws JSONException {
 
@@ -155,12 +188,25 @@ public class JSONParser {
         return FeedingDataSamples;
     }
 
+    /**
+     * Parses a JSON-formatted date string to a Unix timestamp
+     *
+     * @param timestampString The JSON date string to be parsed
+     * @return The Unix timestamp representing the parsed date, or -1 if parsing fails
+     * @throws IllegalArgumentException If the provided timestampString is in an invalid format
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static long parseTimestampToUnix(String timestampString) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z");
-        LocalDateTime localDateTime = LocalDateTime.parse(timestampString, formatter);
-        Instant instant = localDateTime.atZone(ZoneId.of("GMT")).toInstant();
-        return instant.getEpochSecond();
+        SimpleDateFormat jsonDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+        jsonDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+        try {
+            Date date = jsonDateFormat.parse(timestampString);
+            return date.getTime();
+        } catch (ParseException e) {
+            e.printStackTrace(); // Handle parsing exception
+            return -1; // Return a meaningful default value or handle the error appropriately
+        }
     }
 
     public String getResponse() {
