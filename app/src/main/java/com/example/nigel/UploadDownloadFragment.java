@@ -1,13 +1,10 @@
 package com.example.nigel;
 
 import android.Manifest;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +14,6 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.core.content.ContextCompat;
 import androidx.documentfile.provider.DocumentFile;
 import androidx.fragment.app.Fragment;
 
@@ -153,23 +149,6 @@ public class UploadDownloadFragment extends Fragment {
         pickExcelLauncher.launch("*/*");
     }
 
-    public void onActivityResult(Uri result) {
-        if (result != null) {
-            // Log the selected file URI
-            Log.d("UploadData", "onActivityResult: Selected file URI: " + result);
-
-            // Check if storage permissions are granted
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
-                // Permissions are granted, proceed with handling the selected file
-                handleSelectedExcelFile(result);
-            } else {
-                // Permissions are not granted, request them
-                Log.d("Permission", "Storage permission not granted. Requesting permission.");
-                requestPermissionLauncher.launch(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
-            }
-        }
-    }
-
     private void handleSelectedExcelFile(Uri selectedFile) {
         // Log the start of the handleSelectedExcelFile method
         Log.d("UploadData", "handleSelectedExcelFile: Handling selected file.");
@@ -189,7 +168,7 @@ public class UploadDownloadFragment extends Fragment {
             RequestBody reqBody = RequestBody.create(MediaType.parse("multipart/form-file"), testFile);
             MultipartBody.Part partFile = MultipartBody.Part.createFormData("file", testFile.getName(), reqBody);
 
-            uploadFile(partFile);
+            uploadFile(partFile,excelFilePath);
         } else {
             // Log an error if the file does not exist or is not a valid Excel file
             Log.e("UploadData", "File does not exist at the specified path or is not a valid Excel file");
@@ -197,12 +176,12 @@ public class UploadDownloadFragment extends Fragment {
         }
     }
 
-    // Add this method to check if the file has a valid Excel extension
+    /*Add this method to check if the file has a valid Excel extension*/
     private boolean isExcelFile(File file) {
         String filename = file.getName();
         return filename.endsWith(".xlsx") || filename.endsWith(".xls");
     }
-    private void uploadFile(MultipartBody.Part partFile) {
+    private void uploadFile(MultipartBody.Part partFile, String excelFilePath) {
         // Log the start of the uploadFile method
         Log.d("UploadData", "uploadFile: Uploading file.");
 
@@ -220,6 +199,7 @@ public class UploadDownloadFragment extends Fragment {
                     // Log the successful upload
                     Log.d("UploadData", "uploadFile: Excel File Uploaded");
                     Toast.makeText(requireContext(), "Excel File Uploaded", Toast.LENGTH_SHORT).show();
+                    deleteTempFile(excelFilePath);
                 } else {
                     // Log an error if the upload fails
                     Log.e("UploadData", "uploadFile: Error uploading Excel file. Code: " + response.code());
@@ -243,49 +223,6 @@ public class UploadDownloadFragment extends Fragment {
         });
 
     }
-
-
-    private String getFilePath(Uri uri) {
-        Log.d("UploadData", "getting filepath... from uri: "+uri);
-        // Try to get file path using DocumentFile for non-media files
-        String pathFromDocumentFile = getFilePathFromDocumentFile(uri);
-        if (pathFromDocumentFile != null) {
-            Log.d("UploadData", "excelFilePath from DocumentFile: " + pathFromDocumentFile);
-            return pathFromDocumentFile;
-        }
-
-        // If it's a media file, try to get the file path using MediaStore
-        String[] projection = {MediaStore.Images.Media.DATA};
-        Cursor cursor = requireActivity().getContentResolver().query(uri, projection, null, null, null);
-        if (cursor != null) {
-            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-            cursor.moveToFirst();
-            String filePath = cursor.getString(column_index);
-            cursor.close();
-            Log.d("UploadData", "excelFilePath inside getFilePath: " + filePath);
-            return filePath;
-        }
-        else{
-            Log.e("UploadData", "curser is null");
-        }
-        Log.e("UploadData", "Failed to get file path");
-        return null;
-    }
-//    private String getFilePathFromDocumentFile(Uri uri) {
-//        try {
-//            DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
-//            if (documentFile != null && documentFile.exists()) {
-//                String filePath = documentFile.getUri().getPath();
-//                // Log the file path
-//                Log.d("UploadData", "excelFilePath from DocumentFile: " + filePath);
-//
-//                return filePath;
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 
     private String getFilePathFromDocumentFile(Uri uri) {
         try {
@@ -318,29 +255,20 @@ public class UploadDownloadFragment extends Fragment {
         return null;
     }
 
-
-    private ActivityResultLauncher<String[]> requestPermissionLauncher = registerForActivityResult(
-            new ActivityResultContracts.RequestMultiplePermissions(), result -> {
-                if (result.getOrDefault(Manifest.permission.WRITE_EXTERNAL_STORAGE, false)) {
-                    // Permission granted, you can proceed with the excel pick
-                    pickExcelLauncher.launch("*/*");
+    private void deleteTempFile(String filePath) {
+        if (filePath != null && !filePath.isEmpty()) {
+            File tempFile = new File(filePath);
+            if (tempFile.exists()) {
+                if (tempFile.delete()) {
+                    Log.d("UploadData", "Temporary file deleted successfully");
                 } else {
-                    Toast.makeText(requireContext(), "Storage permission denied", Toast.LENGTH_SHORT).show();
+                    Log.e("UploadData", "Failed to delete temporary file");
                 }
+            } else {
+                Log.e("UploadData", "Temporary file does not exist");
             }
-    );
-
-    private void verifyStoragePermissions() {
-        int permission = ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            // Permission is not granted, request it
-            Log.d("Permission", "Storage permission not granted. Requesting permission.");
-            requestPermissionLauncher.launch(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE});
         } else {
-            // Permission is already granted
-            Log.d("Permission", "Storage permission already granted. Launching pickExcelLauncher.");
-            pickExcelLauncher.launch("*/*");
+            Log.e("UploadData", "Invalid file path");
         }
     }
 }
