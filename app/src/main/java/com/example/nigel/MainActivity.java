@@ -48,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.main_layout);
         mContentMain = findViewById(R.id.main_layout);
 
-        displayFragment(new MainBabyFragment());
+        // Display the initial fragment without adding it to the back stack
+        getSupportFragmentManager()
+                .beginTransaction()
+                .setTransitionStyle(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                .replace(mContentMain.getId(), new MainBabyFragment())
+                .commit();
     }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -89,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
             fragmentManager.popBackStack();
         } else {
             // If no fragments in the back stack, let the system handle the back button
-            super.onBackPressed();
+            finish();
         }
     }
 }

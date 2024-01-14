@@ -16,6 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import com.example.nigel.csv.CSVHandler;
+import com.example.nigel.dataclasses.BloodSample;
+import com.example.nigel.dataclasses.DebugTimestampConverter;
+import com.example.nigel.dataclasses.FeedingDataSample;
+import com.example.nigel.dataclasses.SweatSample;
 import com.github.mikephil.charting.data.Entry;
 
 import org.json.JSONArray;
@@ -27,7 +32,10 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -44,7 +52,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private SwipeRefreshLayout swipeRefreshLayout;
     private Executor executor = Executors.newSingleThreadExecutor();
     private OkHttpClient client = new OkHttpClient();
-    private List<Baby> babyList = new ArrayList<>();
+    private Map<Integer, Baby> babyList = new HashMap<>();
     private RecyclerView recyclerView;
     private BabyListAdapter adapter;
     private EditText searchEditText;
@@ -88,13 +96,13 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     private void fetchDataInBackground() {
         // Perform data fetching from CSV file or server
         executor.execute(() -> {
-            List<Baby> result = fetchDataFromDatabaseViaAPI();
+            Map<Integer, Baby> result = fetchData(true);
 
             // Update UI with the fetched data
             requireActivity().runOnUiThread(() -> {
                 if (result != null) {
                     babyList.clear();
-                    babyList.addAll(result);
+                    babyList.putAll(result);
                     Log.d("MainBabyFragment", "Baby list size: " + babyList.size());
 
                     adapter = new BabyListAdapter(babyList);
@@ -109,7 +117,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         });
     }
 
-    private List<Baby> fetchData() {
+    private Map<Integer, Baby> fetchData(boolean useLocalCSV) {
         // Implement the logic to fetch data from CSV file or server
         // Return the fetched data as a List<Bebe>
         // ...
@@ -136,11 +144,15 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
             return null;
         }
     }
-    private List<Baby> parseResponse(String responseBody) {
+
+
+
+
+    private Map<Integer, Baby> parseResponse(String responseBody) {
         // Implement logic to parse the response and convert it to a List<Bebe>
         // ...
         Log.d("MainActivity", "Response body: " + responseBody);
-        List<Baby> babyList = new ArrayList<>();
+        Map<Integer, Baby> babyList = new HashMap<>();
         try {
             JSONArray jsonArray = new JSONArray(responseBody);
 
@@ -149,11 +161,18 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
                 int id = jsonObject.getInt("Nigel ID");
                 float weight = (float) jsonObject.getDouble("Birth Weight (kg)");
-                String group = jsonObject.getString("Group");
+                int gestationalAge = jsonObject.getInt("Gestational Age");
                 int timeOfBirth = jsonObject.getInt("Time of Birth");
-
+                String notes = jsonObject.getString("Notes");
                 // Now you can use the id and name as needed
-
+                babyList.put(id,
+                        new Baby(
+                                id,
+                                gestationalAge,
+                                timeOfBirth,
+                                weight,
+                                notes)
+                );
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -242,9 +261,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 babyList.add(
                         new Baby(
                                 id,
-                                dateOfBirthObject,
-                                weight,
                                 gestationalAge,
+                                weight,
+                                dateOfBirthObject,
                                 notes,
                                 generateRandomTimeSeriesData())
                 );

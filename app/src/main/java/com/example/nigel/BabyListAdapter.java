@@ -3,38 +3,58 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.nigel.dataclasses.BloodSample;
+import com.example.nigel.dataclasses.DataSample;
+import com.example.nigel.dataclasses.FeedingDataSample;
+import com.example.nigel.dataclasses.SweatSample;
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.LimitLine;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.data.ScatterData;
+import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
 public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
 
-    private List<Baby> originalList;
-    private List<Baby> filteredList; // New list to store filtered results
+    private Map<Integer, Baby> originalList = new HashMap<>();
+    private Map<Integer, Baby> filteredList = new HashMap<>(); // New list to store filtered results
     private AxisConfiguration commonAxisConfig;
 
-    public BabyListAdapter(List<Baby> babyList) {
+    public BabyListAdapter(Map<Integer, Baby> babyList) {
+        Log.d("BabyListAdapter", "BabyListAdapter: " + babyList.size());
         this.originalList = babyList;
         this.filteredList = this.originalList;
         this.commonAxisConfig = new AxisConfiguration(0,10,0,1);
-        if (babyList != null) {
-            this.filteredList = new ArrayList<>(babyList); // Initialize filtered list with all items
-        } else {
-            this.filteredList = new ArrayList<>(); // Initialize an empty list if bebeList is null
-        }    }
+        this.filteredList = new HashMap<>(babyList); // Initialize filtered list with all items
+
+        Log.d("BabyListAdapter", "Baby 1: " + babyList.get(1).getId());
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView personNameTextView;
-        public LineChart personChart;
+        public CombinedChart personChart;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -52,20 +72,69 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        Baby baby = filteredList.get(position);
+        Baby baby = filteredList.get(position+1);
+        // Log the name of the person to the TextView
+        Log.d("BabyListAdapter", "onBindViewHolder: " +
+                baby.getId() + " " +
+                baby.getGestationalAge() + " " +
+                baby.getBirthDate() + " " +
+                baby.getWeight() + " " +
+                baby.getNotes() + " " +
+                baby.getTimeSeriesData().size() + " " +
+                baby.getTimeSeriesData().get(0).getTimestamp());
         holder.personNameTextView.setText(String.valueOf(baby.getId()));
+        Log.d("BabyListAdapter", "Setting up person text " + holder.personNameTextView.getId());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
-                intent.putExtra("Nigel ID", baby.getId());
+                //v.getContext().startActivity(intent);
+
+                //intent.putExtra("Baby object", baby);
+                intent.putExtra("BEBE_KEY", baby.getId());
+                intent.putExtra("Date of Birth", baby.getBirthDate());
+                intent.putExtra("Weight", baby.getWeight());
+                intent.putExtra("Gestational Age", baby.getGestationalAge());
+                intent.putExtra("Notes", baby.getNotes());
+
+                // Extract blood glucose entries
+                ArrayList<Entry> bloodGlucoseEntries = new ArrayList<>();
+                ArrayList<Entry> sweatGlucoseEntries = new ArrayList<>();
+                ArrayList<Float> feedingTimes = new ArrayList<>();
+
+
+                for (DataSample event : baby.getTimeSeriesData()) {
+                    if (event instanceof BloodSample) {
+                        BloodSample bloodSample = (BloodSample) event;
+                        bloodGlucoseEntries.add(new Entry(bloodSample.getTimestamp(), bloodSample.getGlucoseValue()));
+                    }
+                    else if (event instanceof SweatSample){
+                        SweatSample sweatsample = (SweatSample) event;
+                        sweatGlucoseEntries.add(new Entry(sweatsample.getTimestamp(), sweatsample.getGlucoseValue()));
+                    }
+                    else if (event instanceof FeedingDataSample) {
+                        FeedingDataSample feedingSample = (FeedingDataSample) event;
+                        feedingTimes.add((float) feedingSample.getTimestamp());
+                    }
+                }
+
+
+                // Add the extracted entries to the intent
+                intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
+                intent.putExtra("SweatGlucoseEntries", sweatGlucoseEntries);
+                intent.putExtra("feedingTimes", feedingTimes);
+
+
+                //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
+
                 v.getContext().startActivity(intent);
             }
         });
 
         // Customize this method based on your data and chart setup
-        setupPersonChart(holder.personChart,
-                baby.getTimeSeriesData(),
+        setupPersonChart(
+                holder.personChart,
+                baby,
                 commonAxisConfig);
     }
 
@@ -74,38 +143,123 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         return filteredList.size();
     }
 
-    private void setupPersonChart(LineChart chart,
-                                  List<Entry> timeSeriesData,
+    private void setupPersonChart(CombinedChart combinedChart,
+                                  Baby baby,
                                   AxisConfiguration axisConfig) {
         // Customize this method based on how you want to display the chart
+        Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
+        XAxis xAxis = combinedChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
 
-        // Example setup:
-        LineDataSet dataSet = new LineDataSet(timeSeriesData, "Person Data");
-        LineData lineData = new LineData(dataSet);
-        chart.setData(lineData);
+            @Override
+            public String getFormattedValue(float value) {
+                // Assuming the value is in milliseconds since epoch
+                return dateFormat.format(new Date((long) value));
+            }
+        });
+        // Categorize the events
+        ArrayList<Entry> bloodSampleEntries = new ArrayList<>();
+        ArrayList<Entry> sweatSampleEntries = new ArrayList<>();
+        ArrayList<LimitLine> feedingLines = new ArrayList<>();
 
-        // Set common axis configuration
-        chart.getAxisLeft().setAxisMinimum(axisConfig.getMinY());
-        chart.getAxisLeft().setAxisMaximum(axisConfig.getMaxY());
+        // Log size of baby's timeSeries data
+        Log.d("BabyListAdapter", "Baby " + baby.getId() + " timeSeriesData size: " + baby.getTimeSeriesData().size());
+        for (DataSample timeSeriesEvent : baby.getTimeSeriesData()) {
+            if (timeSeriesEvent instanceof BloodSample) {
+                bloodSampleEntries.add(new Entry(timeSeriesEvent.getTimestamp(), ((BloodSample) timeSeriesEvent).getGlucoseValue()));
+                Log.d("BabyListAdapter", "BloodSample event at " + timeSeriesEvent.getTimestamp());
+            } else if (timeSeriesEvent instanceof SweatSample) {
+                sweatSampleEntries.add(new Entry(timeSeriesEvent.getTimestamp(), ((SweatSample) timeSeriesEvent).getGlucoseValue()));
+                Log.d("BabyListAdapter", "SweatSample event at " + timeSeriesEvent.getTimestamp());
+            } else if (timeSeriesEvent instanceof FeedingDataSample) {
+                LimitLine limitLine = new LimitLine(timeSeriesEvent.getTimestamp());
+                limitLine.setLineWidth(1f); // Set the width of the vertical line
+                // Set color to semi-transparent blue according to api level
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                    limitLine.setLineColor(Color.argb(255, 0, 0, 255));
+                } else {
+                    limitLine.setLineColor(Color.BLUE);
+                }
+                // limitLine.enableDashedLine(10f, 10f, 0f);
+                feedingLines.add(limitLine);
+                Log.d("BabyListAdapter", "Feeding event at " + timeSeriesEvent.getTimestamp());
 
-        chart.getXAxis().setAxisMinimum(axisConfig.getMinX());
-        chart.getXAxis().setAxisMaximum(axisConfig.getMaxX());
 
-        chart.getDescription().setEnabled(false);
-        chart.invalidate(); // refresh
+            } else {
+                Log.d("MainActivity", "Unknown event type");
+            }
+        }
+
+        // Set the axis limits
+        // Log SweatSampleEntries size
+        Log.d("BabyListAdapter", "SweatSampleEntries size: " + sweatSampleEntries.size() +
+                " BloodSampleEntries size: " + bloodSampleEntries.size());
+
+        /*LineData sweatData = new LineData(sweatDataset);
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(sweatData);
+
+        combinedChart.setData(combinedData);
+
+        combinedChart.getAxisLeft().setAxisMinimum(axisConfig.getMinY());
+        combinedChart.getAxisLeft().setAxisMaximum(axisConfig.getMaxY());
+
+        combinedChart.getXAxis().setAxisMinimum(axisConfig.getMinX());
+        combinedChart.getXAxis().setAxisMaximum(axisConfig.getMaxX());
+
+        combinedChart.invalidate();*/
+
+
+
+        ScatterDataSet bloodDataset = new ScatterDataSet(bloodSampleEntries, "Blood Glucose");
+        bloodDataset.setColor(Color.argb(255, 255, 0, 0));
+        bloodDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
+        ScatterData bloodData = new ScatterData(bloodDataset);
+
+
+        LineDataSet sweatDataset = new LineDataSet(sweatSampleEntries, "Sweat Glucose");
+        sweatDataset.setAxisDependency(YAxis.AxisDependency.RIGHT);
+        sweatDataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+        sweatDataset.setCubicIntensity(0.1f);
+        sweatDataset.setColor(Color.argb(255, 0, 255, 0));
+        sweatDataset.setCircleColor(Color.argb(255, 0, 255, 0));
+        sweatDataset.setCircleHoleColor(Color.argb(255, 0, 255, 0));
+        LineData sweatData = new LineData(sweatDataset);
+
+        // Clear the previous limit lines
+        xAxis.removeAllLimitLines();
+        // Now, iterate over the feeding times and create a vertical line for each
+        for (LimitLine limitLine : feedingLines) {
+            xAxis.addLimitLine(limitLine);
+        }
+
+        CombinedData combinedData = new CombinedData();
+        combinedData.setData(bloodData);
+        combinedData.setData(sweatData);
+
+        combinedChart.setData(combinedData);
+
+        // Removed Gridlines
+        combinedChart.getAxisLeft().setDrawGridLines(false);
+        combinedChart.getAxisRight().setDrawGridLines(false);
+        combinedChart.getXAxis().setDrawGridLines(false);
+
+        // Refresh the chart to show changes
+        combinedChart.invalidate();
     }
 
     public void filterByName(String query) {
         Log.d("FILTER", "filterByName: " + query);
         filteredList.clear();
         if (query.isEmpty()) {
-            filteredList.addAll(originalList); // If query is empty, show all babies
+            filteredList.putAll(originalList); // If query is empty, show all babies
         } else {
-            for (Baby baby : originalList) {
+            for (Baby baby : originalList.values()) {
                 Log.d("FILTER", "filterByName: " + baby.getId());
                 if (String.valueOf(baby.getId()).toLowerCase().contains(query.toLowerCase())) {
                     Log.d("FILTER", "baby added: " + baby.getId());
-                    filteredList.add(baby);
+                    filteredList.put(baby.getId(), baby);
                 }
             }
         }
@@ -113,11 +267,11 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         notifyDataSetChanged(); // Notify the adapter that the data has changed
     }
 
-    public List<Baby> getFilteredList() {
+    public Map<Integer, Baby> getFilteredList() {
         return filteredList;
     }
 
-    public List<Baby> getOriginalList() {
+    public Map<Integer, Baby> getOriginalList() {
         return originalList;
     }
 
