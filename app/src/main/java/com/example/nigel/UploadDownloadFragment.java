@@ -74,7 +74,7 @@ public class UploadDownloadFragment extends Fragment {
                 .baseUrl(HEROKU_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        Api api= retrofit.create(Api.class);
+        BabyApi api= retrofit.create(BabyApi.class);
         // API call
         Call<ResponseBody> call;
         String successText;
@@ -189,7 +189,7 @@ public class UploadDownloadFragment extends Fragment {
                 .baseUrl(HEROKU_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        Api api = retrofit.create(Api.class);
+        BabyApi api = retrofit.create(BabyApi.class);
 
         Call<ResponseBody> upload = api.uploadExcelFile(partFile);
         upload.enqueue(new Callback<ResponseBody>() {
