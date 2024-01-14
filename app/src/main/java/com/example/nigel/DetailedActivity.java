@@ -1,8 +1,11 @@
 package com.example.nigel;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -43,7 +46,8 @@ public class DetailedActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
 
-        // setup text views
+        // Retrieve views
+        ImageButton backButton = findViewById(R.id.backButton);
         TextView textView = findViewById(R.id.nameTextView);
         TextView dateOfBirthTextView = findViewById(R.id.dateOfBirthTextView);
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
@@ -61,6 +65,20 @@ public class DetailedActivity extends AppCompatActivity {
         long birthdate = getIntent().getLongExtra("Date of Birth", -1);
 
          */
+        // Setup the back button for home page
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Use the intent to navigate back to the MainActivity
+                Intent intent = new Intent(DetailedActivity.this, MainActivity.class);
+                // If you don't want to keep this activity on the stack, clear it
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                startActivity(intent);
+                finish(); // If you want to close this activity
+            }
+        });
+
+
         //Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
         int bebeInt = (int) getIntent().getSerializableExtra("Nigel ID");
         double gestationalAge = (double) getIntent().getSerializableExtra("Gestational Age");
