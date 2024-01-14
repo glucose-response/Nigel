@@ -25,11 +25,15 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
@@ -93,6 +97,29 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
                 intent.putExtra("Notes", baby.getNotes());
 
+                // Extract blood glucose entries
+                ArrayList<Entry> bloodGlucoseEntries = new ArrayList<>();
+                ArrayList<Entry> sweatGlucoseEntries = new ArrayList<>();
+                //ArrayList<Entry> feedingEntries = new ArrayList<>();
+
+
+                for (DataSample event : baby.getTimeSeriesData()) {
+                    if (event instanceof BloodSample) {
+                        BloodSample bloodSample = (BloodSample) event;
+                        bloodGlucoseEntries.add(new Entry(bloodSample.getTimestamp(), bloodSample.getGlucoseValue()));
+                    }
+                    else if (event instanceof SweatSample){
+                        SweatSample sweatsample = (SweatSample) event;
+                        sweatGlucoseEntries.add(new Entry(sweatsample.getTimestamp(), sweatsample.getGlucoseValue()));
+                    }
+                }
+
+                // Add the extracted entries to the intent
+                intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
+                intent.putExtra("SweatGlucoseEntries", new ArrayList<>(sweatGlucoseEntries));
+                //intent.putExtra("feedingEntries", bloodGlucoseEntries);
+
+
                 //intent.putExtra("Blood Samples", (Serializable) BloodSampleEntries.get(baby.getId()));
 
                 v.getContext().startActivity(intent);
@@ -119,6 +146,15 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         // Customize this method based on how you want to display the chart
         Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
         XAxis xAxis = combinedChart.getXAxis();
+        xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
+
+            @Override
+            public String getFormattedValue(float value) {
+                // Assuming the value is in milliseconds since epoch
+                return dateFormat.format(new Date((long) value));
+            }
+        });
         // Categorize the events
         ArrayList<Entry> bloodSampleEntries = new ArrayList<>();
         ArrayList<Entry> sweatSampleEntries = new ArrayList<>();

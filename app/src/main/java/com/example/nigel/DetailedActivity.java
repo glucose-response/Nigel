@@ -9,10 +9,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
@@ -57,6 +61,9 @@ public class DetailedActivity extends AppCompatActivity {
         double weight = (double) getIntent().getSerializableExtra("Weight");
         String notes = (String) getIntent().getSerializableExtra("notes");
 
+        // Retrieve the Blood, Sweat and Feeding entries
+        ArrayList<Entry> bloodGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("bloodGlucoseEntries");
+        ArrayList<Entry> sweatGlucoseEntries = (ArrayList<Entry>) getIntent().getSerializableExtra("SweatGlucoseEntries");
 
         // Populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
@@ -73,47 +80,61 @@ public class DetailedActivity extends AppCompatActivity {
 
         // Onto the graphing
         glucoseChart = findViewById(R.id.glucoseChart);
-        configureChart(glucoseChart);
+        configureChart(glucoseChart, bloodGlucoseEntries, sweatGlucoseEntries);
     }
 
-    private void configureChart(LineChart chart) {
-        // Example axis configuration
+    private void configureChart(LineChart chart, ArrayList<Entry> bloodGlucoseEntries,ArrayList<Entry> sweatGlucoseEntries) {
+        // Setup the X and Y axis configurations
         XAxis xAxis = chart.getXAxis();
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
-        xAxis.setDrawGridLines(false); // remove grid lines
-        xAxis.setDrawAxisLine(true);
-        //... other axis configurations
+        xAxis.setDrawGridLines(false);
 
         YAxis leftAxis = chart.getAxisLeft();
-        leftAxis.setDrawGridLines(false); // remove grid lines
-        //... other axis configurations
+        leftAxis.setDrawGridLines(false);
 
-        // Set the same for the right axis if necessary
         YAxis rightAxis = chart.getAxisRight();
-        rightAxis.setDrawGridLines(false); // remove grid lines
-        //... other axis configurations
+        rightAxis.setDrawGridLines(false);
 
-        // Prepare the data sets (without actual data for now)
-        LineDataSet bloodDataSet = new LineDataSet(null, "Blood Glucose");
-        LineDataSet sweatDataSet = new LineDataSet(null, "Sweat Glucose");
-        // Configure data set appearance
-        bloodDataSet.setColor(Color.RED);
-        sweatDataSet.setColor(Color.GREEN);
-        //... other data set configurations
+        xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
 
-        // Combine the data
-        LineData data = new LineData();
-        data.addDataSet(bloodDataSet);
-        // Set the combined data to the chart
-        chart.setData(data);
+            @Override
+            public String getFormattedValue(float value) {
+                // Assuming the value is in milliseconds since epoch
+                return dateFormat.format(new Date((long) value));
+            }
+        });
 
-        // Any additional chart configurations
-        // For example, if you want to animate the chart:
-        chart.animateX(1000);
+        // Create the dataset for blood glucose if entries are available
+        if (bloodGlucoseEntries != null && !bloodGlucoseEntries.isEmpty()) {
+            LineDataSet bloodDataSet = new LineDataSet(bloodGlucoseEntries, "Blood Glucose");
+            bloodDataSet.setColor(Color.RED);
+            bloodDataSet.setCircleColor(Color.RED);
+            bloodDataSet.setAxisDependency(YAxis.AxisDependency.LEFT);
 
-        // Refresh the chart
+            // Configure more properties of the dataset as needed
+
+            LineData data = new LineData(bloodDataSet);
+            chart.setData(data);
+        }
+
+        if (sweatGlucoseEntries != null && !sweatGlucoseEntries.isEmpty()) {
+            LineDataSet sweatDataSet = new LineDataSet(sweatGlucoseEntries, "Sweat Glucose");
+            sweatDataSet.setColor(Color.GREEN);
+            sweatDataSet.setCircleColor(Color.GREEN);
+            sweatDataSet.setAxisDependency(YAxis.AxisDependency.RIGHT);
+
+            LineData data = chart.getData();
+            if (data != null) {
+                data.addDataSet(sweatDataSet);
+            } else {
+                data = new LineData(sweatDataSet);
+                chart.setData(data);
+            }
+
+            // Refresh the chart
         chart.invalidate();
-
     }
 
-}
+
+}}
