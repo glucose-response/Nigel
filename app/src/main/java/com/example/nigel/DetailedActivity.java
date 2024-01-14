@@ -125,14 +125,14 @@ public class DetailedActivity extends AppCompatActivity {
         rightAxis.setDrawGridLines(false);
 
         xAxis.setValueFormatter(new ValueFormatter() {
-            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
-
             @Override
             public String getFormattedValue(float value) {
-                // Assuming the value is in milliseconds since epoch
-                return dateFormat.format(new Date((long) value));
+                long milliseconds = (long) value * 1000; // Convert seconds to milliseconds
+                return new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault()).format(new Date(milliseconds));
             }
         });
+
+
 
         xAxis.removeAllLimitLines();
         if (feedingTimes != null && !feedingTimes.isEmpty()) {
