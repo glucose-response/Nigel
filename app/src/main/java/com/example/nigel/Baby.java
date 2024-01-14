@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 public class Baby implements Serializable{
-    private int id;
+    private int NigelID;
     private double gestationalAge;
 
     private long birthDate; // in milliseconds for graphing
@@ -36,7 +36,7 @@ public class Baby implements Serializable{
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Baby(int id, double gestationalAge, long birthDate, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
-            this.id = id;
+            this.NigelID = id;
             this.gestationalAge = gestationalAge;
             this.birthDate = birthDate;
             this.dateOfBirth = LocalDate.ofEpochDay(birthDate);
@@ -62,7 +62,7 @@ public class Baby implements Serializable{
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Baby(int id, double gestationalAge, String birthday, double weight, String notes) {
         try{
-            this.id = id;
+            this.NigelID = id;
             this.birthday = birthday;
             String[] birthdays = birthday.split("-");
             this.dateOfBirth = LocalDate.of(Integer.parseInt(birthdays[0]),Integer.parseInt(birthdays[1]),Integer.parseInt(birthdays[2]));
@@ -82,7 +82,7 @@ public class Baby implements Serializable{
     @RequiresApi(api = Build.VERSION_CODES.O)
     public Baby(int id, double gestationalAge, LocalDate dateOfBirth, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
-            this.id = id;
+            this.NigelID = id;
             this.gestationalAge = gestationalAge;
             this.dateOfBirth = dateOfBirth;
             this.birthday = dateOfBirthToString();
@@ -103,7 +103,7 @@ public class Baby implements Serializable{
      * Getters
      */
     public int getId() {
-        return id;
+        return NigelID;
     }
     public double getGestationalAge() {
         return gestationalAge;
@@ -128,7 +128,7 @@ public class Baby implements Serializable{
      * Setters
      */
     public void setId(int id) {
-        this.id = id;
+        this.NigelID = id;
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {this.dateOfBirth = dateOfBirth;}

@@ -18,6 +18,7 @@ import com.example.nigel.dataclasses.FeedingDataSample;
 import com.example.nigel.dataclasses.SweatSample;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.LimitLine;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -242,12 +243,27 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             xAxis.addLimitLine(limitLine);
         }
 
+        // Add feeding line label to legend
+        Legend legend = combinedChart.getLegend();
+        int feedingColor[] = new int[1];
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            feedingColor[0] = Color.argb(185, 170, 211, 225);
+        } else {
+            feedingColor[0] = Color.BLUE;
+        }
+        String[] feedingLabel = new String[1];
+        feedingLabel[0] = "Feeding Time";
+
+        legend.setExtra(feedingColor, feedingLabel);
+
         // Combine the data
         CombinedData combinedData = new CombinedData();
         combinedData.setData(bloodData);
         combinedData.setData(sweatData);
 
         combinedChart.setData(combinedData);
+
+
 
         // Removed Gridlines
         combinedChart.getAxisLeft().setDrawGridLines(false);

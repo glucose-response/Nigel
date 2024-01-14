@@ -7,6 +7,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -140,8 +143,7 @@ public class AddBabyDialog extends Dialog{
                             "\nAdditional Notes: " + notes;
 
                     details = details + "\nBaby added to the database, please close this tab";
-                    outputText.setText("Added Succesfully");
-
+                    outputText.setText("Request send to server");
                     // Function to empty fields for the next set of data to input
                     resetFields();
                 }
@@ -246,6 +248,14 @@ public class AddBabyDialog extends Dialog{
         call.enqueue(new Callback<ResponseBody>() {
             @Override
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                if (!response.isSuccessful()) {
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("Error Body", errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 if (response.body() != null) {
                     try {
                         String responseData = response.body().string();
@@ -264,6 +274,8 @@ public class AddBabyDialog extends Dialog{
         });
     }
 
+
+
     /**
      * This method checks if the ID already exist
      * @param id the ID to be checked
@@ -280,7 +292,7 @@ public class AddBabyDialog extends Dialog{
         return false;
     }
 
-    /**his is the interface that will be used to communicate with the activity that created the dialog*/
+    /**This is the interface that will be used to communicate with the activity that created the dialog*/
     public interface OnAddBabyListener {
         void onAddBaby();
     }
