@@ -1,5 +1,6 @@
 package com.example.nigel;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.Intent;
@@ -27,7 +28,10 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.ScatterData;
 import com.github.mikephil.charting.data.ScatterDataSet;
 
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,6 +119,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         return filteredList.size();
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void setupPersonChart(CombinedChart combinedChart,
                                   Baby baby,
                                   AxisConfiguration axisConfig) {
@@ -138,13 +143,13 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             } else if (timeSeriesEvent instanceof FeedingDataSample) {
                 LimitLine limitLine = new LimitLine(timeSeriesEvent.getTimestamp());
                 limitLine.setLineWidth(1f); // Set the width of the vertical line
+                limitLine.enableDashedLine(10f, 10f, 0f);
                 // Set color to semi-transparent blue according to api level
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                    limitLine.setLineColor(Color.argb(255, 0, 0, 255));
+                    limitLine.setLineColor(Color.argb(185, 170, 211, 225));
                 } else {
                     limitLine.setLineColor(Color.BLUE);
                 }
-                // limitLine.enableDashedLine(10f, 10f, 0f);
                 feedingLines.add(limitLine);
                 Log.d("BabyListAdapter", "Feeding event at " + timeSeriesEvent.getTimestamp());
 
@@ -163,7 +168,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
 
         ScatterDataSet bloodDataset = new ScatterDataSet(bloodSampleEntries, "Blood Glucose");
-        bloodDataset.setColor(Color.argb(255, 255, 0, 0));
+        bloodDataset.setColor(Color.argb(255, 190, 46, 23));
         bloodDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
         ScatterData bloodData = new ScatterData(bloodDataset);
 
@@ -172,9 +177,9 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         sweatDataset.setAxisDependency(YAxis.AxisDependency.RIGHT);
         sweatDataset.setMode(LineDataSet.Mode.CUBIC_BEZIER);
         sweatDataset.setCubicIntensity(0.1f);
-        sweatDataset.setColor(Color.argb(255, 0, 255, 0));
-        sweatDataset.setCircleColor(Color.argb(255, 0, 255, 0));
-        sweatDataset.setCircleHoleColor(Color.argb(255, 0, 255, 0));
+        sweatDataset.setColor(Color.argb(255, 142, 186, 140));
+        sweatDataset.setCircleColor(Color.argb(255, 142, 186, 140));
+        sweatDataset.setCircleHoleColor(Color.argb(255, 142, 186, 140));
         LineData sweatData = new LineData(sweatDataset);
 
         // Clear the previous limit lines
