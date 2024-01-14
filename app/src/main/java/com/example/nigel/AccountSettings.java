@@ -13,7 +13,7 @@ public class AccountSettings extends Application {
     private IAuthenticationResult authenticationResult;
     private ISingleAccountPublicClientApplication mSingleAccountApp;
 
-    /** Get variables */
+    /** Getters*/
     public IAccount getmAccount() {
         return mAccount;
     }
@@ -24,7 +24,7 @@ public class AccountSettings extends Application {
         return mSingleAccountApp;
     }
 
-    /** Set Variables */
+    /** Setters*/
     public void setmAccount(IAccount mAccount) {
         this.mAccount = mAccount;  // Could be a null
     }

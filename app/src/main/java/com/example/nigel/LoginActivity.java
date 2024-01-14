@@ -12,7 +12,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.microsoft.identity.client.IAccount;
 
-
+/**Class triggers login*/
 public class LoginActivity extends AppCompatActivity implements LoginBufferFragment.OnFragmentInteractionListener
 {
     private ConstraintLayout mContentMain;

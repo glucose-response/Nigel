@@ -76,6 +76,11 @@ public class JSONParser {
         }
         return dataset;
     }
+    /**
+     * Parses the JSON response from the server into a List
+     * @return List of BloodSamples
+     * @throws JSONException
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<BloodSample> parseBloodSample(JSONObject response, int NigelID) throws JSONException {
 
@@ -99,6 +104,8 @@ public class JSONParser {
                 String source = record.getString("Source (art/cap/venous)");
                 String timestamps = record.getString("Timestamp");
                 long timestamp = parseTimestampToUnix(timestamps);
+
+                // Create a BloodSample Object
                 BloodSample bloodSample = new BloodSample(timestamp,NigelID, glucose, (float) lactate);
                 bloodSamples.add(bloodSample);
             }
@@ -106,6 +113,11 @@ public class JSONParser {
         return bloodSamples;
     }
 
+    /**
+     * Parses the JSON response from the server into a List
+     * @return List of SweatSample
+     * @throws JSONException
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<SweatSample> parseSweatSample(JSONObject response, int NigelID) throws JSONException {
 
@@ -127,6 +139,8 @@ public class JSONParser {
                 float sodium = (float) record.getDouble("Sodium");
                 String timestamps = record.getString("Timestamp");
                 long timestamp = parseTimestampToUnix(timestamps);
+
+                // Create a SweatSample Object
                 SweatSample sweatSample = new SweatSample(timestamp,NigelID, glucose, sodium, lactate, potassium, chloride, calcium);
                 sweatSamples.add(sweatSample);
             }
@@ -134,9 +148,15 @@ public class JSONParser {
         return sweatSamples;
     }
 
+    /**
+     * Parses the JSON response from the server into a List
+     * @return List of FeedingSamples
+     * @throws JSONException
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private List<FeedingDataSample> parseFeedingDataSample(JSONObject response, int NigelID) throws JSONException {
 
+        // Empty list to be filled with FeedingDataSamples
         List<FeedingDataSample> FeedingDataSamples = new ArrayList<>();
         Iterator<String> it = response.keys();
 
@@ -148,6 +168,8 @@ public class JSONParser {
                 String type = record.getString("Type feeding ");
                 String timestamps = record.getString("Timestamp");
                 long timestamp = parseTimestampToUnix(timestamps);
+
+                // Create a FeedingDataSample Object
                 FeedingDataSample fed = new FeedingDataSample(timestamp,NigelID, type);
                 FeedingDataSamples.add(fed);
             }
@@ -155,6 +177,11 @@ public class JSONParser {
         return FeedingDataSamples;
     }
 
+    /**
+     * Parses the timestamp from the JSON response into a Unix timestamp
+     * @return Unix timestamp
+     * @throws JSONException
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private static long parseTimestampToUnix(String timestampString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z");
@@ -163,6 +190,7 @@ public class JSONParser {
         return instant.getEpochSecond();
     }
 
+    /**Getters*/
     public String getResponse() {
         return response;
     }

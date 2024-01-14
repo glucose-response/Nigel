@@ -37,11 +37,16 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 // MainActivity.java
+/**Class acts as starting point for all fragments*/
 public class MainActivity extends AppCompatActivity {
     private AccountSettings settings;
     private ConstraintLayout mContentMain;
 
     @Override
+    /**
+     * Method automatically called when page opens
+     * Displays the main fragment for graphs
+     * */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_layout);
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
 
         displayFragment(new MainBabyFragment());
     }
+    /**
+     * Method defines the menu selections
+     * */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
@@ -74,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Launching a fragment from another fragment as an implementation
+     */
     private void displayFragment(final Fragment fragment) {
         getSupportFragmentManager()
                 .beginTransaction()
@@ -82,6 +93,9 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)  // Add this line to add the transaction to the back stack
                 .commit();
     }
+    /**
+     * Method defines the back button behaviour
+     * */
     @Override
     public void onBackPressed() {
         FragmentManager fragmentManager = getSupportFragmentManager();

@@ -21,7 +21,7 @@ import com.microsoft.identity.client.exception.MsalException;
 
 import org.json.JSONObject;
 
-
+/**Class organised logouts*/
 public class LogoutFragment extends Fragment {
     private static final String TAG = SingleAccountModeFragment.class.getSimpleName();
     private Button signOutButton;

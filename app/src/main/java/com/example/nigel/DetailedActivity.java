@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+/**Class defines the individual baby page*/
 public class DetailedActivity extends AppCompatActivity {
     private LineChart glucoseChart;
-    // Helper method to format the date
+
+    /**Helper method to format the date*/
     private String formatDate(long timestamp) {
         // Create a DateFormatter object for displaying date in specified format.
         SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
@@ -31,14 +33,14 @@ public class DetailedActivity extends AppCompatActivity {
         // Convert the timestamp to a Date object and format it.
         return formatter.format(new Date(timestamp));
     }
-
-
+    /**
+     * Method automatically called when page opens*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detailed);
 
-        // setup text views
+        // Setup text views
         TextView textView = findViewById(R.id.nameTextView);
         TextView dateOfBirthTextView = findViewById(R.id.dateOfBirthTextView);
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
@@ -55,6 +57,7 @@ public class DetailedActivity extends AppCompatActivity {
         long birthdate = getIntent().getLongExtra("Date of Birth", -1);
 
          */
+        // Get individual baby attributes from BabyListAdapter via Intent
         //Baby baby = (Baby) getIntent().getSerializableExtra("Baby object");
         int bebeInt = (int) getIntent().getSerializableExtra("Nigel ID");
         double gestationalAge = (double) getIntent().getSerializableExtra("Gestational Age");
@@ -74,19 +77,14 @@ public class DetailedActivity extends AppCompatActivity {
         dateOfBirthTextView.setText("Date of Birth: " + birthdate);
         futureNotesEditText.setText(notes);
 
-        /*if (birthdate != -1) {
-            String dateString = formatDate(birthdate);
-            dateOfBirthTextView.setText("Date of Birth: " + dateString);
-        } else {
-            dateOfBirthTextView.setText("Date of Birth: N/A");
-        }*/
-
         // Onto the graphing
         glucoseChart = findViewById(R.id.glucoseChart);
         configureChart(glucoseChart, bloodGlucoseEntries, sweatGlucoseEntries , feedingTimes);
     }
 
 
+    /**
+     * Method creates the charts in the individual view*/
     private void configureChart(LineChart chart, ArrayList<Entry> bloodGlucoseEntries,ArrayList<Entry> sweatGlucoseEntries, ArrayList<Long> feedingTimes) {
         // Setup the X and Y axis configurations
         XAxis xAxis = chart.getXAxis();

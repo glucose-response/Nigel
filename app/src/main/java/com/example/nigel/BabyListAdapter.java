@@ -40,7 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
+/**
+ * This class is used to display the list of babies on the main page
+ */
 public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
 
     private Map<Integer, Baby> originalList = new HashMap<>();
@@ -78,12 +80,17 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     @NonNull
     @Override
+    /**
+     * Called when RecyclerView needs a new RecyclerView.ViewHolder of the given type to represent
+     * an item.
+     */
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_chart, parent, false);
         return new ViewHolder(view);
     }
 
     /**
+     * Called by RecyclerView to display the data at the specified position.
      * @param holder   The ViewHolder which should be updated to represent the contents of the
      *                 item at the given position in the data set.
      * @param position The position of the item within the adapter's data set.
@@ -91,7 +98,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        List<Baby> babyList = mapToList();
+        List<Baby> babyList = mapToList(); //Convert map into list for easier use
         Baby baby = babyList.get(position);
         // Log the name of the person to the TextView
         Log.d("BabyListAdapter", "onBindViewHolder: " +
@@ -100,7 +107,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 baby.getBirthDate() + " " +
                 baby.getWeight() + " " +
                 baby.getNotes());
-        holder.personNameTextView.setText(String.valueOf(baby.getId()));
+        holder.personNameTextView.setText(String.valueOf(baby.getId())); //Set variables on interface
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             holder.personBirthdayTextView.setText(baby.dateOfBirthToString());
         }
@@ -109,6 +116,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // Transfer data to the Baby individual page
                 Intent intent = new Intent(v.getContext(), DetailedActivity.class);
                 intent.putExtra("Nigel ID", baby.getId());
                 intent.putExtra("Gestational Age", baby.getGestationalAge());
@@ -121,7 +129,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 ArrayList<Entry> sweatGlucoseEntries = new ArrayList<>();
                 ArrayList<Float> feedingTimes = new ArrayList<>();
 
-
+                // Define the entries for each type of data (blood, sweat, feeding) from dataset
                 for (DataSample event : baby.getTimeSeriesData()) {
                     if (event instanceof BloodSample) {
                         BloodSample bloodSample = (BloodSample) event;
@@ -137,7 +145,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                     }
                 }
 
-
                 // Add the extracted entries to the intent
                 intent.putExtra("bloodGlucoseEntries", bloodGlucoseEntries);
                 intent.putExtra("SweatGlucoseEntries", sweatGlucoseEntries);
@@ -149,7 +156,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
             }
         });
 
-        // Customize this method based on your data and chart setup
+        // Set up the chart for the person
         setupPersonChart(
                 holder.personChart,
                 baby,
@@ -168,7 +175,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
     private void setupPersonChart(CombinedChart combinedChart,
                                   Baby baby,
                                   AxisConfiguration axisConfig) {
-        // Customize this method based on how you want to display the chart
+        // Set up the chart
         Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
         XAxis xAxis = combinedChart.getXAxis();
         xAxis.setValueFormatter(new ValueFormatter() {
@@ -198,7 +205,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 LimitLine limitLine = new LimitLine(timeSeriesEvent.getTimestamp());
                 limitLine.setLineWidth(1f); // Set the width of the vertical line
                 limitLine.enableDashedLine(10f, 10f, 0f);
-                // Set color to semi-transparent blue according to api level
+                // Color to semi-transparent blue according to api level
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                     limitLine.setLineColor(Color.argb(185, 170, 211, 225));
                 } else {
@@ -220,7 +227,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
 
 
-        // Set the axis limits for blood data
+        // Set the axis data for blood data
         ScatterDataSet bloodDataset = new ScatterDataSet(bloodSampleEntries, "Blood Glucose");
         bloodDataset.setColor(Color.argb(255, 190, 46, 23));
         bloodDataset.setAxisDependency(YAxis.AxisDependency.LEFT);
@@ -276,7 +283,6 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
 
     /**
      * Filters the list of babies by name for the main page
-     *
      * @param query The query to filter by
      */
     public void filterByName(String query) {

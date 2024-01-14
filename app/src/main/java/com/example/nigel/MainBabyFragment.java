@@ -47,6 +47,8 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * Fragment defines the interaction of graphs*/
 public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener{
     private SwipeRefreshLayout swipeRefreshLayout;
     private Executor executor = Executors.newSingleThreadExecutor();
@@ -73,6 +75,9 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
         return view;
     }
+    /**
+     * Method allows for refreshing of the page
+     */
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     public void onRefresh() {
@@ -86,13 +91,13 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         adapter = new BabyListAdapter(new HashMap<>());
         recyclerView.setAdapter(adapter);
 
+        // Set layout manager to position the items
         LinearLayoutManager layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
-
-
         swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         swipeRefreshLayout.setOnRefreshListener(this);
 
+        // Add Baby Buttons
         Button addBabyButton = view.findViewById(R.id.addBabyButton);
         addBabyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +108,10 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
 
     }
-
+    /**
+     * Method displays the progressbar
+     * @param show boolean to show or hide the progressbar
+     */
     private void showProgressBar(final boolean show) {
         if(getActivity() != null && progressBar != null) { // Check progressBar is not null
             getActivity().runOnUiThread(new Runnable() {
@@ -140,6 +148,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
                 Log.d("MainActivity", "Search button clicked");
                 String query = searchEditText.getText().toString();
                 adapter.filterByName(query);
+                // Resets the adaptber with the new filtered list
                 recyclerView.setAdapter(adapter);
                 Log.d("MainActivity", "Filtered List" + adapter.getFilteredList().toString());
             }
@@ -148,13 +157,14 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
 
     /**
      * Fetches data from the server using the JSONParser class
-     * Fills the dataset hashmap
+     * Fills the dataset hashmap on a seperate thread
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     private void fetchDataUsingJSONParser() {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                // URL and Retrofit form connection via the Heroku Server
                 String url = "https://nigel-c0b396b99759.herokuapp.com/";
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(url)

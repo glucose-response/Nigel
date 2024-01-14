@@ -1,7 +1,9 @@
 package com.example.nigel;
 
 // AxisConfiguration.java
+/** This class is used to configure the axis of the graph*/
 public class AxisConfiguration {
+
     private float minX;
     private float maxX;
     private float minY;

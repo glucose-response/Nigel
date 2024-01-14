@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+/** This class defined the main object of interest*/
 public class Baby implements Serializable{
     private int NigelID;
     private double gestationalAge;
@@ -24,7 +25,6 @@ public class Baby implements Serializable{
     private long birthDate; // in milliseconds for graphing
     private LocalDate dateOfBirth; // for age calculation
     private String birthday; // for database communications
-
     private double birthWeight;
     private String notes;
 

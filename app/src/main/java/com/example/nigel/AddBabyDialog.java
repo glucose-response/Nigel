@@ -30,7 +30,8 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-// Used ChatGPT to create a dialog
+/** This class is used to configure the addBaby Dialog
+ * Sourced: ChatGPT*/
 public class AddBabyDialog extends Dialog{
     private Context context;
     private EditText editTextBabyID;
@@ -52,7 +53,7 @@ public class AddBabyDialog extends Dialog{
 
     /**
      * This is the constructor for the dialog
-     * @param babyMap the map of babies
+     * @param babyMap the map of babies (all of the data)
      * @param context the context of the dialog
      * @param onAddBabyListener the listener for the dialog
      */
@@ -152,6 +153,7 @@ public class AddBabyDialog extends Dialog{
         });
         exitButton.setOnClickListener(new View.OnClickListener() {
             @Override
+            // Function closes the dialog
             public void onClick(View v) {
                 dismiss();
             }
@@ -250,6 +252,7 @@ public class AddBabyDialog extends Dialog{
             public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
                 if (!response.isSuccessful()) {
                     try {
+                        // Display the error message
                         String errorBody = response.errorBody().string();
                         Log.e("Error Body", errorBody);
                     } catch (IOException e) {
@@ -258,16 +261,16 @@ public class AddBabyDialog extends Dialog{
                 }
                 if (response.body() != null) {
                     try {
+                        // Display the response message
                         String responseData = response.body().string();
                         new Handler(Looper.getMainLooper()).post(() -> outputText.setText(responseData));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                } else {
-                    // Handle the case when the response body is null
-                }
+                } else {}
             }
             @Override
+            // Display the error message
             public void onFailure(Call<ResponseBody> call, Throwable t) {
                 t.printStackTrace();
             }
@@ -277,7 +280,7 @@ public class AddBabyDialog extends Dialog{
 
 
     /**
-     * This method checks if the ID already exist
+     * This method checks if the ID already exist in the dataset (Map)
      * @param id the ID to be checked
      * @return true if the ID already exists, false otherwise
      */
