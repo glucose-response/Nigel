@@ -11,6 +11,7 @@ import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -32,19 +33,21 @@ public class Baby implements Serializable{
     /**
      * Constructor for graphing
      */
-    public Baby(int id,
-                double gestationalAge,
-                long birthDate,
-                double weight,
-                String notes,
-                List<DataSample> timeSeriesData) {
-        this.id = id;
-        this.gestationalAge = gestationalAge;
-        this.birthDate = birthDate;
-        this.weight = weight;
-        this.notes = notes;
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public Baby(int id, double gestationalAge, long birthDate, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
-            this.timeSeriesData = timeSeriesData;
+            this.id = id;
+            this.gestationalAge = gestationalAge;
+            this.birthDate = birthDate;
+            this.dateOfBirth = LocalDate.ofEpochDay(birthDate);
+            this.birthday = dateOfBirthToString();
+            this.weight = weight;
+            this.notes = notes;
+            if(timeSeriesData == null){
+                this.timeSeriesData = new ArrayList<>();
+            } else {
+                this.timeSeriesData = timeSeriesData;
+            }
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
         }
@@ -56,13 +59,18 @@ public class Baby implements Serializable{
      * note: birthday is a string, not a localdate
      * note: timeSeriesdata is empty
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Baby(int id, double gestationalAge, String birthday, double weight, String notes) {
         try{
             this.id = id;
             this.birthday = birthday;
+            String[] birthdays = birthday.split("-");
+            this.dateOfBirth = LocalDate.of(Integer.parseInt(birthdays[0]),Integer.parseInt(birthdays[1]),Integer.parseInt(birthdays[2]));
+            this.birthday = dateOfBirthToString();
             this.gestationalAge = gestationalAge;
             this.weight = weight;
             this.notes = notes;
+            timeSeriesData = new ArrayList<>();
         } catch (NullPointerException e){
             System.out.println("Null Time Series Data");
         }
@@ -71,14 +79,21 @@ public class Baby implements Serializable{
     /**
      * Constructor for a Baby object for dataset
      */
+    @RequiresApi(api = Build.VERSION_CODES.O)
     public Baby(int id, double gestationalAge, LocalDate dateOfBirth, double weight, String notes, List<DataSample> timeSeriesData) {
         try{
             this.id = id;
             this.gestationalAge = gestationalAge;
             this.dateOfBirth = dateOfBirth;
+            this.birthday = dateOfBirthToString();
+            this.birthDate = dateOfBirth.atStartOfDay(ZoneId.systemDefault()).toEpochSecond();
             this.weight = weight;
             this.notes = notes;
-            this.timeSeriesData = timeSeriesData;
+            if(timeSeriesData == null){
+                this.timeSeriesData = new ArrayList<>();
+            } else {
+                this.timeSeriesData = timeSeriesData;
+            }
         } catch (NullPointerException e){
                 System.out.println("Null Time Series Data");
         }
@@ -150,7 +165,7 @@ public class Baby implements Serializable{
      */
     @RequiresApi(api = Build.VERSION_CODES.O)
     public String getAgeForTest(){
-        Period period = Period.between(dateOfBirth, LocalDate.of(2024,2,1));
+        Period period = Period.between(dateOfBirth, LocalDate.of(2024,2,9));
         return period.getYears() + " years, " + period.getMonths() + " months, " + period.getDays() + " days";
     }
     /**

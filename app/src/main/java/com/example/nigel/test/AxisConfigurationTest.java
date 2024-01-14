@@ -9,6 +9,9 @@ import org.junit.jupiter.api.Test;
 
 class AxisConfigurationTest {
 
+    /**
+     * Tests the AxisConfiguration class
+     */
     AxisConfiguration axisConfiguration;
     AxisConfiguration faultyAxisConfiguration;
 
