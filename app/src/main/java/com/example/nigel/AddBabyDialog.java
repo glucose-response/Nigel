@@ -15,13 +15,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 
-import com.google.gson.Gson;
-
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
@@ -48,12 +45,12 @@ public class AddBabyDialog extends Dialog{
     private String GET = "GET";
     private BabyApi babyApi;
     private OnAddBabyListener onAddBabyListener;
-    private List babyList;
+    private Map<Integer,Baby> babyMap;
 
-    public AddBabyDialog(List babyList, @NonNull Activity context, OnAddBabyListener onAddBabyListener){
+    public AddBabyDialog(Map<Integer, Baby> babyMap, @NonNull Activity context, OnAddBabyListener onAddBabyListener){
         super(context);
         this.context = context;
-        this.babyList = babyList;
+        this.babyMap = babyMap;
         this.onAddBabyListener = onAddBabyListener;
     }
 
@@ -268,9 +265,9 @@ public class AddBabyDialog extends Dialog{
      * @return true if the ID already exists, false otherwise
      */
     private boolean idExists(int id){
-        for (int i = 0; i < babyList.size(); i++){
-            Baby baby = (Baby) babyList.get(i);
-            if (baby.getId() == id){
+        Set<Integer> babyIDs = babyMap.keySet();
+        for (int babyID : babyIDs){
+            if (babyID == id){
                 editTextBabyID.setError("The ID already exists");
                 return true;
             }

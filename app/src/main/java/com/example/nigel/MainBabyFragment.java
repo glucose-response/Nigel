@@ -97,7 +97,7 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
         addBabyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                openAddBabyDialog(babyList);
+                openAddBabyDialog();
             }
         });
 
@@ -211,8 +211,8 @@ public class MainBabyFragment extends Fragment implements SwipeRefreshLayout.OnR
     /**
      * Function opens pop-up to add a baby object to the database
      */
-    private void openAddBabyDialog(List<Baby> babyList) {
-        AddBabyDialog addBabyDialog = new AddBabyDialog(babyList, getActivity(), new AddBabyDialog.OnAddBabyListener() {
+    private void openAddBabyDialog() {
+        AddBabyDialog addBabyDialog = new AddBabyDialog(dataset, getActivity(), new AddBabyDialog.OnAddBabyListener() {
             @Override
             public void onAddBaby() {}
         });
