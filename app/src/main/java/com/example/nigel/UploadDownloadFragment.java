@@ -24,6 +24,8 @@ import androidx.fragment.app.Fragment;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -171,8 +173,17 @@ public class UploadDownloadFragment extends Fragment {
     private void handleSelectedExcelFile(Uri selectedFile) {
         // Log the start of the handleSelectedExcelFile method
         Log.d("UploadData", "handleSelectedExcelFile: Handling selected file.");
+        Log.d("UploadData", "uri: "+selectedFile);
 
         String excelFilePath = getFilePathFromDocumentFile(selectedFile);
+
+        File testFile = new File(excelFilePath);
+
+        if (testFile.exists()) {
+            Log.d("UploadData", "File exists");
+        }else {
+            Log.e("UploadData", "File does not exist at the specified path");
+        }
 
         if (excelFilePath != null && !excelFilePath.isEmpty()) {
             File excelFile = new File(excelFilePath);
@@ -211,7 +222,14 @@ public class UploadDownloadFragment extends Fragment {
                     Toast.makeText(requireContext(), "Excel File Uploaded", Toast.LENGTH_SHORT).show();
                 } else {
                     // Log an error if the upload fails
-                    Log.e("UploadData", "uploadFile: Error uploading Excel file");
+                    Log.e("UploadData", "uploadFile: Error uploading Excel file. Code: " + response.code());
+                    // Additional logging for debugging
+                    try {
+                        String errorBody = response.errorBody().string();
+                        Log.e("UploadData", "uploadFile: Error Body: " + errorBody);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     Toast.makeText(requireContext(), "Error uploading Excel file", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -223,6 +241,7 @@ public class UploadDownloadFragment extends Fragment {
                 Toast.makeText(requireContext(), "Network error", Toast.LENGTH_SHORT).show();
             }
         });
+
     }
 
 
@@ -252,15 +271,46 @@ public class UploadDownloadFragment extends Fragment {
         Log.e("UploadData", "Failed to get file path");
         return null;
     }
+//    private String getFilePathFromDocumentFile(Uri uri) {
+//        try {
+//            DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
+//            if (documentFile != null && documentFile.exists()) {
+//                String filePath = documentFile.getUri().getPath();
+//                // Log the file path
+//                Log.d("UploadData", "excelFilePath from DocumentFile: " + filePath);
+//
+//                return filePath;
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
     private String getFilePathFromDocumentFile(Uri uri) {
         try {
             DocumentFile documentFile = DocumentFile.fromSingleUri(requireActivity(), uri);
             if (documentFile != null && documentFile.exists()) {
-                String filePath = documentFile.getUri().getPath();
-                // Log the file path
-                Log.d("UploadData", "excelFilePath from DocumentFile: " + filePath);
+                // Create a temporary file in your app's private storage
+                File tempFile = new File(requireActivity().getCacheDir(), "tempFile");
 
-                return filePath;
+                try (InputStream inputStream = requireActivity().getContentResolver().openInputStream(uri);
+                     OutputStream outputStream = new FileOutputStream(tempFile)) {
+
+                    // Copy the content from InputStream to FileOutputStream
+                    byte[] buffer = new byte[1024];
+                    int bytesRead;
+                    while ((bytesRead = inputStream.read(buffer)) != -1) {
+                        outputStream.write(buffer, 0, bytesRead);
+                    }
+
+                    // Log the file path of the temporary file
+                    Log.d("UploadData", "Temporary file path: " + tempFile.getAbsolutePath());
+
+                    return tempFile.getAbsolutePath();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
