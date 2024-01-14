@@ -6,6 +6,7 @@ import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.PUT;
+import retrofit2.http.Part;
 import retrofit2.http.Url;
 
 public interface Api {
@@ -17,5 +18,5 @@ public interface Api {
 
     @Multipart
     @PUT("upload_data")
-    Call<ResponseBody> uploadExcelFile(MultipartBody.Part file);
+    Call<ResponseBody> uploadExcelFile(@Part MultipartBody.Part file);
 }
