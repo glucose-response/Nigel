@@ -155,6 +155,13 @@ public class Baby implements Serializable{
         Period period = Period.between(dateOfBirth, LocalDate.now());
         return period.getYears() + " years, " + period.getMonths() + " months, " + period.getDays() + " days";
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.O)
+    public int getDaysOfLife(){
+        Period period = Period.between(dateOfBirth, LocalDate.now());
+        return period.getDays();
+    }
+
     /**
      * Sourced: ChatGPT
      * Function finds the age of the baby and returns a reader friendly string
