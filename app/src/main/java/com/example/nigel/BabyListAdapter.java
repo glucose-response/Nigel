@@ -44,7 +44,6 @@ import java.util.Map;
  * This class is used to display the list of babies on the main page
  */
 public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHolder>{
-
     private Map<Integer, Baby> originalList = new HashMap<>();
     private Map<Integer, Baby> filteredList = new HashMap<>(); // New list to store filtered results
     private AxisConfiguration commonAxisConfig;
