@@ -115,6 +115,7 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
                 intent.putExtra("Date of Birth", baby.dateOfBirthToString());
                 intent.putExtra("Weight", baby.getWeight());
                 intent.putExtra("Notes", baby.getNotes());
+                intent.putExtra("Days of life", baby.getAge());
 
                 // Extract blood glucose entries
                 ArrayList<Entry> bloodGlucoseEntries = new ArrayList<>();

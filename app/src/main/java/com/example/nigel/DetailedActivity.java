@@ -24,6 +24,8 @@ import com.github.mikephil.charting.data.ScatterDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 
+import org.w3c.dom.Text;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +54,7 @@ public class DetailedActivity extends AppCompatActivity {
         TextView dateOfBirthTextView = findViewById(R.id.dateOfBirthTextView);
         TextView gestationalAgeTextView = findViewById(R.id.gestationalAgeTextView);
         TextView birthWeightTextView = findViewById(R.id.birthWeightTextView);
+        TextView daysOfLifeTextView = findViewById(R.id.daysOfLifeTextView);
         TextView futureNotesEditText = findViewById(R.id.futureNotesEditText);
         TextView chartTitleTextView = findViewById(R.id.chartTitleTextView);
 
@@ -84,6 +87,7 @@ public class DetailedActivity extends AppCompatActivity {
         double gestationalAge = (double) getIntent().getSerializableExtra("Gestational Age");
         String birthdate = (String) getIntent().getSerializableExtra("Date of Birth");
         double weight = (double) getIntent().getSerializableExtra("Weight");
+        String daysOfLife = (String) getIntent().getSerializableExtra("Days of life");
         String notes = (String) getIntent().getSerializableExtra("Notes");
 
         // Retrieve the Blood, Sweat and Feeding entries
@@ -93,9 +97,10 @@ public class DetailedActivity extends AppCompatActivity {
 
         // Populate text views
         textView.setText("Person " + String.valueOf(bebeInt) + " Detail Activity");
+        dateOfBirthTextView.setText("Date of Birth: " + birthdate);
         gestationalAgeTextView.setText("Gestational Age: " + String.valueOf(gestationalAge) + " weeks");
         birthWeightTextView.setText("Birth Weight: " + String.valueOf(weight) + " kg");
-        dateOfBirthTextView.setText("Date of Birth: " + birthdate);
+        daysOfLifeTextView.setText("Days of life: "+daysOfLife);
         futureNotesEditText.setText(notes);
         chartTitleTextView.setText("Glucose Measurements (Blood and Sweat)");
 
