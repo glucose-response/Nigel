@@ -130,10 +130,12 @@ public class DetailedActivity extends AppCompatActivity {
         rightAxis.setDrawGridLines(false);
 
         xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
+
             @Override
             public String getFormattedValue(float value) {
-                long milliseconds = (long) value * 1000; // Convert seconds to milliseconds
-                return new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault()).format(new Date(milliseconds));
+                // Assuming value is in milliseconds
+                return dateFormat.format(new Date((long) value));
             }
         });
 

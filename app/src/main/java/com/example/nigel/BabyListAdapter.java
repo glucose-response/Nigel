@@ -173,10 +173,12 @@ public class BabyListAdapter extends RecyclerView.Adapter<BabyListAdapter.ViewHo
         Log.d("BabyListAdapter", "Setting up chart " + combinedChart.getId());
         XAxis xAxis = combinedChart.getXAxis();
         xAxis.setValueFormatter(new ValueFormatter() {
+            private final SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault());
+
             @Override
             public String getFormattedValue(float value) {
-                long milliseconds = (long) value * 1000; // Convert seconds to milliseconds
-                return new SimpleDateFormat("dd/MM/yyyy, HH:mm", Locale.getDefault()).format(new Date(milliseconds));
+                // Assuming value is in milliseconds
+                return dateFormat.format(new Date((long) value));
             }
         });
 
